@@ -61,7 +61,7 @@
     "tailwindcss": "^4.3.3",
     "topojson-client": "^3.1.0",
     "typescript": "^5.7.0",
-    "vitest": "^3.2.7",
+    "vitest": "^4.1.11",
     "world-atlas": "^2.0.2"
   },
   "pnpm": {

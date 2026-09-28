@@ -5502,3 +5502,24 @@ público) e não se aplica a um número que nunca sai da consulta.
 
 Ainda de fora: Explorar por gênero/autor/editora (`lib/explorar-catalogo.ts`),
 como já registrado na entrada anterior.
+
+## O Discord sai. Não vai ter servidor.
+
+Reverte a entrada "O Discord entra, e 'comunidade' ganha seção própria na
+barra". "Não vai ter servidor do Discord, pode tirar tudo que for de
+servidor do Discord" — o dono.
+
+Removido: o convite (`DISCORD` saiu de `lib/onde.ts`), o link na barra
+(`components/sidebar.tsx`, a seção "comunidade" agora só tem Instagram),
+o rodapé da home e de `/sobre`, e a porta em `components/casa-de-quem-faz.tsx`
+e `components/apoie-e-acompanhe.tsx`. `lib/onde.test.ts` deixou de exigir
+Discord na barra.
+
+O que NÃO saiu: `lib/links-sociais.ts` continua reconhecendo `discord.gg`/
+`discord.com` como um tipo de link — isso é sobre um LEITOR poder colocar
+o próprio Discord (ou o de outro lugar) no perfil dele, o mesmo mecanismo
+genérico que já reconhece Twitter, Letterboxd e outros. Não é "o servidor
+do Gume no Discord", que é o que esta entrada tira; é uma pessoa citando
+onde ela mesma está, e essa porta continua aberta.
+
+O Instagram continua sendo o canal de contato.

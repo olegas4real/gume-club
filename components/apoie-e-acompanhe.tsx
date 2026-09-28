@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { INSTAGRAM, DISCORD } from "@/lib/onde";
+import { INSTAGRAM } from "@/lib/onde";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -11,24 +11,24 @@ import { INSTAGRAM, DISCORD } from "@/lib/onde";
  *  geralmente essas ações sao feitas apos uma chamada ou serem
  *  encorajados" — o dono.
  *
- *  Instagram, Discord e Apoiar já moravam na barra (sempre visível, nunca
- *  ligados a um momento) e no rodapé da home/sobre. Isso é ENCONTRÁVEL, mas
- *  não é um CONVITE: ninguém sente vontade de seguir uma marca olhando um
- *  item de menu. Este cartão mora só em dois lugares — o fim de
- *  /estatísticas e o fim do SEU PRÓPRIO perfil público — porque são os dois
- *  momentos em que a pessoa está olhando a própria trajetória de leitura
- *  com orgulho, e é depois desse tipo de momento que se pede uma torcida,
- *  não no meio de uma tarefa.
+ *  Instagram e Apoiar já moravam na barra (sempre visível, nunca ligados a
+ *  um momento) e no rodapé da home/sobre. Isso é ENCONTRÁVEL, mas não é um
+ *  CONVITE: ninguém sente vontade de seguir uma marca olhando um item de
+ *  menu. Este cartão mora só em dois lugares — o fim de /estatísticas e o
+ *  fim do SEU PRÓPRIO perfil público — porque são os dois momentos em que
+ *  a pessoa está olhando a própria trajetória de leitura com orgulho, e é
+ *  depois desse tipo de momento que se pede uma torcida, não no meio de
+ *  uma tarefa.
  *
  *  ═══ POR QUE NÃO É A MESMA CARA DE "PORTAS" (casa-de-quem-faz.tsx) ═══
  *
  *  "Construir" (Quem faz, código, catálogo) é TRABALHO, e carrega o rosa
- *  (--color-colaborar) só dele. Seguir no Instagram, entrar no Discord e
- *  apoiar com dinheiro são a MESMA pergunta — "eu gosto disso, e quero que
- *  continue existindo" — e nenhuma delas é trabalho. Por isso Apoiar mora
- *  aqui, junto de Instagram e Discord, com a MESMA cor neutra que a seção
- *  "comunidade" da barra já usa (ver components/sidebar.tsx) — e não com o
- *  rosa que a tela /apoiar usa sozinha.
+ *  (--color-colaborar) só dele. Seguir no Instagram e apoiar com dinheiro
+ *  são a MESMA pergunta — "eu gosto disso, e quero que continue existindo"
+ *  — e nenhuma delas é trabalho. Por isso Apoiar mora aqui, junto de
+ *  Instagram, com a MESMA cor neutra que a seção "comunidade" da barra já
+ *  usa (ver components/sidebar.tsx) — e não com o rosa que a tela /apoiar
+ *  usa sozinha.
  *
  *  ═══ NUNCA PARA UM DESCONHECIDO ═══
  *
@@ -44,13 +44,6 @@ const DOORS = [
     href: INSTAGRAM,
     titulo: "Instagram",
     texto: "Onde se opina no que vem por aí, e onde se avisa que algo quebrou.",
-    fora: true,
-  },
-  {
-    key: "discord",
-    href: DISCORD,
-    titulo: "Discord",
-    texto: "Onde a conversa acontece de verdade. O convite não expira.",
     fora: true,
   },
   {

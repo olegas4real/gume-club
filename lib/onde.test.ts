@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { CODIGO, INSTAGRAM, DISCORD } from "@/lib/onde";
+import { CODIGO, INSTAGRAM } from "@/lib/onde";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -58,23 +58,19 @@ describe("os endereços de fora", () => {
        * como PLACEHOLDER do link social de outra pessoa, e aquilo não é o mesmo bug: é
        * exemplo, nunca aponta para o Gume.
        *
-       * E os dois vêm de INSTAGRAM/DISCORD, não escritos à mão de novo aqui: o handle do
-       * Instagram coincide, por acaso, com o slug velho do GitHub (ver
-       * lib/nome-do-repo.test.ts) — escrevê-lo solto de novo faria esse outro teste
-       * confundir os dois.
+       * E ele vem de INSTAGRAM, não escrito à mão de novo aqui: o handle do Instagram
+       * coincide, por acaso, com o slug velho do GitHub (ver lib/nome-do-repo.test.ts) —
+       * escrevê-lo solto de novo faria esse outro teste confundir os dois.
        */
       const semProtocoloInstagram = INSTAGRAM.replace(/^https?:\/\//, "");
-      const semProtocoloDiscord = DISCORD.replace(/^https?:\/\//, "");
       if (
         /github\.com\/[\w-]+\/gume-club/.test(codigo) ||
-        codigo.includes(semProtocoloInstagram) ||
-        codigo.includes(semProtocoloDiscord)
+        codigo.includes(semProtocoloInstagram)
       ) {
         naMao.push(
           `${arquivo.replace(process.cwd() + "/", "")} escreve o endereço à mão. ` +
-            "Use CODIGO, INSTAGRAM ou DISCORD, de lib/onde.ts: um endereço em quatro " +
-            "telas muda em três, e a quarta vira um link morto que ninguém reclama, só " +
-            "abandona.",
+            "Use CODIGO ou INSTAGRAM, de lib/onde.ts: um endereço em quatro telas muda " +
+            "em três, e a quarta vira um link morto que ninguém reclama, só abandona.",
         );
       }
     }
@@ -89,12 +85,11 @@ describe("os endereços de fora", () => {
    * parágrafo no rodapé. Estar no app e ser achável no app são coisas diferentes: o que
    * está no fim de um texto é lido por quem leu o texto todo, que é quase ninguém.
    *
-   * Instagram e Discord tomaram o lugar de canal de contato, e o lugar disso é a barra,
-   * visível de qualquer tela — não só o rodapé de um texto. Cada um na sua própria
-   * seção "comunidade", e não dentro de "construir": seguir e conversar não é
-   * contribuir (ver a nota em components/sidebar.tsx).
+   * O Instagram tomou o lugar de canal de contato, e o lugar disso é a barra, visível
+   * de qualquer tela — não só o rodapé de um texto. Numa seção "comunidade", e não
+   * dentro de "construir": seguir não é contribuir (ver a nota em components/sidebar.tsx).
    */
-  it("o Instagram e o Discord estão na barra, e não só no rodapé de um texto", () => {
+  it("o Instagram está na barra, e não só no rodapé de um texto", () => {
     const barra = readFileSync("components/sidebar.tsx", "utf8");
 
     expect(
@@ -102,12 +97,10 @@ describe("os endereços de fora", () => {
       "o canal de contato saiu da barra. Ele volta a existir só no fim de textos que " +
         "quase ninguém termina de ler.",
     ).toContain("INSTAGRAM");
-    expect(barra, "o Discord saiu da barra.").toContain("DISCORD");
   });
 
   it("os endereços são URLs de verdade", () => {
     expect(CODIGO.startsWith("https://")).toBe(true);
     expect(INSTAGRAM.startsWith("https://")).toBe(true);
-    expect(DISCORD.startsWith("https://")).toBe(true);
   });
 });

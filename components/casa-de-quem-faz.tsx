@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { INSTAGRAM, DISCORD } from "@/lib/onde";
+import { INSTAGRAM } from "@/lib/onde";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -122,21 +122,14 @@ export function Portas({ aqui }: { aqui: "quem-faz" | "insignias" | "o-que-vem" 
      * que vem depois de todas: **"e quem decide o que vem por aí?"**
      *
      * A resposta era "A conversa", um link para o GitHub Discussions — nichado demais
-     * para quem não lê código. Dois canais tomaram o lugar, do tamanho das outras portas
-     * e nunca filtrados — nenhum dos dois é uma das telas, e cabe estar em todas.
+     * para quem não lê código. O Instagram tomou o lugar, do tamanho das outras portas
+     * e nunca filtrado — não é uma das telas, e cabe estar em todas.
      */
     {
       key: "instagram",
       href: INSTAGRAM,
       titulo: "Instagram",
       texto: "Onde se opina no que vem por aí, e onde se avisa que algo quebrou.",
-      fora: true,
-    },
-    {
-      key: "discord",
-      href: DISCORD,
-      titulo: "Discord",
-      texto: "Onde a conversa acontece de verdade. O convite não expira.",
       fora: true,
     },
   ].filter((p) => p.key !== aqui);

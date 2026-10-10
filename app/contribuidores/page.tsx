@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeartHandshake } from "lucide-react";
 import { getApoiadores, getCatalogo, getCodigo } from "@/lib/contributors";
 import { apoioLigado } from "@/lib/stripe";
+import { CODIGO } from "@/lib/onde";
 import { Cabecalho, Portas } from "@/components/casa-de-quem-faz";
 import { Avatar } from "@/components/avatar";
 import { Empty } from "@/components/empty";
@@ -168,6 +169,20 @@ export default async function Contribuidores() {
         {/* ── quem escreve o código ───────────────────────────────── */}
         <section>
           <Titulo>quem escreve o código</Titulo>
+
+          {/* A porta pra entrar nesta lista. Sem ela, a seção mostrava quem já
+              escreveu e não dizia onde se escreve. */}
+          <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-[var(--color-ink-soft)]">
+            O Gume é aberto: qualquer pessoa pode ver como ele é feito, e ajudar a fazer.{" "}
+            <a
+              href={CODIGO}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[var(--color-ink)] underline decoration-[var(--color-rule)] underline-offset-4 hover:decoration-[var(--color-ink)]"
+            >
+              O código está no GitHub.
+            </a>
+          </p>
 
           {/* Duas mensagens, porque são duas coisas diferentes. Uma lista vazia porque
               ninguém escreveu código é um fato; uma lista vazia porque o GitHub não

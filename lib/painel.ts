@@ -801,7 +801,35 @@ async function getFunil(): Promise<Painel["funil"]> {
     bucket[campo] += linha.sessoes;
   }
 
-  const [visitasPorDia, cadastrosPorDia] = await Promise.all([
+  /**
+   * ═══ A TAXA SEGUE A SESSÃO, E NÃO DIVIDE CONTAGENS SOLTAS ═══
+   *
+   * A primeira versão dividia "chegaram em /entrar" por "clicaram em criar conta" e
+   * mostrou 1033% no painel: a maioria de quem chega em /entrar NÃO veio do botão da
+   * home (veio do link do cabeçalho, de um convite, de um favorito pra entrar). Cada
+   * passo agora conta só quem fez o passo ANTERIOR na mesma sessão: dos que clicaram,
+   * quantos chegaram; dos que chegaram, quantos se cadastraram.
+   */
+  const [[passos], visitasPorDia, cadastrosPorDia] = await Promise.all([
+    db.execute<{ visitou: number; visitou_clicou: number; clicou: number; clicou_chegou: number; chegou: number; chegou_cadastrou: number }>(sql`
+      with s as (
+        select sessao_anon,
+               bool_or(tipo = 'visita_home')  as visitou,
+               bool_or(tipo = 'clique_criar') as clicou,
+               bool_or(tipo = 'viu_entrar')   as chegou,
+               bool_or(tipo = 'cadastro_ok')  as cadastrou
+          from eventos_funil
+         where criado_em >= now() - interval '30 days'
+         group by sessao_anon
+      )
+      select count(*) filter (where visitou)::int               as visitou,
+             count(*) filter (where visitou and clicou)::int    as visitou_clicou,
+             count(*) filter (where clicou)::int                as clicou,
+             count(*) filter (where clicou and chegou)::int     as clicou_chegou,
+             count(*) filter (where chegou)::int                as chegou,
+             count(*) filter (where chegou and cadastrou)::int  as chegou_cadastrou
+        from s
+    `),
     serieDoFunil("visita_home"),
     serieDoFunil("cadastro_ok"),
   ]);
@@ -811,9 +839,9 @@ async function getFunil(): Promise<Painel["funil"]> {
   return {
     janelaDias: 30,
     totais,
-    taxaVisitaClique: taxa(totais.visitas, totais.cliques),
-    taxaCliqueEntrar: taxa(totais.cliques, totais.viuEntrar),
-    taxaEntrarCadastro: taxa(totais.viuEntrar, totais.cadastros),
+    taxaVisitaClique: taxa(passos?.visitou ?? 0, passos?.visitou_clicou ?? 0),
+    taxaCliqueEntrar: taxa(passos?.clicou ?? 0, passos?.clicou_chegou ?? 0),
+    taxaEntrarCadastro: taxa(passos?.chegou ?? 0, passos?.chegou_cadastrou ?? 0),
     // Mais cadastros primeiro: é a pergunta que motivou a fatia inteira —
     // "de onde vêm os cadastros", e não só "de onde vêm as visitas".
     porOrigem: [...porOrigemMapa.values()].sort((a, b) => b.cadastros - a.cadastros || b.visitas - a.visitas),

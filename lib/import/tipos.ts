@@ -162,3 +162,86 @@ export type Achado = {
 export function ehFato(como: Casamento): boolean {
   return como === "isbn13" || como === "isbn10" || como === "openlibrary";
 }
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  O ISBN É UM FATO SOBRE O NÚMERO, NÃO SOBRE O ARQUIVO.
+ *
+ *  A auditoria de 2026-10-10 importou vinte linhas e viu seis "pelo ISBN, esses são
+ *  certos". Três estavam errados: "Vidas Secas" virou "Neblina", "Cem Anos de Solidão"
+ *  virou "1984". O casamento estava certo; o NÚMERO do arquivo é que estava errado. E
+ *  número errado em arquivo de gente é a regra: o Goodreads exporta o ISBN da edição
+ *  que a pessoa clicou um dia, planilha tem copiar e colar torto.
+ *
+ *  Então o ISBN continua mandando no casamento (a gravação usa o mesmo, e a prévia não
+ *  pode mostrar uma coisa e gravar outra), mas ele perde o selo de "certo" quando o
+ *  livro que ele aponta não se parece em NADA com o que o arquivo dizia: nem uma palavra
+ *  do título, nem uma do nome do autor. Aí a linha desce para "confira", com os dois
+ *  lados na tela, e a pessoa decide se desmarca.
+ *
+ *  A régua é frouxa de propósito. Uma palavra em comum basta ("Crime e Castigo" e
+ *  "Crime and Punishment"; "García Márquez" e "Gabriel García Márquez"). Ela não existe
+ *  para achar tradução: existe para pegar o erro grosseiro, o livro que é OUTRO.
+ * ════════════════════════════════════════════════════════════════════
+ */
+
+/** Palavras que não dizem nada sobre qual livro é. */
+const VAZIAS = new Set([
+  "the", "and", "of", "a", "an", "o", "os", "as", "um", "uma", "de", "do", "da", "dos", "das",
+  "e", "em", "no", "na", "el", "la", "los", "las", "y", "le", "les", "des", "du", "et", "vol",
+  "volume", "livro", "book",
+]);
+
+function palavras(texto: string): Set<string> {
+  return new Set(
+    texto
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((p) => p.length >= 3 && !VAZIAS.has(p)),
+  );
+}
+
+/** Pelo menos uma palavra que conta em comum. Sem palavra que conte, só igualdade serve. */
+export function parecido(a: string, b: string): boolean {
+  const pa = palavras(a);
+  const pb = palavras(b);
+  if (pa.size === 0 || pb.size === 0) return a.trim().toLowerCase() === b.trim().toLowerCase();
+  for (const p of pa) if (pb.has(p)) return true;
+  return false;
+}
+
+/**
+ * O ISBN casou com um livro que é OUTRO? Título e autor, os dois, sem nada em comum com
+ * o que o arquivo trouxe. Sem autor dos dois lados, o título decide sozinho.
+ */
+export function isbnDiverge(a: Achado): boolean {
+  if (!ehFato(a.como) || !a.tituloNoCatalogo) return false;
+  if (parecido(a.titulo, a.tituloNoCatalogo)) return false;
+  if (a.autor && a.autorNoCatalogo && parecido(a.autor, a.autorNoCatalogo)) return false;
+  return true;
+}
+
+/**
+ * Linhas do MESMO arquivo com o mesmo ISBN e títulos diferentes. Um número só não pode
+ * ser dois livros: pelo menos uma das linhas está errada, e importar as duas caladas
+ * faria uma sumir dentro da outra. Devolve os índices.
+ */
+export function isbnRepetido(livros: Pick<LivroImportado, "titulo" | "isbn13" | "isbn10">[]): Set<number> {
+  const porIsbn = new Map<string, number[]>();
+  livros.forEach((l, i) => {
+    const isbn = l.isbn13 ?? l.isbn10;
+    if (!isbn) return;
+    porIsbn.set(isbn, [...(porIsbn.get(isbn) ?? []), i]);
+  });
+
+  const repetidos = new Set<number>();
+  for (const indices of porIsbn.values()) {
+    if (indices.length < 2) continue;
+    const titulos = indices.map((i) => livros[i]!.titulo);
+    if (titulos.every((t) => parecido(t, titulos[0]!))) continue; // a mesma linha duas vezes
+    for (const i of indices) repetidos.add(i);
+  }
+  return repetidos;
+}

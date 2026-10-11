@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Upload, ScanBarcode, Type, Sparkles } from "lucide-react";
 import { ler, procurar, importar, type Previa } from "@/app/importar/actions";
-import { LOTE, ehFato, type Relatorio, type Achado } from "@/lib/import/tipos";
+import { LOTE, ehFato, isbnDiverge, isbnRepetido, type Relatorio, type Achado } from "@/lib/import/tipos";
 import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
 import { PedidoDeApoio } from "@/components/pedido-de-apoio";
@@ -179,12 +179,23 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
   if (previa && achados) {
     const escolhidos = previa.livros.filter((_, i) => !fora.has(i));
 
-    const fatos = achados.filter((a) => ehFato(a.como)).length;
+    /**
+     * O ISBN que aponta para OUTRO livro, ou que o arquivo usa em duas linhas diferentes,
+     * perde o selo de certo e desce para "confira". Ver isbnDiverge em lib/import/tipos.ts.
+     */
+    const repetidos = isbnRepetido(previa.livros);
+    const avisoDe = (a: Achado, i: number): Aviso =>
+      !ehFato(a.como) ? null : repetidos.has(i) ? "repetido" : isbnDiverge(a) ? "outro" : null;
+
+    const fatos = achados.filter((a, i) => ehFato(a.como) && !avisoDe(a, i)).length;
+    const conflitos = achados.filter((a, i) => avisoDe(a, i)).length;
     const palpites = achados.filter((a) => a.como === "titulo").length;
     const novos = achados.filter((a) => a.como === "novo").length;
 
-    /** Os palpites primeiro: são os únicos que precisam de um par de olhos. */
-    const ordem = achados.map((a, i) => ({ a, i })).sort((x, y) => peso(x.a.como) - peso(y.a.como));
+    /** Os que precisam de um par de olhos primeiro: o ISBN em conflito, e os palpites. */
+    const ordem = achados
+      .map((a, i) => ({ a, i, aviso: avisoDe(a, i) }))
+      .sort((x, y) => (x.aviso ? -1 : peso(x.a.como)) - (y.aviso ? -1 : peso(y.a.como)));
 
     return (
       <section className="surface mt-10 p-7 sm:p-9">
@@ -215,6 +226,24 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
               <span>
                 <strong className="font-medium text-[var(--color-ink)]">{fatos}</strong> pelo ISBN.
                 Esses são certos: o número está impresso no livro.
+              </span>
+            </li>
+          )}
+
+          {conflitos > 0 && (
+            <li className="flex items-start gap-2.5">
+              <ScanBarcode
+                size={16}
+                strokeWidth={1.5}
+                className="mt-1 shrink-0"
+                style={{ color: "var(--color-colaborar)" }}
+                aria-hidden
+              />
+              <span>
+                <strong className="font-medium text-[var(--color-ink)]">{conflitos}</strong> com um
+                ISBN que aponta para outro livro, ou que aparece em duas linhas do arquivo. O número
+                pode estar errado no arquivo.{" "}
+                <strong className="font-medium text-[var(--color-ink)]">Confira esses.</strong>
               </span>
             </li>
           )}
@@ -274,7 +303,7 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
          * aviso que não dá para agir é um aviso decorativo.
          */}
         <ul className="mt-8 flex flex-col gap-2">
-          {ordem.map(({ a, i }) => {
+          {ordem.map(({ a, i, aviso }) => {
             const dentro = !fora.has(i);
             const livro = previa.livros[i]!;
 
@@ -314,14 +343,15 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
                     {/* O TÍTULO DO ARQUIVO, quando ele é OUTRO. É aqui que o erro aparece: a
                         pessoa vê os dois lado a lado, e decide. */}
                     {a.tituloNoCatalogo &&
-                      a.tituloNoCatalogo.toLowerCase() !== a.titulo.toLowerCase() && (
+                      (aviso || a.tituloNoCatalogo.toLowerCase() !== a.titulo.toLowerCase()) && (
                         <span className="mt-0.5 block truncate text-[12px] text-[var(--color-ink-faint)]">
                           no seu arquivo: {a.titulo}
+                          {aviso && a.autor ? `, ${a.autor}` : ""}
                         </span>
                       )}
                   </span>
 
-                  <Selo como={a.como} />
+                  <Selo como={a.como} aviso={aviso} />
 
                   <span className="hidden shrink-0 text-[11px] uppercase tracking-[0.12em] text-[var(--color-ink-faint)] sm:block">
                     {livro.estrelas !== null
@@ -430,8 +460,29 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
   );
 }
 
+/** "outro": o ISBN aponta para um livro que não se parece com a linha. "repetido": o
+ *  arquivo usa o mesmo ISBN em duas linhas diferentes. */
+type Aviso = "outro" | "repetido" | null;
+
 /** Casou por ISBN, por título, ou não casou. O selo é a única coisa que a pessoa precisa ler. */
-function Selo({ como }: { como: Achado["como"] }) {
+function Selo({ como, aviso }: { como: Achado["como"]; aviso: Aviso }) {
+  if (aviso) {
+    return (
+      <span
+        className="flex shrink-0 items-center gap-1.5 text-[11px] uppercase tracking-[0.1em]"
+        style={{ color: "var(--color-colaborar)" }}
+        title={
+          aviso === "repetido"
+            ? "O arquivo usa este mesmo ISBN em outra linha, com outro título. Confira."
+            : "O ISBN do arquivo aponta para este livro, que não parece o da sua linha. Confira."
+        }
+      >
+        <ScanBarcode size={13} strokeWidth={1.5} aria-hidden />
+        {aviso === "repetido" ? "isbn repetido" : "isbn não bate"}
+      </span>
+    );
+  }
+
   if (como === "novo") {
     return (
       <span className="hidden shrink-0 items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink-faint)] sm:flex">

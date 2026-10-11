@@ -27,7 +27,7 @@ const SHELVES = [
   { key: "3", status: "read", label: "lido" },
 ] as const;
 
-export function Command() {
+export function Command({ userId }: { userId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -61,7 +61,7 @@ export function Command() {
 
   const aborter = useRef<AbortController | null>(null);
   const input = useRef<HTMLInputElement>(null);
-  const resume = lastBook.read();
+  const resume = lastBook.read(userId);
 
   // Cmd+K de qualquer lugar. Nunca sequestra o atalho quando a pessoa está
   // escrevendo uma resenha: aí o navegador é dela, não nosso.

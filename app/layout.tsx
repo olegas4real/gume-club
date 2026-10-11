@@ -144,7 +144,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         {/* Cmd+K de qualquer tela: achar um livro e pôr na estante é a ação mais
             repetida do app, e ela custava uma navegação inteira. */}
-        <Command />
+        <Command userId={viewer.id} />
 
         {/* O elevador: some no topo, aparece depois de duas telas. */}
         <VoltarAoTopo />

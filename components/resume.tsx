@@ -16,12 +16,12 @@ import { lastBook, type LastBook } from "@/lib/last-book";
  * Lê do navegador, então precisa esperar a montagem: renderizar no servidor uma
  * coisa que só o navegador sabe é como o texto pisca e pula na sua cara.
  */
-export function Resume({ hide }: { hide?: string }) {
+export function Resume({ userId, hide }: { userId: string; hide?: string }) {
   const [book, setBook] = useState<LastBook | null>(null);
 
   useEffect(() => {
-    setBook(lastBook.read());
-  }, []);
+    setBook(lastBook.read(userId));
+  }, [userId]);
 
   if (!book || book.slug === hide) return null;
 

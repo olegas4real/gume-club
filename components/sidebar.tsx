@@ -17,6 +17,7 @@ import { Tema } from "@/components/tema";
 import type { Novidade } from "@/lib/novidades";
 import { Avatar } from "@/components/avatar";
 import { signOut } from "@/lib/auth-client";
+import { lastBook } from "@/lib/last-book";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -276,6 +277,8 @@ export function Sidebar({
   const sair = () =>
     signOut()
       .then(() => {
+        // O navegador não guarda o último livro de quem saiu. Ver lib/last-book.ts.
+        lastBook.esquecer();
         router.push("/");
         router.refresh();
       })

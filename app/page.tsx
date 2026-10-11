@@ -510,7 +510,7 @@ async function Casa({ viewerId }: { viewerId: string }) {
 
         {/* O último livro que você abriu. Some quando ele já é o herói ali embaixo:
             repetir a mesma capa duas vezes na mesma tela não é memória, é eco. */}
-        <Resume hide={lendo[0]?.slug} />
+        <Resume userId={viewerId} hide={lendo[0]?.slug} />
       </header>
 
       {/* ── o herói: o livro na mão ──────────────────────────────────────

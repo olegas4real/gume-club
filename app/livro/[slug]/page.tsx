@@ -331,7 +331,7 @@ export default async function BookPage({
           voltar para a estante
         </Link>
       )}
-      <RememberBook slug={slug} title={book.title} />
+      {actor && <RememberBook userId={actor.id} slug={slug} title={book.title} />}
       <div className="mt-16 grid gap-5 sm:mt-24 sm:grid-cols-12">
         {/* ── left: the cover, in a card of its own ─────────────────── */}
         <aside className="sm:col-span-4 lg:col-span-3">

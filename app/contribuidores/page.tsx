@@ -6,6 +6,8 @@ import { CODIGO } from "@/lib/onde";
 import { Cabecalho, Portas } from "@/components/casa-de-quem-faz";
 import { Avatar } from "@/components/avatar";
 import { Empty } from "@/components/empty";
+import { ChamadaConta } from "@/components/chamada-conta";
+import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +23,7 @@ export const dynamic = "force-dynamic";
  * perfil, nunca no feed. Ver lib/contributors.ts e ai/DECISIONS.md.
  */
 export default async function Contribuidores() {
-  const [catalogo, apoiadores] = await Promise.all([getCatalogo(), getApoiadores()]);
+  const [catalogo, apoiadores, viewer] = await Promise.all([getCatalogo(), getApoiadores(), getViewer()]);
 
   /**
    * Esta instância aceita apoio? Quem hospeda o próprio Gume não tem conta de pagamento,
@@ -54,6 +56,10 @@ export default async function Contribuidores() {
           estão na mesma página, com o mesmo tamanho, porque valem o mesmo.
         </>}
       />
+
+      {!viewer && (
+        <ChamadaConta className="mt-10 sm:max-w-xl" frase="Crie sua conta e arrume a ficha do primeiro livro." />
+      )}
 
       {/**
        * ════════════════════════════════════════════════════════════════

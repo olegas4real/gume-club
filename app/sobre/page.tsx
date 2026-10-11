@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Mark } from "@/components/mark";
 import { CODIGO, INSTAGRAM } from "@/lib/onde";
+import { ChamadaConta } from "@/components/chamada-conta";
+import { getViewer } from "@/lib/viewer";
 
 export const metadata = {
   title: "Sobre · Gume",
@@ -51,7 +53,8 @@ const RECUSAS = [
   "Sem anúncio, e o que você lê nunca está à venda.",
 ];
 
-export default function Sobre() {
+export default async function Sobre() {
+  const viewer = await getViewer();
   return (
     <main className="mx-auto max-w-5xl px-6 pb-32 sm:px-10">
       {/* ── a tese ─────────────────────────────────────────────────── */}
@@ -116,6 +119,10 @@ export default function Sobre() {
           isso que ler aqui é silencioso.
         </p>
       </section>
+
+      {!viewer && (
+        <ChamadaConta className="mt-20 sm:max-w-xl" frase="Monte a sua estante. É de graça, e o que você lê continua seu." />
+      )}
 
       {/* ── o convite ──────────────────────────────────────────────── */}
       <section className="mt-20 border-t border-[var(--color-rule)] pt-14 sm:mt-24">

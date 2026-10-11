@@ -27,6 +27,7 @@ import { PerfilAbas } from "@/components/perfil-abas";
 import { CuradoriaCard } from "@/components/curadoria-card";
 import { SeloIdealizador } from "@/components/selo-idealizador";
 import { ApoieEAcompanhe } from "@/components/apoie-e-acompanhe";
+import { ChamadaConta } from "@/components/chamada-conta";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -273,6 +274,15 @@ export default async function Profile({ params }: { params: Promise<{ handle: st
       </div>
 
       {invisivel && <ConfirmeSeuEmail faltam={LIVROS_QUE_PROVAM - livrosQueProvam} />}
+
+      {/* Quem chega por um link de estante e não tem conta: o convite mora logo abaixo
+          de quem é a estante. Ver components/chamada-conta.tsx. */}
+      {!viewer && (
+        <ChamadaConta
+          className="mt-10 sm:max-w-xl"
+          frase="Monte a sua estante também. É de graça, sem anúncio, e você leva tudo embora quando quiser."
+        />
+      )}
 
       {/* `key={profile.id}`: sem isto, o Next reaproveita a MESMA instância de
           cliente ao navegar de um perfil para outro (mesma rota, `[handle]`

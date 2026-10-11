@@ -164,3 +164,16 @@ O Gume deixa de ser um app que se usa e vira um app que se constrói. Seis fatia
 - [x] **4. Cópia disponível.** Doar, trocar, emprestar. Não é mercado: o app não intermedeia. UM canal de contato por pessoa, que só aparece com SEGUIR MÚTUO, filtrado no SQL via mutuals() em lib/authz.ts.
 - [x] **5. A linhagem da cópia.** "Veio da estante de @maria, que a recebeu de @joão." A corrente para no elo privado, e não pula por cima dele.
 - [x] **6. "O que falta".** O trabalho aberto do catálogo, e o recorte que importa: os livros SEM CAPA que estão NA SUA estante. A fila de capas (que a fatia 1 deixou sem tela) mora aqui, e só bibliotecário a vê.
+
+## Auditoria de produto (2026-10-10)
+
+Antes de mandar tráfego de rede social. Nesta ordem.
+
+- [x] **Livro fantasma.** O "último livro que você abriu" era por navegador, e uma conta via o da outra. Agora é por conta, e sair esquece.
+- [x] **Privacidade e apagar a conta.** `/privacidade` existe e está no cadastro; o perfil apaga a conta de verdade.
+- [ ] **Criar conta em toda página pública.** Livro, perfil, contribuidores e sobre só ofereciam "Entrar".
+- [ ] **ISBN que casa errado.** Na importação, ISBN cujo livro não se parece com o título e o autor do arquivo desce para "confira".
+- [ ] **A vitrine da home.** "Ver uma estante" aponta para uma estante quase vazia, fixa no código.
+- [ ] **Foco do ⌘K.** Quem digita logo depois do atalho perde as primeiras letras.
+- [ ] **Home vazia depois de importar.** Leituras sem data não caem no ano, e a home parece igual a antes.
+- [ ] **Cliques mortos no primeiro acesso.** "Escolher um livro" leva a uma estante vazia.

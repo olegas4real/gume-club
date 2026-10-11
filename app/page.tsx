@@ -273,7 +273,13 @@ async function Manifesto() {
               className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
             >
               Siga no Instagram.
-            </a>
+            </a>{" "}
+            <Link
+              href="/privacidade"
+              className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
+            >
+              Privacidade.
+            </Link>
           </p>
 
           <Mark size={20} className="text-[var(--color-ink-faint)]" />

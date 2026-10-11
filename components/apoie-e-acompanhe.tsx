@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { INSTAGRAM } from "@/lib/onde";
+import { CUSTO_MENSAL_CENTAVOS, reais } from "@/lib/apoio";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -50,7 +51,8 @@ const DOORS = [
     key: "apoiar",
     href: "/apoiar",
     titulo: "Apoiar o Gume",
-    texto: "Quem apoia mantém o Gume no ar, sem anúncio, de graça para todo mundo.",
+    // O custo de verdade, e não só "apoie": pedir no escuro não convence ninguém.
+    texto: `O Gume custa cerca de ${reais(CUSTO_MENSAL_CENTAVOS).replace(/,00$/, "")} por mês, sem anúncio. Quem apoia paga essa conta.`,
     fora: false,
   },
 ] as const;

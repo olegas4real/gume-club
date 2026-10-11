@@ -38,6 +38,10 @@ import { FORMAT_LABEL } from "@/lib/shelf-view";
 import { origemAceita } from "@/lib/imagens";
 import { nomeDoAutor } from "@/lib/autores";
 import { DOURADO } from "@/lib/dourado";
+import { apoioLigado } from "@/lib/stripe";
+import { apoiaHoje } from "@/lib/apoio-conta";
+import { CUSTO_MENSAL_CENTAVOS, reais } from "@/lib/apoio";
+import { PedidoDeApoio } from "@/components/pedido-de-apoio";
 
 export const dynamic = "force-dynamic";
 
@@ -291,6 +295,20 @@ export default async function BookPage({
 
   /** A capa na tela é de OUTRA edição, e não da que você escolheu. */
   const capaEmprestada = Boolean(minha && !minha.coverUrl && cover?.coverUrl);
+
+  /**
+   * O pedido de apoio, no momento bom: só para quem ACABOU de marcar este livro como
+   * lido (nos últimos 15 minutos, não para quem abre um livro lido há meses), e nunca
+   * para quem já apoia. "Uma vez a cada tantos meses" é o próprio cartão que decide,
+   * no navegador. Ver components/pedido-de-apoio.tsx.
+   */
+  const acabouDeTerminar = Boolean(
+    actor &&
+      book.mine?.status === "read" &&
+      book.mine.statusAt &&
+      Date.now() - new Date(book.mine.statusAt).getTime() < 15 * 60 * 1000,
+  );
+  const pedirApoio = acabouDeTerminar && apoioLigado() && actor ? !(await apoiaHoje(actor.id)) : false;
 
   return (
     <main className="relative mx-auto max-w-7xl px-6 pb-32 sm:px-10">
@@ -572,6 +590,13 @@ export default async function BookPage({
                 todas={todasAsEstantes.map((e) => e.name)}
                 favoritado={favoritado}
               />
+
+              {pedirApoio && (
+                <PedidoDeApoio
+                  frase={`Que bom que você terminou ${book.title}.`}
+                  custo={reais(CUSTO_MENSAL_CENTAVOS).replace(/,00$/, "")}
+                />
+              )}
 
               {/* A COLEÇÃO é um cartão à parte, e não mais um estado da prateleira.
                   Ter e ler são duas perguntas que se cruzam: dá para ter lido sem ter

@@ -3,6 +3,9 @@ import { getViewer } from "@/lib/viewer";
 import { ScreenHeader } from "@/components/screen-header";
 import { Empty } from "@/components/empty";
 import { ImportForm } from "@/components/import-form";
+import { apoioLigado } from "@/lib/stripe";
+import { apoiaHoje } from "@/lib/apoio-conta";
+import { CUSTO_MENSAL_CENTAVOS, reais } from "@/lib/apoio";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +55,16 @@ export default async function Importar() {
         forma no caminho, a gente diz antes de trazer.
       </p>
 
-      <ImportForm />
+      {/* O pedido de apoio aparece no fim de uma importação que deu certo: é o momento
+          em que a estante inteira acabou de chegar sem perder nada. Nunca para quem já
+          apoia. Ver components/pedido-de-apoio.tsx. */}
+      <ImportForm
+        apoio={
+          apoioLigado() && !(await apoiaHoje(viewer.id))
+            ? { custo: reais(CUSTO_MENSAL_CENTAVOS).replace(/,00$/, "") }
+            : null
+        }
+      />
 
       <p className="mt-14 max-w-xl text-[14px] leading-relaxed text-[var(--color-ink-faint)]">
         Trouxe duas vezes o mesmo arquivo? Não tem problema: nada duplica. O mesmo livro

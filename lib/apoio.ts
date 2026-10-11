@@ -140,3 +140,52 @@ export function novaValidadeAvulso(): SQL {
   return sql`greatest(coalesce(users.avulso_badge_until, now()), now())
              + ${`${DIAS_DE_AVULSO} days`}::interval`;
 }
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  A CONTA DO MÊS. O custo de verdade, dito na tela.
+ *
+ *  "meus gastos com o Gume giram em torno de USD 20 por mes" — o dono. Pedir apoio sem
+ *  dizer quanto custa é pedir no escuro; com o número, a pessoa sabe o que está pagando.
+ *
+ *  Em reais porque é a moeda de quem lê e a moeda do apoio. US$ 20 a uns R$ 5,50 dá
+ *  R$ 110; a tela diz "cerca de", porque o câmbio anda. Quando a conta mudar, muda AQUI.
+ * ════════════════════════════════════════════════════════════════════
+ */
+export const CUSTO_MENSAL_CENTAVOS = 11_000;
+
+/** O valor mensal de cada plano, em centavos. O mesmo que a /apoiar mostra. */
+export const PRECO_CENTAVOS: Record<Tier, number> = {
+  marcador: 490,
+  lombada: 990,
+  capadura: 1990,
+};
+
+/**
+ * ═══ A PORCENTAGEM SÓ APARECE COM GENTE SUFICIENTE ═══
+ *
+ * O valor de quem apoia nunca aparece para ninguém (docs/apoio.md), e a lista de
+ * apoiadores é pública. Com uma pessoa só apoiando, "R$ 4,90 de R$ 110 cobertos" diria
+ * em voz alta quanto ESSA pessoa paga. Abaixo deste número a tela mostra o custo e
+ * quantas pessoas apoiam, e não a soma.
+ */
+export const APOIADORES_PRA_MOSTRAR_COBERTURA = 3;
+
+export type ContaDoMes = {
+  custoCentavos: number;
+  apoiadores: number;
+  /** Fração do custo coberta, de 0 a 1 (pode passar de 1). Nula com pouca gente. */
+  cobertura: number | null;
+};
+
+/** Pura: decide o que pode ser dito a partir do que entrou. */
+export function contaDoMes(apoiadores: number, entrouCentavos: number): ContaDoMes {
+  return {
+    custoCentavos: CUSTO_MENSAL_CENTAVOS,
+    apoiadores,
+    cobertura:
+      apoiadores >= APOIADORES_PRA_MOSTRAR_COBERTURA
+        ? entrouCentavos / CUSTO_MENSAL_CENTAVOS
+        : null,
+  };
+}

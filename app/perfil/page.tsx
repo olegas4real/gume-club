@@ -18,6 +18,7 @@ import { ehApoiador } from "@/lib/apoio";
 import { getFavoritos, getFavoritaveis } from "@/lib/favoritos";
 import { GerenciarFavoritos } from "@/components/gerenciar-favoritos";
 import { GerenciarLinks } from "@/components/gerenciar-links";
+import { ApagarConta } from "@/components/apagar-conta";
 
 export const dynamic = "force-dynamic";
 
@@ -282,15 +283,20 @@ export default async function Perfil() {
           Baixar a minha estante
         </a>
 
-        {/* A promessa de apagar a conta morava aqui COM "apaga na hora" e sem botão
-            nenhum no app inteiro (auditoria de 2026-07-22). Promessa impressa sem
-            botão é pior que ausência: na tela que existe para provar confiança, era
-            a única frase que mentia. Até o fluxo existir, a frase diz a verdade. */}
+        {/* A promessa de apagar a conta morava aqui com "em breve" desde a auditoria de
+            2026-07-22. Agora o botão existe, e apaga mesmo. Ver lib/conta.ts. */}
         <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
           E se um dia você quiser ir embora, a estante vai com você: é o arquivo aqui de
-          cima, e ele não pede licença. O botão de apagar a conta de vez chega em breve, e
-          quando chegar vai apagar mesmo: tudo que você escreveu some junto, sem deixar
-          rastro para os outros.
+          cima, e ele não pede licença. Depois, se quiser, dá para apagar a conta de vez:
+          tudo que você escreveu some junto, sem deixar rastro para os outros.
+        </p>
+        <ApagarConta handle={me.handle} />
+        <p className="mt-6 text-[13px] text-[var(--color-ink-faint)]">
+          O que o Gume guarda, e para quê, está na{" "}
+          <Link href="/privacidade" className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
+            política de privacidade
+          </Link>
+          .
         </p>
       </section>
     </main>

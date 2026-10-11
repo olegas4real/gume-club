@@ -267,6 +267,21 @@ export default function Entrar() {
         </p>
       )}
 
+      {/* O ponto de coleta precisa dizer para onde vão os dados (LGPD). Uma linha, nos
+          dois caminhos de criar conta, e nada de caixinha para marcar. */}
+      {mode === "criar" && (
+        <p className="mt-4 text-[12px] leading-relaxed text-[var(--color-ink-faint)]">
+          Ao criar a conta, você concorda com a nossa{" "}
+          <Link
+            href="/privacidade"
+            className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
+          >
+            política de privacidade
+          </Link>
+          .
+        </p>
+      )}
+
       <button
         onClick={() => {
           setMode(mode === "entrar" ? "criar" : "entrar");

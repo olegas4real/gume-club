@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
@@ -9,6 +10,7 @@ import { LIMITS, clamp } from "@/lib/limits";
 import { assertOwner, type Viewer } from "@/lib/authz";
 import { coroar, desfavoritar, favoritar } from "@/lib/favoritos";
 import { urlValida } from "@/lib/links-sociais";
+import { apagarConta } from "@/lib/conta";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -171,5 +173,39 @@ export async function saveSocialLinks(
   await db.update(users).set({ socialLinks: limpos }).where(eq(users.id, actor.id));
 
   revalidatePath("/perfil");
+  return { ok: true };
+}
+
+/**
+ * Apagar a própria conta. A confirmação é digitar o próprio @: um clique só apagaria
+ * por acidente, e uma senha deixaria de fora quem entrou pelo Google. Ver lib/conta.ts.
+ */
+export async function apagarMinhaConta(
+  confirmacao: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const actor = await getActor();
+  assertOwner(actor as Viewer, { userId: actor.id });
+
+  const [eu] = await db.select({ handle: users.handle }).from(users).where(eq(users.id, actor.id));
+  if (!eu || cleanHandle(confirmacao) !== eu.handle) {
+    return { ok: false, error: `Para confirmar, escreva @${eu?.handle ?? ""} exatamente assim.` };
+  }
+
+  const r = await apagarConta(actor.id);
+  if (!r.ok) {
+    const error = {
+      idealizador: "Esta conta não pode ser apagada pela tela.",
+      apoio:
+        "Não conseguimos cancelar o seu apoio mensal agora, então nada foi apagado. Tente de novo em alguns minutos.",
+      sumiu: "Esta conta já não existe.",
+    }[r.motivo];
+    return { ok: false, error };
+  }
+
+  // As sessões foram junto com a conta. O cookie que sobrou não abre mais nada, mas
+  // não há por que deixá-lo no navegador.
+  const jar = await cookies();
+  for (const c of jar.getAll()) if (c.name.includes("better-auth")) jar.delete(c.name);
+
   return { ok: true };
 }

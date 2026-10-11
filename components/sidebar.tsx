@@ -7,7 +7,7 @@ import {
   Home, Library, Users, Search, LogIn, LogOut, Info, UserRound, HeartHandshake,
   ArrowUpRight, ChevronUp, BarChart3, Compass, Milestone,
 } from "lucide-react";
-import { INSTAGRAM } from "@/lib/onde";
+import { INSTAGRAM, CODIGO } from "@/lib/onde";
 import { IconeRedeSocial } from "@/components/icone-rede-social";
 import { GlassBar } from "@/components/glass-bar";
 import { Logo, Mark } from "@/components/logo";
@@ -328,6 +328,12 @@ export function Sidebar({
               {label}
             </Item>
           ))}
+          {/* O CÓDIGO. "tem que ter alguma forma da galera acessar o repo no github pq é
+              open source" — o dono. Ele só aparecia no rodapé da home deslogada e em
+              /sobre: quem já tinha conta nunca via. É construir, e mora aqui. */}
+          <Fora href={CODIGO} icon={<IconeRedeSocial url={CODIGO} size={18} />}>
+            Código no GitHub
+          </Fora>
         </div>
 
         {/* ═══ COMUNIDADE, E POR QUE ELA NÃO É "CONSTRUIR" ═══

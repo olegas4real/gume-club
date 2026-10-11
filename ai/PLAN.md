@@ -172,8 +172,8 @@ Antes de mandar tráfego de rede social. Nesta ordem.
 - [x] **Livro fantasma.** O "último livro que você abriu" era por navegador, e uma conta via o da outra. Agora é por conta, e sair esquece.
 - [x] **Privacidade e apagar a conta.** `/privacidade` existe e está no cadastro; o perfil apaga a conta de verdade.
 - [x] **Criar conta em toda página pública.** Livro, perfil, contribuidores e sobre só ofereciam "Entrar".
-- [ ] **ISBN que casa errado.** Na importação, ISBN cujo livro não se parece com o título e o autor do arquivo desce para "confira".
+- [x] **ISBN que casa errado.** Na importação, ISBN cujo livro não se parece com o título e o autor do arquivo desce para "confira".
 - [x] **A vitrine da home.** "Ver uma estante" aponta para uma estante quase vazia, fixa no código.
-- [ ] **Foco do ⌘K.** Quem digita logo depois do atalho perde as primeiras letras.
+- [x] **Foco do ⌘K.** Quem digita logo depois do atalho perde as primeiras letras.
 - [x] **Home vazia depois de importar.** Leituras sem data não caem no ano, e a home parece igual a antes.
 - [ ] **Cliques mortos no primeiro acesso.** "Escolher um livro" leva a uma estante vazia.

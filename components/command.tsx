@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, CornerDownLeft, Plus } from "lucide-react";
 import { Cover } from "@/components/cover";
 import { Avatar } from "@/components/avatar";
 import { addFromSearch, abrirDaBusca } from "@/app/buscar/actions";
 import { lastBook } from "@/lib/last-book";
+import { teclaPerdida } from "@/lib/tecla-perdida";
 import type { Hit, Autor } from "@/lib/catalog";
 
 type Pessoa = { id: string; handle: string; displayName: string | null; image: string | null };
@@ -65,21 +66,48 @@ export function Command({ userId }: { userId: string }) {
 
   // Cmd+K de qualquer lugar. Nunca sequestra o atalho quando a pessoa está
   // escrevendo uma resenha: aí o navegador é dela, não nosso.
+  // A paleta está aberta? O ouvinte abaixo é montado uma vez só, e precisa saber.
+  const aberta = useRef(false);
+  aberta.current = open;
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((v) => !v);
+        // Marcado aqui, e não só na próxima renderização: a letra que vem logo depois
+        // do ⌘K chega antes de o React desenhar a paleta.
+        aberta.current = !aberta.current;
+        setOpen(aberta.current);
+        return;
       }
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        aberta.current = false;
+        setOpen(false);
+        return;
+      }
+      // A letra que chegou antes do foco vai para o campo, e não para a página.
+      // Ver lib/tecla-perdida.ts.
+      if (aberta.current) {
+        const letra = teclaPerdida(e, document.activeElement === input.current);
+        if (letra) {
+          e.preventDefault();
+          setQ((atual) => atual + letra);
+          input.current?.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // O foco vem NA MONTAGEM, antes de o navegador pintar a paleta. Era um setTimeout, e a
+  // primeira letra de quem digita rápido caía na página.
+  useLayoutEffect(() => {
+    if (open) input.current?.focus();
+  }, [open]);
+
   useEffect(() => {
-    if (open) setTimeout(() => input.current?.focus(), 10);
-    else {
+    if (!open) {
       setQ("");
       setAutores([]);
       setLivros([]);
@@ -250,6 +278,7 @@ export function Command({ userId }: { userId: string }) {
           <Search size={18} strokeWidth={1.5} className="shrink-0 text-[var(--color-ink-faint)]" />
           <input
             ref={input}
+            autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}

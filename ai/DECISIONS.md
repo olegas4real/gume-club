@@ -5599,3 +5599,22 @@ prometia "o botão de apagar a conta chega em breve" desde julho.
 - **O idealizador não se apaga pela tela.** É o único que concede moderação.
 - O contato da política é `contato@gume.club`. O dono precisa confirmar que essa caixa
   recebe e-mail.
+
+## Importação: o ISBN que aponta para outro livro desce para "confira"
+
+A prévia da importação punha todo casamento por ISBN no nível "esses são certos". Na
+auditoria de 2026-10-10, três de seis estavam errados ("Vidas Secas" virou "Neblina"). O
+casamento estava certo; o número no arquivo é que estava errado, e número errado em
+arquivo de gente é a regra.
+
+O ISBN continua decidindo O QUE é gravado: a prévia e a gravação não podem divergir.
+Muda só a CLASSIFICAÇÃO. Quando nem uma palavra do título nem uma do autor batem com o
+livro que o número aponta, a linha vai para "confira", com os dois lados visíveis, e a
+pessoa desmarca se quiser. Mesmo ISBN em duas linhas com títulos diferentes também.
+
+A régua é frouxa de propósito: uma palavra em comum basta, para que tradução e nome
+escrito de outro jeito não virem alarme. Existe para pegar o livro que é OUTRO, não
+para julgar edição. `lib/import/isbn-diverge.test.ts` trava os dois lados.
+
+`seed/exemplo.csv` tinha cinco ISBNs de outros livros (conferidos no Open Library). Eles
+foram apagados, não trocados: número inventado ensinaria o mesmo erro.

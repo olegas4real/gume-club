@@ -107,3 +107,39 @@ describe("normalizarOrigem nunca devolve a URL crua", () => {
     expect(normalizarOrigem(42)).toBeNull();
   });
 });
+
+/**
+ * "clique → chegou na porta: 1033%" — apareceu no painel de verdade. A taxa dividia
+ * contagens soltas, e a maioria de quem chega em /entrar não passou pelo botão da
+ * home. Uma taxa de funil é "dos que fizeram o passo anterior, quantos fizeram este",
+ * e por isso nunca passa de 100%.
+ */
+describe("as taxas do funil seguem a sessão", () => {
+  it("nenhuma taxa passa de 100%, mesmo com muita gente chegando sem clicar", async () => {
+    const { coletarPainel } = await import("@/lib/painel");
+    const sessoes: string[] = [];
+    const nova = () => {
+      const id = crypto.randomUUID();
+      sessoes.push(id);
+      return id;
+    };
+
+    // Uma pessoa faz o caminho todo; dez chegam em /entrar direto, sem clicar.
+    const caminho = nova();
+    for (const tipo of ["visita_home", "clique_criar", "viu_entrar"]) {
+      await db.execute(sql`insert into eventos_funil (tipo, sessao_anon) values (${tipo}, ${caminho}::uuid)`);
+    }
+    for (let i = 0; i < 10; i++) {
+      await db.execute(sql`insert into eventos_funil (tipo, sessao_anon) values ('viu_entrar', ${nova()}::uuid)`);
+    }
+
+    try {
+      const { funil } = await coletarPainel();
+      for (const t of [funil.taxaVisitaClique, funil.taxaCliqueEntrar, funil.taxaEntrarCadastro]) {
+        if (t !== null) expect(t).toBeLessThanOrEqual(1);
+      }
+    } finally {
+      await db.execute(sql`delete from eventos_funil where sessao_anon = any(${sql.param(sessoes)}::uuid[])`);
+    }
+  });
+});

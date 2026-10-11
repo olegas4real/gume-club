@@ -9,6 +9,7 @@ import { Cover } from "@/components/cover";
 import { Mark } from "@/components/logo";
 import { Avatar, AvatarLink } from "@/components/avatar";
 import { Resume } from "@/components/resume";
+import { getVitrine } from "@/lib/vitrine";
 import { CODIGO, INSTAGRAM } from "@/lib/onde";
 import { getCapasDaParede } from "@/lib/parede";
 import { PortaEntrada } from "@/components/porta-entrada";
@@ -92,7 +93,8 @@ async function Manifesto() {
      order by random()
      limit 3`);
 
-  const vitrine = pessoas[0]?.handle;
+  // Não é a primeira das três de cima: o botão precisa de uma estante cheia. Ver lib/vitrine.ts.
+  const vitrine = (await getVitrine()) ?? undefined;
 
   return (
     <main className="relative overflow-hidden">

@@ -1,4 +1,7 @@
 import { describe, it, expect, afterAll } from "vitest";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { getCatalogo } from "@/lib/contributors";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users, revisions } from "@/lib/db/schema";
@@ -120,5 +123,67 @@ describe("a porta que se abre sozinha", () => {
     const id = await novaConta(`biblio-manual-${marca}`, new Date());
     await db.execute(sql`update users set librarian_tier = 1 where id = ${id}::uuid`);
     expect(await ehBiblio(id)).toBe(true);
+  });
+});
+
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  A INSÍGNIA APARECE ONDE A PESSOA É VISTA.
+ *
+ *  "pq só eu to como bibliotecario? tem mais gente com esse titulo" — o dono.
+ *  A porta automática estava certa, e a tela de contribuidores olhava só o
+ *  `librarian_tier` (a porta MANUAL): quem virou bibliotecária pelo próprio
+ *  trabalho tinha o poder de reverter e nenhum rótulo na página.
+ * ════════════════════════════════════════════════════════════════════
+ */
+describe("a bibliotecária automática aparece como bibliotecária", () => {
+  it("/contribuidores marca quem passou pela porta automática, sem tier manual", async () => {
+    const id = await novaConta(`biblio-tela-${marca}`);
+    await corrigir(id, CORRECOES_PARA_BIBLIOTECARIO);
+
+    const lista = await getCatalogo();
+    const ela = lista.find((p) => p.handle === `biblio-tela-${marca}`);
+    expect(ela, "a bibliotecária sumiu da lista de quem cuida do catálogo").toBeDefined();
+    expect(ela!.librarian, "o rótulo voltou a olhar só a porta manual").toBe(true);
+  });
+});
+
+/**
+ * E A TERCEIRA CÓPIA DA REGRA NÃO NASCE.
+ *
+ * Já foram duas vezes: o PODER olhava só o tier (consertado em lib/corrections.ts) e
+ * depois o RÓTULO (lib/contributors.ts). Fora daqui, ninguém decide "é bibliotecário"
+ * lendo `librarian_tier` sozinho. As exceções existem com o motivo do lado.
+ */
+describe("só lib/librarian.ts decide quem é bibliotecário", () => {
+  const PODE_LER_O_TIER: Record<string, string> = {
+    "lib/librarian.ts": "é a regra",
+    "lib/db/schema.ts": "declara a coluna",
+    "lib/auth.ts": "declara o campo e impede o cliente de escrevê-lo",
+    "lib/badges.ts":
+      "conceder()/retirar() de insígnia manual: nenhuma tela chama, e abrir esse poder para a porta automática é decisão do dono, não conserto",
+  };
+
+  function arquivos(dir: string, out: string[] = []): string[] {
+    for (const nome of readdirSync(dir)) {
+      const full = join(dir, nome);
+      if (statSync(full).isDirectory()) arquivos(full, out);
+      else if (/\.(ts|tsx)$/.test(nome) && !nome.includes(".test.")) out.push(full);
+    }
+    return out;
+  }
+
+  it("ninguém mais lê librarian_tier para decidir", () => {
+    const fora: string[] = [];
+    for (const f of [...arquivos("lib"), ...arquivos("app"), ...arquivos("components")]) {
+      if (PODE_LER_O_TIER[f]) continue;
+      const codigo = readFileSync(f, "utf8")
+        .replace(/\/\*[\s\S]*?\*\//g, " ")
+        .replace(/(^|[^:])\/\/.*$/gm, "$1")
+        .replace(/--.*$/gm, "");
+      if (/librarian_tier|librarianTier/.test(codigo)) fora.push(f);
+    }
+    expect(fora, "use ehBibliotecario() de lib/librarian.ts, e não o tier sozinho").toEqual([]);
   });
 });

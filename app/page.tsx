@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { getViewer, getUser } from "@/lib/viewer";
 import { getShelf, getShelfCounts } from "@/lib/shelf";
 import { getFeed } from "@/lib/social";
-import { getStats } from "@/lib/stats";
+import { getStatsDoRecorte } from "@/lib/stats";
 import { Cover } from "@/components/cover";
 import { Mark } from "@/components/logo";
 import { Avatar, AvatarLink } from "@/components/avatar";
@@ -489,11 +489,13 @@ async function Casa({ viewerId }: { viewerId: string }) {
   const viewer = { id: viewerId };
   const me = await getUser(viewerId);
 
-  const [lendo, counts, feed, ano] = await Promise.all([
+  const [lendo, counts, feed, { year: recorte, stats: ano }] = await Promise.all([
     getShelf(viewer, viewerId, { filter: "lendo" }),
     getShelfCounts(viewer, viewerId),
     getFeed(viewer),
-    getStats(viewer, viewerId, new Date().getFullYear()),
+    // O ano, ou a vida inteira quando o ano está vazio e ela não: quem acabou de
+    // importar a estante inteira não pode cair numa casa vazia. Ver lib/stats.ts.
+    getStatsDoRecorte(viewer, viewerId, undefined),
   ]);
 
   const primeiro = me?.displayName?.split(" ")[0] ?? null;
@@ -612,9 +614,9 @@ async function Casa({ viewerId }: { viewerId: string }) {
       <section className="mt-10">
         <div className="mb-4 flex items-baseline justify-between px-1">
           <h2 className="tabular text-[11px] uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">
-            {new Date().getFullYear()}
+            {recorte ?? "a vida inteira"}
           </h2>
-          <Link href="/estatisticas" className="text-[13px] text-[var(--color-ink-faint)] hover:text-[var(--color-ink)]">
+          <Link href={recorte === null ? "/estatisticas?ano=sempre" : "/estatisticas"} className="text-[13px] text-[var(--color-ink-faint)] hover:text-[var(--color-ink)]">
             ver as estatísticas
           </Link>
         </div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getViewer, getUser } from "@/lib/viewer";
 import {
-  getStats, getCommunity, resumo, MINIMO_PARA_FALAR, MINIMO_DA_COMUNIDADE,
+  getStatsDoRecorte, getCommunity, resumo, MINIMO_PARA_FALAR, MINIMO_DA_COMUNIDADE,
   type Slice, type Stats, type Community, type Extremo,
 } from "@/lib/stats";
 import { ScreenHeader } from "@/components/screen-header";
@@ -66,10 +66,13 @@ export default async function Estatisticas({
   if (!owner) return <Empty>Ainda não tem ninguém por aqui.</Empty>;
 
   const now = new Date().getFullYear();
-  const year = raw === "sempre" ? null : Number(raw) >= 1900 && Number(raw) <= now ? Number(raw) : now;
+  // Sem `?ano=`, o recorte é decidido por getStatsDoRecorte: o ano, ou a vida inteira
+  // quando o ano está vazio e ela não. Ano inválido continua caindo no ano corrente.
+  const pedido =
+    raw === undefined ? undefined : raw === "sempre" ? null : Number(raw) >= 1900 && Number(raw) <= now ? Number(raw) : now;
 
-  const [s, c] = await Promise.all([
-    getStats(viewer, owner.id, year),
+  const [{ year, stats: s }, c] = await Promise.all([
+    getStatsDoRecorte(viewer, owner.id, pedido),
     getCommunity(viewer, owner.id),
   ]);
 
@@ -137,7 +140,9 @@ export default async function Estatisticas({
           </p>
           <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
             <span className="tabular text-[var(--color-ink)]">{s.shelf}</span>{" "}
-            {s.shelf === 1 ? "livro espera" : "livros esperam"} na estante.
+            {/* "Esperando" é uma prateleira (quero ler), e aqui é a estante inteira: a
+                mesma palavra para duas contas diferentes, em duas telas. */}
+            {s.shelf === 1 ? "livro" : "livros"} na estante.
             {year !== null && (
               <>
                 {" "}

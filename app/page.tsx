@@ -558,16 +558,53 @@ async function Casa({ viewerId }: { viewerId: string }) {
           ))}
         </section>
       ) : (
+        /* ═══ O BOTÃO VAI PARA ONDE HÁ O QUE FAZER ═══
+
+            "Escolher um livro" levava sempre a /estante?filtro=esperando. Para quem
+            acabou de criar a conta, era uma estante vazia com outro estado vazio: dois
+            cliques sem função logo depois do cadastro, onde a paciência é menor. Agora
+            o botão depende do que existe. Estante vazia: importar primeiro (quem vem
+            do Goodreads ou do Skoob já tem a vida inteira em outro lugar), buscar
+            depois. Estante sem nada esperando: buscar. Só com livro esperando é que
+            "escolher" tem do que escolher. */
         <section className="surface mt-10 flex flex-col items-center gap-6 px-7 py-14 text-center">
           <p className="voice max-w-md text-[22px] leading-snug text-[var(--color-ink-soft)]">
-            Nenhum livro na mão. A estante está esperando.
+            {(counts.tudo ?? 0) === 0
+              ? "Sua estante está vazia. Se você já tem uma lista em outro lugar, traga ela para cá."
+              : "Nenhum livro na mão. A estante está esperando."}
           </p>
-          <Link
-            href="/estante?filtro=esperando"
-            className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-canvas)]"
-          >
-            Escolher um livro
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+            {(counts.tudo ?? 0) === 0 ? (
+              <>
+                <Link
+                  href="/importar"
+                  className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-canvas)]"
+                >
+                  Trazer meus livros de outro app
+                </Link>
+                <Link
+                  href="/buscar"
+                  className="text-[14px] text-[var(--color-ink-soft)] underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
+                >
+                  Buscar um livro
+                </Link>
+              </>
+            ) : (counts.esperando ?? 0) > 0 ? (
+              <Link
+                href="/estante?filtro=esperando"
+                className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-canvas)]"
+              >
+                Escolher um livro
+              </Link>
+            ) : (
+              <Link
+                href="/buscar"
+                className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-canvas)]"
+              >
+                Buscar um livro
+              </Link>
+            )}
+          </div>
         </section>
       )}
 

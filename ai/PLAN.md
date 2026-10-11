@@ -176,4 +176,4 @@ Antes de mandar tráfego de rede social. Nesta ordem.
 - [x] **A vitrine da home.** "Ver uma estante" aponta para uma estante quase vazia, fixa no código.
 - [ ] **Foco do ⌘K.** Quem digita logo depois do atalho perde as primeiras letras.
 - [ ] **Home vazia depois de importar.** Leituras sem data não caem no ano, e a home parece igual a antes.
-- [ ] **Cliques mortos no primeiro acesso.** "Escolher um livro" leva a uma estante vazia.
+- [x] **Cliques mortos no primeiro acesso.** "Escolher um livro" leva a uma estante vazia.

@@ -31,6 +31,7 @@ import { getFriendRatings } from "@/lib/ratings";
 import { getBook, slugAtualDe } from "@/lib/book";
 import { AvatarLink } from "@/components/avatar";
 import { RememberBook } from "@/components/remember-book";
+import { ChamadaConta } from "@/components/chamada-conta";
 import { VerdictOf } from "@/components/veredito";
 import { getViewer } from "@/lib/viewer";
 import { getActorOrNull } from "@/lib/actor";
@@ -634,11 +635,7 @@ export default async function BookPage({
               )}
             </>
           ) : (
-            <section className="surface p-6">
-              <p className="text-[14px] text-[var(--color-ink-soft)]">
-                Entre para guardar este livro na estante, dar a sua palavra e escrever.
-              </p>
-            </section>
+            <ChamadaConta frase="Crie sua conta para guardar este livro na estante, dar a sua palavra e escrever." />
           )}
 
           {/* ═══ DAQUI PARA BAIXO, TUDO MORA EM GAVETA ═══

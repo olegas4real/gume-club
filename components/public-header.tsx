@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { LinkCriarConta } from "@/components/chamada-conta";
 
 /**
  * Chrome for somebody who is not logged in.
@@ -16,19 +17,24 @@ export function PublicHeader() {
         <Logo />
       </Link>
 
-      <nav className="flex items-center gap-6">
+      <nav className="flex items-center gap-4 sm:gap-6">
         <Link
           href="/sobre"
           className="text-[13px] text-[var(--color-ink-faint)] transition-colors hover:text-[var(--color-ink)]"
         >
           Sobre
         </Link>
+        {/* "Entrar" sozinho mandava todo desconhecido para o login. Ver
+            components/chamada-conta.tsx. */}
         <Link
           href="/entrar"
-          className="rounded-[var(--radius-control)] border border-[var(--color-rule)] px-4 py-1.5 text-[13px] font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
+          className="text-[13px] text-[var(--color-ink-faint)] transition-colors hover:text-[var(--color-ink)]"
         >
           Entrar
         </Link>
+        <LinkCriarConta className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-4 py-1.5 text-[13px] font-medium text-[var(--color-canvas)]">
+          Criar conta
+        </LinkCriarConta>
       </nav>
     </header>
   );

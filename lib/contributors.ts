@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { REPO } from "@/lib/onde";
 import { ehApoiador } from "@/lib/apoio";
+import { ehBibliotecario } from "@/lib/librarian";
 
 /**
  * O GitHub recusou. Isso NÃO é "ninguém contribuiu".
@@ -138,11 +139,16 @@ export async function getCatalogo(): Promise<DoCatalogo[]> {
    */
   const rows = await db.execute<{
     handle: string; name: string | null; image: string | null;
-    librarian_tier: number; livros: number; capas: number; conjuntos: number; correcoes: number;
+    bibliotecario: boolean; livros: number; capas: number; conjuntos: number; correcoes: number;
     desde: Date;
   }>(sql`
     with contagens as (
-      select u.id, u.handle, u.display_name as name, u.image, u.librarian_tier, u.created_at as desde,
+      select u.id, u.handle, u.display_name as name, u.image, u.created_at as desde,
+             -- A MESMA regra que dá o poder (lib/librarian.ts), e não só a porta manual
+             -- (librarian_tier). Olhar só o tier escondia quem virou bibliotecária
+             -- sozinha, pelo trabalho: uma leitora com mais de 400 correções aparecia
+             -- aqui sem o rótulo enquanto já podia reverter o trabalho dos outros.
+             ${ehBibliotecario(sql`u`)} as bibliotecario,
              (select count(*) from works w
                where w.created_by = u.id)::int as livros,
              -- 'accepted' NUNCA foi um estado de verdade: o check constraint da tabela
@@ -186,7 +192,7 @@ export async function getCatalogo(): Promise<DoCatalogo[]> {
     handle: r.handle,
     name: r.name,
     image: r.image,
-    librarian: (r.librarian_tier ?? 0) > 0,
+    librarian: r.bibliotecario,
     livros: r.livros,
     capas: r.capas,
     conjuntos: r.conjuntos,

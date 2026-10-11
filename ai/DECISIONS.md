@@ -5523,3 +5523,17 @@ do Gume no Discord", que é o que esta entrada tira; é uma pessoa citando
 onde ela mesma está, e essa porta continua aberta.
 
 O Instagram continua sendo o canal de contato.
+
+## O código aparece pra quem já tem conta
+
+"tem que ter alguma forma da galera acessar o repo no github pq é open
+source" — o dono.
+
+A regra antiga dizia que só `/sobre` falava do código. Na prática ele já
+estava também no rodapé da home deslogada, e mesmo assim quem tinha conta
+nunca o via. Agora há um link "Código no GitHub" na seção "construir" da
+barra (é construir, e mora ali) e uma frase em `/contribuidores`, logo em
+"quem escreve o código", que mostrava quem escreveu sem dizer onde se
+escreve. AGENTS.md e CLAUDE.md foram atualizados para listar os quatro
+lugares. O que continua proibido é o jargão em volta: "repositório",
+"AGPL", "self-host", "open source" na tela.

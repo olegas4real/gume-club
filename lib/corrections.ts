@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { assertAuthenticated, assertLibrarian, Forbidden, type Viewer } from "@/lib/authz";
 import { LIMITS, clamp } from "@/lib/limits";
 import { porQueNaoAceita } from "@/lib/imagens";
-import { editions, authors, works, revisions, coverProposals, users } from "@/lib/db/schema";
+import { editions, authors, works, revisions, coverProposals } from "@/lib/db/schema";
 import { ehBibliotecario } from "@/lib/librarian";
 import {
   CAMPOS, CAMPOS_AUTOR, type Campo, type CampoAutor, type Correcao, type Proposta,
@@ -34,11 +34,13 @@ export async function getCorrecoes(targetIds: string[]): Promise<Correcao[]> {
   const rows = await db.execute<{
     id: string; patch: Record<string, unknown>; previous: Record<string, unknown>;
     handle: string | null; name: string | null; image: string | null;
-    librarian_tier: number | null;
+    bibliotecario: boolean | null;
     created_at: Date; reverted_at: Date | null; revertedby: string | null;
   }>(sql`
     select r.id, r.patch, r.previous, r.created_at, r.reverted_at,
-           u.handle, u.display_name as name, u.image, u.librarian_tier,
+           u.handle, u.display_name as name, u.image,
+           -- A mesma regra do poder (lib/librarian.ts), e não só o tier manual.
+           case when u.id is null then false else ${ehBibliotecario(sql`u`)} end as bibliotecario,
            (select u2.handle from users u2 where u2.id = r.reverted_by) as revertedby
       from revisions r
       left join users u on u.id = r.user_id
@@ -60,7 +62,7 @@ export async function getCorrecoes(targetIds: string[]): Promise<Correcao[]> {
         handle: r.handle,
         name: r.name,
         image: r.image,
-        librarian: (r.librarian_tier ?? 0) > 0,
+        librarian: Boolean(r.bibliotecario),
         createdAt: r.created_at,
         revertedAt: r.reverted_at,
         revertedByHandle: r.revertedby,
@@ -463,13 +465,14 @@ export async function corrigirRetrato(
 ): Promise<void> {
   assertAuthenticated(viewer);
 
-  // O tier vem do BANCO, e nunca do cliente: "sou bibliotecário" não é uma coisa que
-  // o navegador tenha o direito de afirmar.
-  const [eu] = await db
-    .select({ tier: users.librarianTier })
-    .from(users)
-    .where(eq(users.id, viewer.id));
-  assertLibrarian(viewer, eu?.tier ?? 0);
+  // Vem do BANCO, e nunca do cliente: "sou bibliotecário" não é uma coisa que o
+  // navegador tenha o direito de afirmar. E é a MESMA regra de reverter() e da
+  // insígnia (lib/librarian.ts): olhar só o tier manual deixava quem virou
+  // bibliotecária pelo trabalho com a insígnia no perfil e um "você não pode" aqui.
+  const [eu] = await db.execute<{ sim: boolean }>(sql`
+    select ${ehBibliotecario(sql`u`)} as sim
+      from users u where u.id = ${viewer.id}::uuid and u.deleted_at is null`);
+  assertLibrarian(viewer, eu?.sim ? 1 : 0);
 
   const limpo = clamp(url, LIMITS.url);
 

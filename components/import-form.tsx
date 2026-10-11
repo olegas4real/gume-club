@@ -7,6 +7,7 @@ import { ler, procurar, importar, type Previa } from "@/app/importar/actions";
 import { LOTE, ehFato, type Relatorio, type Achado } from "@/lib/import/tipos";
 import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
+import { PedidoDeApoio } from "@/components/pedido-de-apoio";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -45,7 +46,7 @@ import { mine } from "@/lib/veredito";
  *  dois anos.
  * ════════════════════════════════════════════════════════════════════
  */
-export function ImportForm() {
+export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null }) {
   const [previa, setPrevia] = useState<Previa | null>(null);
   const [achados, setAchados] = useState<Achado[] | null>(null);
   const [fora, setFora] = useState<Set<number>>(new Set());
@@ -163,6 +164,13 @@ export function ImportForm() {
             trazer outro arquivo
           </button>
         </div>
+
+        {apoio && relatorio.entraram > 0 && (
+          <PedidoDeApoio
+            frase={`${relatorio.entraram} ${relatorio.entraram === 1 ? "livro entrou inteiro" : "livros entraram inteiros"} na sua estante.`}
+            custo={apoio.custo}
+          />
+        )}
       </section>
     );
   }

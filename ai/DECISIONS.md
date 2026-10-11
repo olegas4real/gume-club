@@ -5537,3 +5537,27 @@ barra (é construir, e mora ali) e uma frase em `/contribuidores`, logo em
 escreve. AGENTS.md e CLAUDE.md foram atualizados para listar os quatro
 lugares. O que continua proibido é o jargão em volta: "repositório",
 "AGPL", "self-host", "open source" na tela.
+
+## Apoiar: o custo dito na tela, e um pedido no momento bom
+
+"A parte de apoiar o gume deve ser mais importante, chamativa etc, preciso
+de apoios, como fazer sem ficar invasivo?" — o dono. Escolhidas duas coisas
+de três propostas:
+
+**A. A conta do mês.** `/apoiar` mostra quanto o Gume custa por mês (cerca
+de R$ 110, os ~US$ 20 do servidor; a constante mora em `lib/apoio.ts`) e
+quantas pessoas ajudam a pagar. O cartão do fim de `/estatisticas` e do
+próprio perfil diz o mesmo custo. A porcentagem coberta só aparece com
+pelo menos 3 apoiadores: com menos, ela diria quanto UMA pessoa paga, e a
+lista de quem apoia é pública. Isso abre uma exceção estreita ao "o valor
+nunca soma" de `docs/apoio.md`: soma-se, mas só quando a soma não aponta
+para ninguém. Um teste trava o limite.
+
+**B. O pedido no momento bom.** Um cartão pequeno, dispensável, aparece
+logo depois de marcar um livro como lido (até 15 minutos depois) e no fim
+de uma importação que deu certo. Nunca para quem já apoia. Uma vez a cada
+120 dias, contado no navegador; se o navegador não deixar gravar, ele não
+aparece.
+
+Rejeitado por ora: mostrar os rostos de quem apoia no cartão. Com um
+apoiador só, é uma sala vazia; volta quando houver uns dez.

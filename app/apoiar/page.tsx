@@ -5,7 +5,8 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getViewer } from "@/lib/viewer";
 import { apoioLigado, precoDo } from "@/lib/stripe";
-import { ehApoiador } from "@/lib/apoio";
+import { ehApoiador, PRECO_CENTAVOS, reais } from "@/lib/apoio";
+import { getContaDoMes } from "@/lib/apoio-conta";
 import { getCapasDaParede } from "@/lib/parede";
 import { FitaDeCapas } from "@/components/fita-de-capas";
 import { Placa } from "@/components/badges";
@@ -62,7 +63,7 @@ export default async function Apoiar({
   const { obrigado } = await searchParams;
   const viewer = await getViewer();
 
-  const [capas, me] = await Promise.all([
+  const [capas, me, conta] = await Promise.all([
     /**
      * Pede com folga: a fita descarta a capa cuja imagem não vier, e as seguintes
      * fecham o buraco. Nesta tela não pode aparecer livro sem capa, então é melhor
@@ -76,15 +77,16 @@ export default async function Apoiar({
           )
           .then((r) => r[0])
       : Promise.resolve(undefined),
+    getContaDoMes(),
   ]);
 
   const logado = Boolean(viewer);
 
   /** Um plano sem preço no ambiente não vira botão quebrado: ele some. */
   const planos = [
-    { tier: "marcador" as const, rotulo: "Marcador", preco: "R$ 4,90" },
-    { tier: "lombada" as const, rotulo: "Lombada", preco: "R$ 9,90" },
-    { tier: "capadura" as const, rotulo: "Capa dura", preco: "R$ 19,90" },
+    { tier: "marcador" as const, rotulo: "Marcador", preco: reais(PRECO_CENTAVOS.marcador) },
+    { tier: "lombada" as const, rotulo: "Lombada", preco: reais(PRECO_CENTAVOS.lombada) },
+    { tier: "capadura" as const, rotulo: "Capa dura", preco: reais(PRECO_CENTAVOS.capadura) },
   ].filter((p) => precoDo(p.tier));
 
   return (
@@ -102,6 +104,8 @@ export default async function Apoiar({
         Sem anúncio, sem vender o que você lê, e de graça para todo mundo. Isso tem uma
         conta no fim do mês, e é ela que o seu apoio paga.
       </p>
+
+      <ContaDoMesBloco conta={conta} />
 
       {/* As capas respondem "apoiar o quê?" antes de a pergunta ser feita. São livros de
           verdade, das estantes de verdade. Ver lib/parede.ts. */}
@@ -252,5 +256,49 @@ export default async function Apoiar({
         passa por aqui, nem fica guardado com a gente.
       </p>
     </main>
+  );
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  A CONTA DO MÊS. O número de verdade, sem barra piscando.
+ *
+ *  Pedir apoio sem dizer quanto custa é pedir no escuro. Aqui está o custo, quantas
+ *  pessoas apoiam, e (só quando há gente o bastante para não entregar o valor de
+ *  ninguém) quanto da conta já está coberto. Ver APOIADORES_PRA_MOSTRAR_COBERTURA.
+ * ════════════════════════════════════════════════════════════════════
+ */
+function ContaDoMesBloco({ conta }: { conta: import("@/lib/apoio").ContaDoMes }) {
+  const custo = reais(conta.custoCentavos).replace(/,00$/, "");
+  const pct = conta.cobertura === null ? null : Math.min(100, Math.round(conta.cobertura * 100));
+
+  return (
+    <section className="surface mt-10 p-6 sm:p-7">
+      <h2 className="text-[11px] uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">
+        a conta do mês
+      </h2>
+      <p className="voice mt-3 text-[24px] leading-snug text-[var(--color-ink)] sm:text-[28px]">
+        O Gume custa cerca de {custo} por mês para ficar no ar.
+      </p>
+      <p className="mt-3 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+        {conta.apoiadores === 0
+          ? "Hoje, quem paga essa conta é quem fez o Gume. Você pode ser a primeira pessoa a dividir."
+          : conta.apoiadores === 1
+            ? "Hoje, uma pessoa ajuda a pagar essa conta."
+            : `Hoje, ${conta.apoiadores} pessoas ajudam a pagar essa conta.`}
+        {pct !== null && ` Juntas, cobrem ${pct}% do mês.`}
+      </p>
+
+      {pct !== null && (
+        <div
+          className="mt-5 h-2 overflow-hidden rounded-full"
+          style={{ background: "var(--surface-2)" }}
+          role="img"
+          aria-label={`${pct}% da conta do mês coberta`}
+        >
+          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--color-colaborar)" }} />
+        </div>
+      )}
+    </section>
   );
 }

@@ -63,6 +63,8 @@ export type Book = {
   /** The reader's own rows. Null when nobody is logged in. */
   mine: {
     status: string | null;
+    /** Quando o status mudou pela última vez. Serve para "acabou de terminar". */
+    statusAt: Date | null;
     entryId: string | null;
     rating: number | null;
     review: { body: string; visibility: string } | null;
@@ -182,7 +184,7 @@ export async function getBook(slug: string, viewer: Viewer, actorId: string | nu
 /** Your own rows. You can always see your own, whatever their visibility. */
 async function getMine(workId: string, actorId: string) {
   const [entry] = await db
-    .select({ id: libraryEntries.id, status: libraryEntries.status, editionId: libraryEntries.editionId })
+    .select({ id: libraryEntries.id, status: libraryEntries.status, statusAt: libraryEntries.statusAt, editionId: libraryEntries.editionId })
     .from(libraryEntries)
     .where(and(eq(libraryEntries.workId, workId), eq(libraryEntries.userId, actorId)))
     .limit(1);
@@ -216,6 +218,7 @@ async function getMine(workId: string, actorId: string) {
 
   return {
     status: entry?.status ?? null,
+    statusAt: entry?.statusAt ?? null,
     entryId: entry?.id ?? null,
     rating: rating?.value ?? null,
     review: review ? { body: review.body, visibility: review.visibility } : null,

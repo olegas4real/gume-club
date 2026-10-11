@@ -105,3 +105,27 @@ describe("a janela do apoio avulso", () => {
     expect(DIAS_DE_AVULSO).toBe(30);
   });
 });
+
+/**
+ * A CONTA DO MÊS não pode entregar quanto uma pessoa paga. Com uma ou duas pessoas
+ * apoiando, "X de R$ 110 cobertos" diria o valor delas, e a lista de apoiadores é
+ * pública. Ver APOIADORES_PRA_MOSTRAR_COBERTURA em lib/apoio.ts.
+ */
+describe("a conta do mês", () => {
+  it("com menos de três apoiadores, a cobertura não aparece", async () => {
+    const { contaDoMes, APOIADORES_PRA_MOSTRAR_COBERTURA } = await import("@/lib/apoio");
+    for (let n = 0; n < APOIADORES_PRA_MOSTRAR_COBERTURA; n++) {
+      expect(contaDoMes(n, 490).cobertura, `com ${n} apoiador(es) a soma vazou`).toBeNull();
+    }
+  });
+
+  it("com gente suficiente, a cobertura é a fração do custo", async () => {
+    const { contaDoMes, CUSTO_MENSAL_CENTAVOS } = await import("@/lib/apoio");
+    expect(contaDoMes(3, CUSTO_MENSAL_CENTAVOS / 2).cobertura).toBeCloseTo(0.5);
+  });
+
+  it("os preços dos planos vêm de um lugar só", async () => {
+    const fonte = (await import("node:fs")).readFileSync("app/apoiar/page.tsx", "utf8");
+    expect(fonte, "preço escrito à mão na /apoiar: use PRECO_CENTAVOS").not.toMatch(/"R\$ \d/);
+  });
+});

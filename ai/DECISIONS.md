@@ -5561,3 +5561,15 @@ aparece.
 
 Rejeitado por ora: mostrar os rostos de quem apoia no cartão. Com um
 apoiador só, é uma sala vazia; volta quando houver uns dez.
+
+## Memória do servidor: o limite mora no `start`, não no Railway
+
+Quase toda a conta do Railway é memória: o servidor segurava ~1,8 GB parado.
+Três ajustes: `MALLOC_ARENA_MAX=2` e `VIPS_CONCURRENCY=1` como variáveis do
+serviço (menos memória presa pelo alocador e pelo sharp), e o teto do heap do
+Node em 768 MB.
+
+O teto NÃO pode ser variável do serviço: o Railway entrega as variáveis também
+à compilação, e o `next build` passa de 768 MB. Tentado assim, o build morreu
+por falta de memória (o site ficou na versão anterior). Por isso ele vai
+dentro do script `start` do package.json, que só roda no servidor.

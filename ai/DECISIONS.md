@@ -5573,3 +5573,29 @@ O teto NÃO pode ser variável do serviço: o Railway entrega as variáveis tamb
 à compilação, e o `next build` passa de 768 MB. Tentado assim, o build morreu
 por falta de memória (o site ficou na versão anterior). Por isso ele vai
 dentro do script `start` do package.json, que só roda no servidor.
+
+## Privacidade e apagar a conta: a página existe, e o botão apaga mesmo
+
+A auditoria de 2026-10-10 achou `/privacidade` respondendo 404 e o cadastro sem uma
+linha de texto legal, num produto que guarda histórico de leitura. E a tela de perfil
+prometia "o botão de apagar a conta chega em breve" desde julho.
+
+- **`/privacidade`** diz o que é guardado, para quê, quem vê, quais serviços de fora
+  recebem o quê (Railway, Resend, Vercel, Google, Stripe, Sentry, Google Analytics,
+  Clarity), como levar embora e como apagar. É linkada da tela de criar conta (uma
+  linha, sem caixinha de marcar), da home, de /sobre e do perfil.
+  `lib/privacidade.test.ts` quebra a build se um serviço que o código sabe ligar não
+  estiver nomeado na página. Isso cumpre a condição (2) que o ai/PLAN.md pôs para o
+  Clarity; a (1), máscara Strict, mora no painel do Clarity e é do dono conferir.
+- **Apagar a conta é DELETE, e não `deleted_at`.** Um carimbo de "saiu" deixaria o
+  histórico inteiro no banco. Toda chave para `users` já era CASCADE (o que é da
+  pessoa) ou SET NULL (o que é do acervo: correções, capas, obras cadastradas, que
+  ficam sem o nome). `lib/conta.sql.test.ts` trava isso: uma chave nova sem ON DELETE
+  quebra a build.
+- **O Stripe é cancelado ANTES, e se falhar nada é apagado.** Apagar a conta e deixar o
+  cartão cobrando por um apoio sem dono é o pior desfecho.
+- **A confirmação é digitar o próprio @**, e não a senha: quem entrou pelo Google não
+  tem senha.
+- **O idealizador não se apaga pela tela.** É o único que concede moderação.
+- O contato da política é `contato@gume.club`. O dono precisa confirmar que essa caixa
+  recebe e-mail.

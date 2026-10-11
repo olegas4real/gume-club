@@ -173,6 +173,13 @@ export default async function Sobre() {
           >
             ir para a estante
           </Link>
+          <span className="text-[13px] text-[var(--color-ink-faint)]"> · </span>
+          <Link
+            href="/privacidade"
+            className="text-[13px] text-[var(--color-ink-faint)] underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
+          >
+            privacidade
+          </Link>
         </p>
       </section>
     </main>

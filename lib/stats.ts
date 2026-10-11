@@ -858,3 +858,30 @@ export function centuryLabel(century: number): string {
   }
   return century < 0 ? `século ${out} a.C.` : `século ${out}`;
 }
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  O RECORTE QUE ABRE: O ANO, A NÃO SER QUE O ANO ESTEJA VAZIO.
+ *
+ *  A auditoria de 2026-10-10 importou dezenove livros, quinze lidos, e a home disse
+ *  "Nada terminado ainda este ano" e as estatísticas abriram em "Nada terminado em
+ *  2026". A conta estava certa (leitura importada sem data não cai em ano nenhum), e
+ *  a tela de recompensa da ação mais valiosa do produto era idêntica à de antes dela.
+ *
+ *  Quando ninguém PEDIU um ano (`pedido === undefined`) e o ano corrente não tem nada
+ *  terminado, mas a vida inteira tem, o recorte abre na vida inteira (`year: null`).
+ *  Quem escolheu um ano no seletor recebe o ano que escolheu, vazio ou não.
+ * ════════════════════════════════════════════════════════════════════
+ */
+export async function getStatsDoRecorte(
+  viewer: Viewer,
+  ownerId: string,
+  pedido: number | null | undefined,
+): Promise<{ year: number | null; stats: Stats }> {
+  const year = pedido === undefined ? new Date().getFullYear() : pedido;
+  const stats = await getStats(viewer, ownerId, year);
+  if (pedido !== undefined || stats.books > 0) return { year, stats };
+
+  const vida = await getStats(viewer, ownerId, null);
+  return vida.books > 0 ? { year: null, stats: vida } : { year, stats };
+}

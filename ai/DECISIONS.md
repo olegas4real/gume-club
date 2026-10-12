@@ -5778,3 +5778,6 @@ entrou e por que saiu. Volta nos mesmos lugares de antes, pelo mesmo `DISCORD` d
 também" (fim de /estatisticas e do próprio perfil) e as portas de /contribuidores. O
 convite é novo (`discord.gg/ByC6SFRBPN`), conferido na API do Discord: servidor
 "Gume.club", sem data para expirar.
+
+O convite trocou no mesmo dia para `discord.gg/7BPuNqvsut`, a pedido do dono. Mesmo
+servidor ("Gume.club"), também sem data para expirar. Mudou só a linha de `lib/onde.ts`.

@@ -40,4 +40,4 @@ export const INSTAGRAM = "https://instagram.com/gumeclub";
  * O convite do servidor do Gume no Discord. Onde a conversa acontece de verdade.
  * Conferido na API do Discord em 2026-10-12: servidor "Gume.club", sem data para expirar.
  */
-export const DISCORD = "https://discord.gg/ByC6SFRBPN";
+export const DISCORD = "https://discord.gg/7BPuNqvsut";

@@ -67,6 +67,8 @@ export type Escadas = {
    */
   coroa: Coroa;
   apoia: boolean;
+  /** Apoia hoje E deixou o apoio público. É o que acende a etiqueta ao lado do nome. */
+  apoiaEmPublico: boolean;
 };
 
 export async function getEscadas(userId: string): Promise<Escadas> {
@@ -74,6 +76,7 @@ export async function getEscadas(userId: string): Promise<Escadas> {
     lidos: number;
     paginas: number;
     apoia: boolean;
+    publico: boolean;
     moldura: string | null;
   }>(sql`
     select
@@ -86,7 +89,8 @@ export async function getEscadas(userId: string): Promise<Escadas> {
         (select e3.page_count from editions e3 where e3.id = ${EDICAO_RESOLVIDA})
       ) filter (where le.status = 'read'), 0)::int as paginas,
       (select ${ehApoiador(sql`u`)} from users u where u.id = ${userId}::uuid) as apoia,
-      (select u.moldura      from users u where u.id = ${userId}::uuid) as moldura
+      (select u.moldura      from users u where u.id = ${userId}::uuid) as moldura,
+      (select u.supporter_public from users u where u.id = ${userId}::uuid) as publico
     from library_entries le
    where le.user_id = ${userId}::uuid`);
 
@@ -102,7 +106,12 @@ export async function getEscadas(userId: string): Promise<Escadas> {
    * regra de produto duplicada é uma regra que vai divergir, e aí a mesma pessoa aparece
    * com um anel no perfil e outro no feed.
    */
-  return { posicao, apoia, coroa: coroaDe(posicao, { apoia, moldura: linha?.moldura ?? null }) };
+  return {
+    posicao,
+    apoia,
+    apoiaEmPublico: apoia && Boolean(linha?.publico),
+    coroa: coroaDe(posicao, { apoia, moldura: linha?.moldura ?? null }),
+  };
 }
 
 

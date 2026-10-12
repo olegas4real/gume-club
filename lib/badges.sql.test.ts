@@ -14,7 +14,7 @@ import { editions, users, works } from "@/lib/db/schema";
  *  Uma insígnia que não tem mais como ser conquistada não fica de enfeite no catálogo.
  *
  *  Depois foram nove, e o IDEALIZADOR saiu também — não por deixar de existir, mas por
- *  virar um selo à parte, ao lado do nome (components/selo-idealizador.tsx), fora do
+ *  virar um selo à parte, ao lado do nome (components/etiqueta-do-nome.tsx), fora do
  *  círculo de matiz. `badge_grants` e `conceder("idealizador", …)` continuam os mesmos;
  *  só `getBadgesOf()` parou de devolvê-lo. Ver ai/DECISIONS.md.
  *
@@ -88,7 +88,7 @@ describe("ZELADOR: DEZ correções, e só as que SOBREVIVERAM", () => {
    *
    * "eu acho que em vez de eu ter uma badge de idealizador, poderia ter um iconezinho
    * diferente do lado do meu nome" — o dono. `getBadgesOf()` não devolve mais
-   * "idealizador" (virou components/selo-idealizador.tsx, lido de souIdealizador()),
+   * "idealizador" (virou components/etiqueta-do-nome.tsx, lido de souIdealizador()),
    * então este teste passou a medir `badge_grants` direto — o mesmo dado que
    * souIdealizador() lê, e o único lugar onde "só existe UM" é garantido de verdade.
    */

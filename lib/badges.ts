@@ -87,7 +87,7 @@ export { CORTE_FUNDADOR, CORRECOES_PARA_ZELADOR } from "@/lib/regras";
  *  "eu acho que em vez de eu ter uma badge de idealizador, poderia ter
  *  um iconezinho diferente do lado do meu nome" — o dono. Ela era a
  *  única concedida à mão e a única sobre uma pessoa só; virou um selo à
- *  parte (components/selo-idealizador.tsx), ao lado do nome em
+ *  parte (components/etiqueta-do-nome.tsx), ao lado do nome em
  *  `/@handle`, fora do círculo de matiz de lib/badges-view.ts. O FATO
  *  continua o mesmo — `badge_grants`, `souIdealizador()` (lib/authz.ts) e
  *  `conceder()`, abaixo, não mudaram — só a forma como ele aparece na

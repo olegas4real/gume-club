@@ -25,7 +25,7 @@ import { souIdealizador } from "@/lib/authz";
 import { getResenhasDe } from "@/lib/explore";
 import { PerfilAbas } from "@/components/perfil-abas";
 import { CuradoriaCard } from "@/components/curadoria-card";
-import { SeloIdealizador } from "@/components/selo-idealizador";
+import { EtiquetaDoNome } from "@/components/etiqueta-do-nome";
 import { ApoieEAcompanhe } from "@/components/apoie-e-acompanhe";
 import { ChamadaConta } from "@/components/chamada-conta";
 import Link from "next/link";
@@ -135,7 +135,7 @@ export default async function Profile({ params }: { params: Promise<{ handle: st
   const escadas = await getEscadas(profile.id);
 
   // O perfil da CASA carrega a curadoria da casa fixada nas listas (as editoriais
-  // moram com quem as edita) e o selo ao lado do nome (components/selo-idealizador.tsx).
+  // moram com quem as edita) e a etiqueta ao lado do nome (components/etiqueta-do-nome.tsx).
   // souIdealizador aqui não é permissão, é identificação: pergunta se ESTE perfil é
   // o de quem imaginou o Gume.
   const perfilDaCasa = await souIdealizador({ id: profile.id });
@@ -200,13 +200,19 @@ export default async function Profile({ params }: { params: Promise<{ handle: st
         </span>
 
         <div className="min-w-0 flex-1">
-          <h1 className="voice flex items-center gap-3 text-[40px] leading-[1.02] tracking-[-0.015em] sm:text-[56px]">
-            {name}
-            {/* "em vez de eu ter uma badge de idealizador, poderia ter um
-                iconezinho diferente do lado do meu nome" — o dono. Ver
-                components/selo-idealizador.tsx. */}
-            {perfilDaCasa && <SeloIdealizador />}
-          </h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <h1 className="voice text-[40px] leading-[1.02] tracking-[-0.015em] sm:text-[56px]">
+              {name}
+            </h1>
+            {/* Fora do <h1>: o nome é o título, as etiquetas são fatos sobre ele.
+                Ver components/etiqueta-do-nome.tsx. */}
+            {(perfilDaCasa || escadas.apoiaEmPublico) && (
+              <span className="flex flex-wrap items-center gap-2">
+                {perfilDaCasa && <EtiquetaDoNome tipo="idealizador" />}
+                {escadas.apoiaEmPublico && <EtiquetaDoNome tipo="apoiador" />}
+              </span>
+            )}
+          </div>
           <p className="tabular mt-3 text-[11px] uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">
             {[`@${profile.handle}`, `${counts.tudo ?? 0} livros`, (counts.lidos ?? 0) > 0 && `${counts.lidos} lidos`]
               .filter(Boolean)

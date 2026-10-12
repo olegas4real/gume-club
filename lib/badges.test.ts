@@ -47,7 +47,7 @@ describe("são SETE, e são estas sete", () => {
      *
      * "eu acho que em vez de eu ter uma badge de idealizador, poderia ter um iconezinho
      * diferente do lado do meu nome" — o dono. Ele virou um selo à parte
-     * (components/selo-idealizador.tsx), fora do círculo de matiz. Ver ai/DECISIONS.md.
+     * (components/etiqueta-do-nome.tsx), fora do círculo de matiz. Ver ai/DECISIONS.md.
      *
      * A promessa nunca foi "todo mundo tem as mesmas insígnias" (bibliotecário também
      * não é de todo mundo): foi "NENHUMA VALE MAIS QUE OUTRA", e é isso que os testes

@@ -10,7 +10,7 @@ import {
   findOrCreateWork, hitToWork, shelve, setProvenance,
   isStatus, type Status,
 } from "@/lib/library";
-import { searchAll, enriquecer, porIsbn, type Hit } from "@/lib/catalog";
+import { enriquecer, porIsbn, type Hit } from "@/lib/catalog";
 import { porQueNaoAceita } from "@/lib/imagens";
 
 /**
@@ -187,59 +187,6 @@ export async function addByHand(form: {
   revalidatePath("/");
   revalidatePath("/estante");
   return { workId, editionId, title };
-}
-
-/**
- * Colar uma lista.
- *
- * Os seus amigos têm planilha, não têm arquivo de exportação. Eles têm um bloco de
- * notas com quarenta títulos, um por linha, e até hoje a única forma de trazer isso
- * para cá era digitar quarenta buscas. Agora é um "cole aqui".
- *
- * O casamento é UMA linha, UM livro, e o app mostra o que achou ANTES de escrever
- * qualquer coisa na sua estante: casar título em texto livre erra, e um erro que
- * entra sozinho na estante é um erro que ninguém percebe por dois anos. Você
- * confere e você confirma.
- *
- * "Título — Autor" e "Título - Autor" também funcionam, porque é assim que as
- * pessoas de verdade escrevem as listas delas.
- */
-export type Match = { line: string; hit: Hit | null };
-
-export async function matchList(text: string): Promise<Match[]> {
-  await getActor();
-
-  const lines = String(text ?? "")
-    .split("\n")
-    .map((l) => l.trim().slice(0, LIMITS.listLine))
-    .filter(Boolean)
-    .slice(0, LIMITS.listLines);
-
-  const out: Match[] = [];
-  for (const line of lines) {
-    // uma busca boa é o título; o autor depois do travessão só atrapalha o trigrama
-    const query = line.split(/\s+[—–-]\s+/)[0]?.trim() || line;
-    const hits = await searchAll(query);
-    out.push({ line, hit: hits[0] ?? null });
-  }
-  return out;
-}
-
-/** Põe na estante o que você conferiu, e devolve quantos entraram. */
-export async function addMany(hits: Hit[], status: Status): Promise<number> {
-  const actor = await getActor();
-  if (!isStatus(status)) throw new Error("status inválido");
-
-  let n = 0;
-  for (const hit of hits.slice(0, 100)) {
-    const { workId, editionId } = await findOrCreateWork({ ...hitToWork(hit), criadoPor: actor.id });
-    await shelve(actor, workId, status, editionId);
-    n++;
-  }
-
-  revalidatePath("/");
-  revalidatePath("/estante");
-  return n;
 }
 
 /**

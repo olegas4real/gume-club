@@ -110,7 +110,7 @@ Goodreads. Parser + fixture + testes já é um PR completo.
 4. **Livro comprado na loja Kobo e livro lateral (epub que a pessoa botou lá) se comportam
    diferente.** O segundo costuma vir sem ISBN e com metadado torto. Ele ainda é um livro da
    estante dela. Não descarte: manda pro casamento por título + autor, e deixa a pessoa
-   conferir na tela, como o `components/paste-list.tsx` já faz.
+   conferir na tela, como o `components/import-form.tsx` já faz.
 
 ## A régua: SEM PERDAS
 

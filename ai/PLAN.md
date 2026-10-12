@@ -184,4 +184,4 @@ O Skoob não tem exportação (a ajuda deles diz isso; a API pública morreu em 
 
 - [x] **1. Consertar a promessa.** As telas diziam aceitar "o arquivo que você baixou do Skoob", e o perfil dizia que o Skoob importa o nosso CSV. Nenhum dos dois existe.
 - [x] **2. Medir o que já funciona, e a página de ajuda.** Fixtures do que circula no mundo, o importador comendo os dois, e `/ajuda/skoob`.
-- [ ] **3. Colar uma lista em /importar**, pelo mesmo caminho da importação por arquivo.
+- [x] **3. Colar uma lista em /importar**, pelo mesmo caminho da importação por arquivo.

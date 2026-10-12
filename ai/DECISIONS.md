@@ -5719,3 +5719,39 @@ que gravava sem passar pela importação. Era um segundo fluxo. Agora:
 Rejeitado: manter o colar em /buscar e só trocar o casamento (seriam duas telas para a
 mesma coisa), e deixar a linha sem casamento criar ficha (um catálogo cheio de "Dom
 casmurro machado" é o lixo que o concorrente tem).
+
+## Pronto para os posts: o que o teste de 2026-10-12 achou e consertou
+
+Teste de prontidão antes da divulgação (funil, apoio, estabilidade). O que já estava
+certo: todas as páginas públicas respondem; nenhuma página passa da largura de um
+celular de 390 px, nem tem erro de script, e todas mostram "Criar conta" na primeira
+tela; 400 requisições a 20 por vez sem erro (mediana 0,66 s); memória estável em
+~0,43 GB depois do ajuste de heap; Stripe em modo real, preços ativos, webhook sem
+entrega falha; e-mail com SPF, DKIM e DMARC, e entregando no Gmail e no Yahoo.
+
+Consertado:
+
+- **Login do Google dentro do Instagram.** O Google recusa login em navegador embutido
+  de app ("disallowed_useragent"). /entrar detecta Instagram, Threads, Facebook,
+  TikTok e LinkedIn (`lib/navegador-interno.ts`), esconde o botão do Google e explica
+  como abrir no navegador. E-mail e senha seguem funcionando ali dentro.
+- **Voltar para onde a pessoa estava.** Criar conta a partir de um livro, de um perfil
+  ou de /apoiar caía na home. Agora a chamada leva `?volta=` e /entrar devolve a pessoa
+  lá, inclusive pelo Google. Só caminho de dentro, para não virar redirecionamento
+  aberto (`lib/volta.ts`, testado com os ataques clássicos).
+- **A mensagem de erro do cadastro culpava a senha** em qualquer falha, até quando a
+  rede bateu no limite de cadastros ou o e-mail já tinha conta. Agora o limite tem a
+  sua frase, e a falha genérica cita as duas causas.
+- **O card de compartilhamento do livro** saía como "Gume / A mente leitora…". Agora
+  leva título, autor e sinopse.
+- **Origens do funil:** TikTok, LinkedIn e Threads ganharam balde, e "ig", "fb" e "tt"
+  também contam.
+- **`/robots.txt` e `/sitemap.xml`** existem. O mapa tem as páginas da casa e as fichas
+  de livro, nunca perfis de leitor (que têm a trava própria de indexação).
+
+Não consertado, e por quê:
+
+- **`contato@gume.club` não recebe e-mail.** O domínio não tem MX. É configuração de DNS
+  do dono (encaminhamento de e-mail), e é o contato da /privacidade.
+- **Limite de 3 cadastros por hora por IP.** Celular no Brasil divide IP. Mantido: a
+  frase nova diz o que aconteceu, e afrouxar é decisão do dono.

@@ -28,7 +28,9 @@ export type ModoInicial = (typeof MODOS)[number];
  * referrer (que pode identificar — um link mandado numa DM é um link só)
  * nunca é gravada, só o balde.
  */
-const BUCKETS = ["reddit", "facebook", "instagram", "twitter", "whatsapp", "google", "direto"] as const;
+// "threads" vem antes de "instagram": o app do Threads é da mesma casa, e um link dele é
+// do Threads. TikTok, LinkedIn e Threads entraram para os posts de lançamento (2026-10-12).
+const BUCKETS = ["reddit", "facebook", "threads", "instagram", "tiktok", "linkedin", "twitter", "whatsapp", "google", "direto"] as const;
 type Bucket = (typeof BUCKETS)[number] | "outro";
 
 /**
@@ -51,6 +53,13 @@ export function normalizarOrigem(bruto: unknown): Bucket | null {
   if (/(twitter\.|x\.com)/.test(limpo)) return "twitter";
   if (/whatsapp\./.test(limpo)) return "whatsapp";
   if (/google\./.test(limpo)) return "google";
+  if (/threads\.(net|com)/.test(limpo)) return "threads";
+  if (/tiktok\.|vm\.tiktok/.test(limpo)) return "tiktok";
+  if (/linkedin\.|lnkd\.in/.test(limpo)) return "linkedin";
+  // As abreviações que os próprios apps põem no utm_source.
+  if (limpo === "ig") return "instagram";
+  if (limpo === "fb") return "facebook";
+  if (limpo === "tt") return "tiktok";
 
   return "outro";
 }

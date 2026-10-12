@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Bookmark, Library, BookMarked, type LucideIcon } from "lucide-react";
 import { MINIMO_CENTAVOS, reais, type Tier } from "@/lib/apoio";
 
+/** Quem não tem conta e quer apoiar: criar a conta, e voltar para /apoiar. Ver lib/volta.ts. */
+const ENTRAR_PARA_APOIAR = "/entrar?novo=1&volta=%2Fapoiar";
+
 /**
  * ════════════════════════════════════════════════════════════════════
  *  OS BOTÕES DE APOIO.
@@ -113,7 +116,7 @@ export function AssinarBotao({
 
   if (!logado) {
     return (
-      <Link href="/entrar" className={CARTAO} aria-label={`apoiar com ${preco} por mês`}>
+      <Link href={ENTRAR_PARA_APOIAR} className={CARTAO} aria-label={`apoiar com ${preco} por mês`}>
         <Miolo tier={tier} rotulo={rotulo} preco={preco} pendente={false} />
       </Link>
     );
@@ -215,7 +218,7 @@ export function AvulsoForm({ logado }: { logado: boolean }) {
     return (
       <div className="mt-5">
         {campo}
-        <Link href="/entrar" className={`${BOTAO} mt-5`} style={ESTILO_BOTAO}>
+        <Link href={ENTRAR_PARA_APOIAR} className={`${BOTAO} mt-5`} style={ESTILO_BOTAO}>
           Apoiar uma vez
         </Link>
       </div>

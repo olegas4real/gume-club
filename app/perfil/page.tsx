@@ -296,7 +296,7 @@ export default async function Perfil() {
         </p>
 
         <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[var(--color-ink-faint)]">
-          O arquivo sai no formato que o Skoob, o StoryGraph e o Oku sabem importar. Uma saída
+          O arquivo sai no formato que o StoryGraph e o Oku sabem importar. Uma saída
           que outro app não consegue ler não é uma saída.
         </p>
 

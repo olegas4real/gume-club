@@ -25,7 +25,8 @@ import { mine as palavraDaNota } from "@/lib/veredito";
  *  parece uma saída, tem a forma de uma saída, e não abre porta nenhuma.
  *
  *  Por isso o CSV espelha as colunas do **export do Goodreads** — que é o formato que o
- *  Skoob, o StoryGraph, o Oku e o Fable sabem importar. Não porque o Goodreads seja bom,
+ *  StoryGraph e o Oku sabem importar (o Skoob não importa nada: não tem importação nem
+ *  exportação). Não porque o Goodreads seja bom,
  *  mas porque ele é o que o mundo lê. Onde o Gume não tem o campo, a coluna vai vazia.
  *  Onde o Gume tem MAIS (procedência, série, volume, a palavra da nota), vai em colunas
  *  extras no fim: quem não entende ignora, e quem entende ganha.
@@ -478,8 +479,8 @@ Tem dois arquivos aqui, e eles têm as mesmas coisas dentro:
 
 estante.csv
 -----------
-As colunas são as do export do Goodreads, de propósito: é o formato que o Skoob, o
-StoryGraph, o Oku e o Fable sabem importar. Você abre o importador de qualquer um deles,
+As colunas são as do export do Goodreads, de propósito: é o formato que o
+StoryGraph e o Oku sabem importar. Você abre o importador de qualquer um deles,
 manda este arquivo, e a sua estante vai junto.
 
 Se ele pedir "o arquivo do Goodreads", é este.

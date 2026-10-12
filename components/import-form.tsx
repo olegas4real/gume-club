@@ -9,6 +9,9 @@ import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
 import { PedidoDeApoio } from "@/components/pedido-de-apoio";
 
+/** Para onde vai quem vem do Skoob. Por enquanto, a lista colada da busca. */
+const CAMINHO_DO_SKOOB = "/buscar";
+
 /**
  * ════════════════════════════════════════════════════════════════════
  *  TRAZER A ESTANTE INTEIRA, DE UM ARQUIVO.
@@ -434,8 +437,8 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
         </span>
 
         <span className="max-w-sm text-[14px] leading-relaxed text-[var(--color-ink-soft)]">
-          O arquivo que você baixou do Goodreads, do StoryGraph, do Skoob ou do Fable. Também
-          serve uma planilha sua, e serve o arquivo que você baixou daqui.
+          O arquivo que você baixou do Goodreads, do StoryGraph ou do Fable. Também serve uma
+          planilha sua, e serve o arquivo que você baixou daqui.
         </span>
 
         <input
@@ -445,6 +448,17 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
           onChange={(e) => escolher(e.target.files?.[0])}
         />
       </label>
+
+      {/* O Skoob NÃO tem exportação (a ajuda deles diz isso, e a API pública morreu em
+          2025). Prometer "o arquivo que você baixou do Skoob" era prometer uma coisa que
+          não existe ao primeiro leitor que viesse de lá. lib/skoob-promessa.test.ts trava. */}
+      <p className="mt-4 text-center text-[13px] leading-relaxed text-[var(--color-ink-faint)]">
+        Veio do Skoob? Ele não tem botão de exportar, mas tem caminho:{" "}
+        <Link href={CAMINHO_DO_SKOOB} className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
+          veja como
+        </Link>
+        .
+      </p>
 
       {andando && (
         <div className="mt-5 h-1 w-full overflow-hidden rounded-full bg-[var(--color-rule)]">

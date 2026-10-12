@@ -31,6 +31,15 @@ import { toast } from "@/lib/toast";
  *  dois empilham no MESMO canto: este um degrau acima de onde o elevador
  *  nasce, com uma folga que cabe o elevador inteiro entre os dois.
  *
+ *  ═══ NO CELULAR, ELE NÃO FLUTUA ═══
+ *
+ *  Flutuando no canto, ele cobria a ponta do que passasse por baixo: em /entrar, o
+ *  botão "Criar conta com o Google", justo na tela de quem chega por um post. "Isso é
+ *  MUITO importante" — o dono. Numa tela de 390 px não existe canto vazio: qualquer
+ *  posição cobre alguma coisa em alguma página. Então no celular ele é um link de
+ *  texto no FIM da página, que não cobre nada; o botão redondo fica só a partir de
+ *  `sm`, onde a margem é larga. lib/relatar-problema.test.ts trava.
+ *
  *  ═══ A MESMA ANIMAÇÃO DO DIÁLOGO DE LISTA ═══
  *
  *  Escala a partir de 0.96 com leve overshoot, cross-fade — a régua que
@@ -79,10 +88,23 @@ export function RelatarProblema() {
         onClick={() => setAberto(true)}
         aria-label="relatar um problema"
         title="relatar um problema"
-        className="surface fixed bottom-40 right-4 z-40 flex h-9 w-9 items-center justify-center rounded-full text-[var(--color-ink-faint)] shadow-lg transition-colors hover:text-[var(--color-ink)] sm:bottom-20 sm:right-6"
+        className="surface fixed bottom-20 right-6 z-40 hidden h-9 w-9 items-center justify-center rounded-full text-[var(--color-ink-faint)] shadow-lg transition-colors hover:text-[var(--color-ink)] sm:flex"
       >
         <Flag size={14} strokeWidth={1.5} aria-hidden />
       </button>
+
+      {/* No celular: no fim da página, e não por cima dela. O espaço de baixo deixa o
+          link acima da barra de navegação de quem está logado. */}
+      <div className="flex justify-center px-6 pb-28 pt-4 sm:hidden">
+        <button
+          type="button"
+          onClick={() => setAberto(true)}
+          className="flex items-center gap-2 py-2 text-[13px] text-[var(--color-ink-faint)] underline decoration-[var(--color-rule)] underline-offset-4"
+        >
+          <Flag size={13} strokeWidth={1.5} aria-hidden />
+          relatar um problema
+        </button>
+      </div>
 
       <div
         aria-hidden={!aberto}

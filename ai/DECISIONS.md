@@ -5768,3 +5768,13 @@ Numa tela de 390 px não existe canto vazio, então mudar de canto só mudaria o
 coberto. No celular ele virou um link de texto no fim da página; o botão redondo ficou
 só a partir de `sm`. Depois da troca, a mesma varredura não acha nada coberto em nove
 páginas públicas. `lib/relatar-problema.test.ts` trava.
+
+## O Discord volta
+
+"Voltamos com o Discord, adicione no site" — o dono, revertendo "Tira o Discord. Não vai
+ter servidor" (#169). As entradas anteriores ficam como estão: elas explicam por que ele
+entrou e por que saiu. Volta nos mesmos lugares de antes, pelo mesmo `DISCORD` de
+`lib/onde.ts`: a seção "comunidade" da barra, o rodapé da home, /sobre, o cartão "e
+também" (fim de /estatisticas e do próprio perfil) e as portas de /contribuidores. O
+convite é novo (`discord.gg/ByC6SFRBPN`), conferido na API do Discord: servidor
+"Gume.club", sem data para expirar.

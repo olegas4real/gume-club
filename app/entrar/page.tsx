@@ -6,6 +6,8 @@ import Link from "next/link";
 import { signIn, signUp } from "@/lib/auth-client";
 import { rememberInviter } from "@/app/entrar/invite";
 import { registrarEvento, origemAtual } from "@/lib/funil-client";
+import { destinoSeguro } from "@/lib/volta";
+import { navegadorInterno } from "@/lib/navegador-interno";
 
 /**
  * Entrar. E-mail e senha, ou Google. Nada mais.
@@ -22,6 +24,16 @@ export default function Entrar() {
   const [mode, setMode] = useState<"entrar" | "criar">(
     params.get("novo") === "1" ? "criar" : "entrar",
   );
+
+  // Para onde a pessoa volta depois: o livro, o perfil ou o apoio que a trouxe até
+  // aqui. Só caminho de dentro. Ver lib/volta.ts.
+  const volta = destinoSeguro(params.get("volta"));
+
+  // Dentro do Instagram (e do Facebook, TikTok, Threads, LinkedIn) o Google recusa
+  // login. Lido depois de montar: o servidor não sabe em que navegador a página abriu.
+  // Ver lib/navegador-interno.ts.
+  const [dentroDe, setDentroDe] = useState<string | null>(null);
+  useEffect(() => setDentroDe(navegadorInterno(navigator.userAgent)), []);
 
   // /entrar?convite=<handle>. Stored server-side in a short cookie so it survives
   // the trip to Google and back, and read once when the account is created. A
@@ -121,9 +133,15 @@ export default function Entrar() {
       if (res.error) {
         // A mensagem é deliberadamente vaga: dizer "esse e-mail não existe"
         // entrega quem tem conta aqui para quem só está testando e-mails.
+        // Muitas tentativas desta rede: dizer isso, e não culpar a senha. Celular no
+        // Brasil divide endereço com muita gente, e a pessoa não fez nada de errado.
+        if (res.error.status === 429) {
+          setError("Muita gente entrando por esta rede agora. Espere uns minutos e tente de novo.");
+          return;
+        }
         setError(
           mode === "criar"
-            ? "Não deu para criar a conta. A senha precisa de 12 caracteres ou mais."
+            ? "Não deu para criar a conta. Confira se a senha tem 12 caracteres ou mais. Se você já tem conta com esse e-mail, é só entrar."
             : "E-mail ou senha não conferem.",
         );
         return;
@@ -135,7 +153,7 @@ export default function Entrar() {
       // inicial mesmo" — o dono. Quem cria conta ou entra vai direto pra /,
       // igual todo mundo. A própria / já cobre a estante vazia (components de
       // estado vazio de app/page.tsx); "quem te convidou" continua em /perfil.
-      router.push("/");
+      router.push(volta);
       router.refresh();
     });
 
@@ -212,6 +230,13 @@ export default function Entrar() {
           sabe o que é GitHub, e não deveria precisar saber. O GitHub volta um dia, e como
           VÍNCULO de conta (a insígnia de Construtor precisa do handle), e não como porta
           de entrada. Ver lib/auth.ts e ai/DECISIONS.md. */}
+      {dentroDe ? (
+        <p className="rounded-[var(--radius-control)] border border-[var(--color-rule)] px-4 py-3 text-[13px] leading-relaxed text-[var(--color-ink-soft)]">
+          Você está dentro do {dentroDe}, e o Google não deixa entrar por aqui. Para usar o
+          Google, abra esta página no navegador: toque nos três pontinhos e escolha
+          &ldquo;Abrir no navegador&rdquo;. Com e-mail e senha, dá para seguir aqui mesmo.
+        </p>
+      ) : (
       <button
         disabled={google === "indo"}
         onClick={async () => {
@@ -233,7 +258,7 @@ export default function Entrar() {
             // Google. Some no `pending`: na prática resolve bem antes de a
             // pessoa notar "Um momento" na tela.
             await conviteEmVoo.current;
-            const res = await signIn.social({ provider: "google", callbackURL: "/" });
+            const res = await signIn.social({ provider: "google", callbackURL: volta });
             // Se a resposta voltou com erro, a viagem nem começou: o navegador
             // continua aqui, e o botão precisa voltar a funcionar.
             if (res?.error) setGoogle("falhou");
@@ -260,6 +285,7 @@ export default function Entrar() {
             ? "Criar conta com o Google"
             : "Entrar com o Google"}
       </button>
+      )}
 
       {google === "falhou" && (
         <p className="mt-2 text-[13px] text-[var(--color-perigo)]">

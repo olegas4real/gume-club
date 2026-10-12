@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { comVolta } from "@/lib/volta";
 import { registrarEvento, origemAtual, hrefComUtm } from "@/lib/funil-client";
 
 /**
@@ -24,8 +26,11 @@ const CRIAR = "/entrar?novo=1";
 
 /** O link de criar conta, contado no funil como o da home. */
 export function LinkCriarConta({ className, children }: { className?: string; children: React.ReactNode }) {
-  const [href, setHref] = useState(CRIAR);
-  useEffect(() => setHref(hrefComUtm(CRIAR)), []);
+  // Depois de criar a conta, a pessoa volta para a página que a convenceu (o livro,
+  // a estante de alguém). Ver lib/volta.ts.
+  const aqui = usePathname();
+  const [href, setHref] = useState(comVolta(CRIAR, aqui));
+  useEffect(() => setHref(hrefComUtm(comVolta(CRIAR, aqui))), [aqui]);
   return (
     <Link
       href={href}
@@ -46,13 +51,22 @@ export function ChamadaConta({ frase, className = "" }: { frase: string; classNa
         <LinkCriarConta className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-5 py-2.5 text-[14px] font-medium text-[var(--color-canvas)]">
           Criar conta
         </LinkCriarConta>
-        <Link
-          href="/entrar"
+        <JaTenhoConta
           className="text-[14px] text-[var(--color-ink-soft)] underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
         >
           Já tenho conta
-        </Link>
+        </JaTenhoConta>
       </div>
     </section>
+  );
+}
+
+/** "Já tenho conta", também com a volta: quem entra numa conta que já tem volta para cá. */
+function JaTenhoConta({ className, children }: { className?: string; children: React.ReactNode }) {
+  const aqui = usePathname();
+  return (
+    <Link href={comVolta("/entrar", aqui)} className={className}>
+      {children}
+    </Link>
   );
 }

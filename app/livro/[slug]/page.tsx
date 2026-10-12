@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -59,6 +60,41 @@ export const dynamic = "force-dynamic";
  * das Letras" and "capa dura" are interface data, and setting data in a display
  * serif is what made this look amateur. Data is Inter.
  */
+/**
+ * O TEXTO DO CARD, quando alguém compartilha o livro.
+ *
+ * A imagem do card já era deste livro (opengraph-image.tsx), mas o título e a
+ * descrição eram os da casa: "Gume" e "A mente leitora nunca perde o fio". Quem
+ * mandava um livro num story ou no WhatsApp mandava um card sem o nome do livro.
+ * Uma consulta pequena, só com o que o card precisa, e pública: título, autor e a
+ * sinopse da ficha (nunca nada de leitor).
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const [w] = await db.execute<{ title: string; author: string | null; description: string | null }>(sql`
+    select w.title, a.name as author, w.description
+      from works w left join authors a on a.id = w.author_id
+     where w.slug = ${slug}`);
+  if (!w) return {};
+
+  const titulo = w.author ? `${w.title}, de ${w.author}` : w.title;
+  const sinopse = (w.description ?? "").replace(/\s+/g, " ").trim();
+  const description = sinopse
+    ? sinopse.length > 180 ? `${sinopse.slice(0, 177).trimEnd()}...` : sinopse
+    : `${titulo}. Guarde na sua estante no Gume.`;
+
+  return {
+    title: `${titulo} · Gume`,
+    description,
+    openGraph: { title: titulo, description },
+    twitter: { title: titulo, description },
+  };
+}
+
 export default async function BookPage({
   params,
   searchParams,

@@ -14,6 +14,9 @@ import { TrocarSenha } from "@/components/trocar-senha";
 import { ProfileForm } from "@/components/profile-form";
 import { HeraldSeal } from "@/components/herald-seal";
 import { ApoioPublico } from "@/components/apoio-publico";
+import { Moldura } from "@/components/moldura";
+import { getEscadas } from "@/lib/escada";
+import { nomeCompleto } from "@/lib/honras";
 import { ehApoiador } from "@/lib/apoio";
 import { getFavoritos, getFavoritaveis } from "@/lib/favoritos";
 import { GerenciarFavoritos } from "@/components/gerenciar-favoritos";
@@ -74,6 +77,9 @@ export default async function Perfil() {
   `);
 
   if (!me) return <main className="px-6 pt-16">Leitor não encontrado.</main>;
+
+  // A moldura escolhida e a honra de hoje, só para quem apoia: é quem tem o que escolher.
+  const escadas = me.apoia ? await getEscadas(viewer.id) : null;
 
   const [inviter, insignias, convidados, favoritos, favoritaveis, githubLigado] = await Promise.all([
     getInviter(viewer.id),
@@ -171,7 +177,27 @@ export default async function Perfil() {
 
       {/* Só para quem apoia. Perguntar a quem não apoia se ele quer aparecer numa lista
           da qual não faz parte não é uma opção, é uma cobrança educada. */}
-      {me.apoia && <ApoioPublico aparecendo={Boolean(me.supporter_public)} />}
+      {me.apoia && escadas && (
+        <ApoioPublico
+          aparecendo={Boolean(me.supporter_public)}
+          moldura={"apoiador" in escadas.coroa ? "apoiador" : "honra"}
+          nomeDaHonra={nomeCompleto(escadas.posicao)}
+          previas={{
+            honra: (
+              <Moldura
+                coroa={{ honra: escadas.posicao.honra, estrelas: escadas.posicao.estrelas }}
+                src={me.image}
+                name={me.display_name}
+                handle={me.handle}
+                size={40}
+              />
+            ),
+            apoiador: (
+              <Moldura coroa={{ apoiador: true }} src={me.image} name={me.display_name} handle={me.handle} size={40} />
+            ),
+          }}
+        />
+      )}
 
       <dl className="surface mt-6 flex flex-wrap gap-x-12 gap-y-8 p-6">
         <Stat n={me.livros} label="na estante" />

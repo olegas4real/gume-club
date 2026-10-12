@@ -99,7 +99,7 @@ export type Insignia =
  *  insígnia CONCEDIDA à mão (ninguém pode "conseguir" ter imaginado uma
  *  coisa), e a única sobre uma pessoa só — as duas exceções bastavam para
  *  ele não caber direito na régua das outras sete. Virou um selo à parte,
- *  fora do círculo de matiz: `components/selo-idealizador.tsx`, ao lado
+ *  fora do círculo de matiz: `components/etiqueta-do-nome.tsx`, ao lado
  *  do nome em `/@handle`. O fato que ele registra não mudou —
  *  `badge_grants`, `souIdealizador()` (lib/authz.ts) e `conceder()`
  *  continuam os mesmos —, só a FORMA como ele aparece na tela.

@@ -5625,3 +5625,18 @@ foram apagados, não trocados: número inventado ensinaria o mesmo erro.
 "Código no GitHub" da seção "construir" saiu. O link continua em /contribuidores (que
 abre a mesma seção da barra), em /sobre e no rodapé da home, e quem já tem conta chega
 nele por /contribuidores. Revê em parte "O código aparece pra quem já tem conta".
+
+## Etiquetas ao lado do nome, e a moldura de apoiador que se escolhe
+
+- **O idealizador virou palavra.** A bússola dourada "não dá pra saber o que é" — o
+  dono. Um ícone que precisa de legenda falhou. Agora é uma etiqueta escrita,
+  "idealizador", no mesmo dourado. `components/selo-idealizador.tsx` saiu; mora em
+  `components/etiqueta-do-nome.tsx`.
+- **"apoia o Gume" ao lado do nome**, pedido do dono. Só para quem apoia hoje E deixou o
+  apoio público. A caixa "aparecer na lista" virou "mostrar que você apoia" e passa a
+  valer para as duas coisas: quem desmarca apoia em silêncio, e a etiqueta não aparece.
+  (A insígnia de apoiador na fileira de medalhas continua ignorando essa caixa; fica
+  como pendência a decidir.)
+- **A escolha da moldura ganhou tela.** A regra existia desde a migration 0042
+  (`coroaDe`) e /insignias prometia "escolhe entre ela e a da honra", mas nenhum lugar
+  gravava. Agora o bloco "seu apoio" do perfil mostra as duas, com a cara da pessoa.

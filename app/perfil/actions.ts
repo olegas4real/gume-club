@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { getActor } from "@/lib/actor";
@@ -207,5 +207,27 @@ export async function apagarMinhaConta(
   const jar = await cookies();
   for (const c of jar.getAll()) if (c.name.includes("better-auth")) jar.delete(c.name);
 
+  return { ok: true };
+}
+
+/**
+ * A moldura que aparece na sua cara: a da honra, ou a de apoiador. A coluna guarda a
+ * ESCOLHA, e não o direito: quem para de apoiar volta para a da honra sozinho (ver
+ * coroaDe em lib/honras.ts), sem ninguém limpar nada.
+ */
+export async function salvarMoldura(
+  moldura: "honra" | "apoiador",
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const actor = await getActor();
+  assertOwner(actor as Viewer, { userId: actor.id });
+
+  // A coluna nasceu numa migration (0042) e não está em lib/db/schema.ts; o check do
+  // banco aceita só null ou 'apoiador'.
+  await db.execute(sql`
+    update users set moldura = ${moldura === "apoiador" ? "apoiador" : null}
+     where id = ${actor.id}::uuid`);
+
+  revalidatePath("/perfil");
+  revalidatePath("/[handle]", "page");
   return { ok: true };
 }

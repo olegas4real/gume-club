@@ -62,7 +62,7 @@ Certo:
 
 > Seus livros são seus. Em breve você vai poder baixar tudo num arquivo, quando quiser.
 
-**A única exceção:** dizer, em frase humana, que o Gume é aberto e que o código está no GitHub, com um link. Mora em `/sobre`, no rodapé da home, em `/contribuidores` ("quem escreve o código") e na seção "construir" da barra, e só ali. Nunca o jargão em volta ("repositório", "AGPL", "self-host", "open source").
+**A única exceção:** dizer, em frase humana, que o Gume é aberto e que o código está no GitHub, com um link. Mora em `/sobre`, no rodapé da home, e em `/contribuidores` ("quem escreve o código"), e só ali. Na barra, não: polui. Nunca o jargão em volta ("repositório", "AGPL", "self-host", "open source").
 
 Vale para tudo que o leitor lê: página, botão, rótulo, estado vazio, mensagem de erro, e-mail, texto de meta. Sentence case, sem em-dash, sem emoji. Comentário de código e mensagem de commit são outra conversa: ali pode citar arquivo interno à vontade, porque quem lê é quem constrói.
 

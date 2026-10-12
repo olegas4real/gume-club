@@ -1,0 +1,7 @@
+Título;Autor;Estante;Nota;Resenha;Data de leitura
+Fixture A: Lido com meio ponto;Autora Fictícia;Lido;4,5;Resenha fictícia, com vírgula dentro.;07/03/2024
+Fixture B: Lido inteiro;Autor Imaginário;Lido;3;;15/11/2023
+Fixture C: Vou ler;Autora Fictícia;Vou ler;;;
+Fixture D: Lendo;Autor Imaginário;Lendo;;;
+Fixture E: Relendo;Autora Fictícia;Relendo;5;;
+Fixture F: Abandonei;Autor Imaginário;Abandonei;2;;20/02/2024

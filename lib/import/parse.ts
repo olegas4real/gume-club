@@ -98,7 +98,41 @@ const STATUS_DE: Record<string, Status> = {
   "did not finish": "did_not_finish",
   "dnf": "did_not_finish",
   "abandonado": "did_not_finish",
+
+  // As estantes do Skoob, como uma extensão que lê a tela as escreveria. Ver
+  // lib/import/skoob.test.ts.
+  "vou ler": "want_to_read",
+  "lidos": "read",
+  "relendo": "reading",
+  "abandonei": "did_not_finish",
+  "abandonados": "did_not_finish",
+
+  // E como o skoob_downloader as escreve: as colunas do Goodreads não têm "relendo"
+  // nem "abandonado", então ele põe a exclusiva mais próxima e uma ETIQUETA ao lado
+  // ("to-read" + "abandoned"). A etiqueta é o status de verdade. Ver statusDaEtiqueta.
+  "rereading": "reading",
+  "abandoned": "did_not_finish",
 };
+
+/** A releitura. Não tem status próprio aqui: é "lendo", e a tela avisa o que se perde. */
+const RELEITURA = new Set(["relendo", "rereading"]);
+
+/**
+ * A etiqueta que corrige a exclusiva. O skoob_downloader escreve um abandonado como
+ * "to-read" com "abandoned" nas estantes; ler só a exclusiva poria na sua estante, como
+ * "quero ler", um livro que você largou.
+ */
+function statusDaEtiqueta(linha: Record<string, string>, st: Status): { st: Status; relendo: boolean } {
+  const etiquetas = (pega(linha, APELIDOS.prateleiras) ?? "")
+    .split(/[,;]/)
+    .map((p) => p.trim().toLowerCase());
+  const bruto = (pega(linha, APELIDOS.statusBruto) ?? "").trim().toLowerCase();
+  const relendo = RELEITURA.has(bruto) || etiquetas.some((e) => RELEITURA.has(e));
+  if (st === "want_to_read" && etiquetas.some((e) => STATUS_DE[e] === "did_not_finish")) {
+    return { st: "did_not_finish", relendo };
+  }
+  return { st, relendo };
+}
 
 /** As prateleiras que a pessoa inventou, sem as três que já são o status. */
 const EXCLUSIVAS = new Set(Object.keys(STATUS_DE));
@@ -263,7 +297,7 @@ function linha(l: Record<string, string>): LivroImportado | null {
   const titulo = pega(l, APELIDOS.titulo);
   if (!titulo) return null;
 
-  const st = status(pega(l, APELIDOS.statusBruto));
+  const { st, relendo } = statusDaEtiqueta(l, status(pega(l, APELIDOS.statusBruto)));
   const ids = lerIsbn(pega(l, APELIDOS.isbn13) ?? pega(l, APELIDOS.isbn10));
 
   return {
@@ -286,5 +320,6 @@ function linha(l: Record<string, string>): LivroImportado | null {
     resenha: texto(pega(l, APELIDOS.resenha)),
     notaPrivada: texto(pega(l, APELIDOS.notaPrivada)),
     possui: possui(l),
+    ...(relendo ? { relendo: true as const } : {}),
   };
 }

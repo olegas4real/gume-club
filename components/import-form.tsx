@@ -9,8 +9,8 @@ import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
 import { PedidoDeApoio } from "@/components/pedido-de-apoio";
 
-/** Para onde vai quem vem do Skoob. Por enquanto, a lista colada da busca. */
-const CAMINHO_DO_SKOOB = "/buscar";
+/** Para onde vai quem vem do Skoob: a página que diz a verdade e dá os caminhos. */
+const CAMINHO_DO_SKOOB = "/ajuda/skoob";
 
 /**
  * ════════════════════════════════════════════════════════════════════

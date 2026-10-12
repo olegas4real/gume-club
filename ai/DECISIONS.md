@@ -5657,3 +5657,39 @@ que o Skoob importa o nosso CSV.
   "exportar", "importar", "arquivo" ou "formato" sem a ressalva. O rótulo da fonte que o
   importador reconhece (`skoob: "Skoob"`) é exceção: nomeia um arquivo que a pessoa já
   trouxe, não promete um.
+
+## O que vem do Skoob, medido: o importador come os dois formatos que circulam
+
+Fixtures em `lib/import/fixtures/` (dados fictícios, ver o LEIA-ME de lá), testadas em
+`lib/import/skoob.test.ts`:
+
+- **skoob_downloader** (`vinyluis/skoob_downloader`, formato copiado do código dele,
+  `converters.py`): colunas do Goodreads sem `Book Id`, ISBN `="..."`. Já entravam
+  ISBN, nota, data, resenha e "tenho". **Quebrava:** abandonado vira `to-read` +
+  etiqueta `abandoned` (entrava como "quero ler"), e relendo vira `currently-reading` +
+  `rereading` (a etiqueta virava prateleira inventada). Agora a etiqueta corrige a
+  exclusiva: abandonado volta a ser abandonado.
+- **Extensão que lê a tela** (hipotético): cabeçalho em português, ponto e vírgula,
+  nota "4,5", data dd/mm/aaaa, sem ISBN. Já entravam o separador, a vírgula decimal, a
+  data com o dia primeiro e a resenha com vírgula. **Quebrava:** "vou ler", "relendo" e
+  "abandonei" não eram estantes conhecidas e caíam em "quero ler". Entraram no mapa.
+
+Decisões:
+
+- **Nota com casa decimal vai para a palavra mais próxima, e o meio exato sobe** (4,5
+  vira adorei, 3,5 vira gostei). Quem deu 4,5 gostou mais do que de um 4. É o
+  `Math.round` que `fromStars` já fazia para o StoryGraph; agora a prévia AVISA.
+- **Relendo entra como lendo, e a leitura anterior fica de fora, avisada.** A gravação
+  não distingue "terminei sem data" de "estou lendo sem data" (as duas são uma linha de
+  `readings` sem datas); inventar a leitura anterior seria uma leitura ambígua.
+  Rejeitado: criar um status "relendo" (mudaria o enum e toda tela de estante por um
+  caso de importação).
+- **Livro sem ISBN** (cerca de 14% numa estante do Skoob, pelo relato do concorrente)
+  já casa por título e autor sem acento (`lib/import/casar.sql.test.ts`).
+- **`/ajuda/skoob`**: diz que o Skoob não tem exportação e dá três caminhos (colar a
+  lista, montar uma planilha, o programa de um leitor). Cita o skoob_downloader dizendo
+  que não sabemos se ainda funciona e que o Gume nunca pede senha, sessão ou chave do
+  Skoob. Rejeitado: construir extensão agora, e qualquer fluxo que peça credencial de
+  terceiro.
+- A assinatura `["skoob_id", "estante"]` continua: "estante" casa o arquivo da extensão
+  hipotética. `skoob_id` segue não verificada, porque não existe arquivo oficial.

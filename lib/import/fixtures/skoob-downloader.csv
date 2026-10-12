@@ -1,0 +1,6 @@
+Title,Author,ISBN13,My Rating,Average Rating,Publisher,Number of Pages,Year Published,Date Read,Date Added,Bookshelves,Exclusive Shelf,My Review,Read Count,Owned Copies
+Fixture Um: O Livro Lido,Autora Fictícia,"=""9780000000002""",5,,Editora Inventada,312,2019,2024/03/07,2023/12/01,"read, romance, owned",read,Uma resenha de mentira para o teste.,1,1
+Fixture Dois: O Livro Esperando,Autor Imaginário,,0,,,,,,2024/01/15,"to-read, fantasia",to-read,,0,0
+Fixture Três: O Livro Abandonado,Autora Fictícia,"=""9780000000019""",0,,Editora Inventada,180,2020,,2022/05/20,"to-read, abandoned, terror",to-read,,0,0
+Fixture Quatro: O Livro Relido,Autor Imaginário,,4,,,,,,2021/08/09,"currently-reading, rereading",currently-reading,Melhor na segunda vez.,2,1
+Fixture Cinco: O Livro Lendo,Autora Fictícia,,0,,,,,,2024/06/01,currently-reading,currently-reading,,0,0

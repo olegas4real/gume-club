@@ -68,6 +68,13 @@ export type LivroImportado = {
 
   // ── ter não é ler ─────────────────────────────────────────────────
   possui: boolean;
+
+  /**
+   * Estava RELENDO na origem (o Skoob tem essa estante). Entra como "lendo", e a leitura
+   * anterior, que o arquivo não data, fica de fora: a gravação não distingue "terminei
+   * sem data" de "estou lendo sem data". A prévia avisa. Ver lib/import/skoob.test.ts.
+   */
+  relendo?: true;
 };
 
 /** Os cinco formatos do schema. Nada fora disto entra: o banco tem um enum. */

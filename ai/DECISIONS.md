@@ -5618,3 +5618,10 @@ para julgar edição. `lib/import/isbn-diverge.test.ts` trava os dois lados.
 
 `seed/exemplo.csv` tinha cinco ISBNs de outros livros (conferidos no Open Library). Eles
 foram apagados, não trocados: número inventado ensinaria o mesmo erro.
+
+## O código sai da barra
+
+"Não precisa deixar o link pro github na sidebar, vai ficar poluído" — o dono. O item
+"Código no GitHub" da seção "construir" saiu. O link continua em /contribuidores (que
+abre a mesma seção da barra), em /sobre e no rodapé da home, e quem já tem conta chega
+nele por /contribuidores. Revê em parte "O código aparece pra quem já tem conta".

@@ -32,7 +32,7 @@
  */
 export const REPO = "olegas4real/gume-club";
 
-/** Onde o código mora. Aparece na barra (construir), em /contribuidores, em /sobre e no rodapé da home. */
+/** Onde o código mora. Aparece em /contribuidores, em /sobre e no rodapé da home. Não na barra: ver components/sidebar.tsx. */
 export const CODIGO = `https://github.com/${REPO}`;
 
 /** O canal de contato do Gume: onde se opina no que vem por aí, e onde se avisa que algo quebrou. */

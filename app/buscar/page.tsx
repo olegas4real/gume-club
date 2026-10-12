@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ScreenHeader } from "@/components/screen-header";
 import { LiveSearch } from "@/components/live-search";
-import { PasteList } from "@/components/paste-list";
 
 export const dynamic = "force-dynamic";
 
@@ -25,18 +24,15 @@ export default async function Buscar({
       <ScreenHeader title="Buscar" meta={["livros", "pessoas"]} />
       <LiveSearch initial={(raw ?? "").trim()} />
 
-      {/* Duas portas, e elas servem gente diferente. Colar uma lista é para quem
-          tem um bloco de notas com quarenta títulos, e ele PERDE TUDO menos o
-          título. Trazer o arquivo é para quem tem dez anos de Goodreads, e ele não
-          perde nada. Quem tem o arquivo não pode acabar na porta errada. */}
-      <PasteList />
-
-      <p className="mt-6 text-[13px] text-[var(--color-ink-faint)]">
-        Tem um arquivo do Goodreads, do StoryGraph ou do Fable?{" "}
+      {/* Colar uma lista morava aqui, com um casamento próprio (a busca solta, que
+          podia trazer livro de fora do acervo). Mudou-se para /importar, ao lado do
+          arquivo, pelo mesmo caminho dele: um fluxo só. Ver lib/import/colar.ts. */}
+      <p className="mt-8 text-[13px] text-[var(--color-ink-faint)]">
+        Tem uma lista de títulos, ou um arquivo do Goodreads, do StoryGraph ou do Fable?{" "}
         <Link href="/importar" className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
-          Traga a estante inteira
+          Traga de uma vez
         </Link>
-        , com as datas, as notas e as resenhas.
+        .
       </p>
     </main>
   );

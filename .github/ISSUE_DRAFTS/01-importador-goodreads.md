@@ -96,7 +96,7 @@ ISBN, depois pela chave da Open Library, depois por título + autor. Esse matche
 escrito à mão e revisado à mão (ver AGENTS.md). Não escreva um segundo.
 
 **Por último, a tela**, em `app/importar/`. Um `<input type="file">`, e o relatório
-(abaixo). Copie o desenho de `components/paste-list.tsx`, que já faz a mesma dança:
+(abaixo). Copie o desenho de `components/import-form.tsx`, que já faz a mesma dança:
 mostra o que achou **antes** de escrever qualquer coisa na estante.
 
 ## As armadilhas que vão te pegar

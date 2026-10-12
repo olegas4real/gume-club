@@ -3,7 +3,9 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Upload, ScanBarcode, Type, Sparkles } from "lucide-react";
-import { ler, procurar, importar, type Previa } from "@/app/importar/actions";
+import { ler, procurar, importar, lerColado, procurarColado, importarColado, type Previa } from "@/app/importar/actions";
+import { LIMITS } from "@/lib/limits";
+import type { Status } from "@/lib/library";
 import { LOTE, ehFato, isbnDiverge, isbnRepetido, type Relatorio, type Achado } from "@/lib/import/tipos";
 import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
@@ -57,6 +59,10 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
   const [relatorio, setRelatorio] = useState<Relatorio | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [pendente, comecar] = useTransition();
+  /** A lista colada e a estante em que ela entra. Ver lib/import/colar.ts. */
+  const [colado, setColado] = useState("");
+  const [estanteDaLista, setEstanteDaLista] = useState<Status>("want_to_read");
+  const daLista = previa?.fonte === "lista";
 
   /**
    * ═══ EM LOTES, E A BARRA ANDA ═══
@@ -113,6 +119,32 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
     };
 
     leitor.readAsText(arquivo);
+  }
+
+  /**
+   * COLAR: o mesmo caminho do arquivo. A procura devolve os candidatos REESCRITOS com a
+   * ficha achada (é o que a gravação vai casar), e o que não casou nasce desmarcado.
+   */
+  function colar() {
+    setErro(null);
+    comecar(async () => {
+      try {
+        const p = await lerColado(colado, estanteDaLista);
+        if (p.livros.length === 0) {
+          setErro("Não achamos nenhum título nessa lista. É um livro por linha.");
+          return;
+        }
+        const partes = await emLotes(p.livros, async (lote) => [await procurarColado(lote)]);
+        const livros = partes.flatMap((x) => x.livros);
+        const casados = partes.flatMap((x) => x.achados);
+        setPrevia({ ...p, livros });
+        setAchados(casados);
+        setFora(new Set(casados.flatMap((a, i) => (a.como === "novo" ? [i] : []))));
+      } catch {
+        setErro("Não deu para ler essa lista.");
+        setAndando(null);
+      }
+    });
   }
 
   // ── 4. o relatório ─────────────────────────────────────────────────
@@ -208,7 +240,7 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
 
         <p className="voice mt-5 text-[28px] leading-snug sm:text-[34px]">
           {previa.livros.length} livros
-          {previa.fonte !== "desconhecida" && `, do ${nome(previa.fonte)}`}.
+          {previa.fonte !== "desconhecida" && !daLista && `, do ${nome(previa.fonte)}`}.
         </p>
 
         {/**
@@ -277,8 +309,18 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
                 aria-hidden
               />
               <span>
-                <strong className="font-medium text-[var(--color-ink)]">{novos}</strong> ainda não
-                existem no catálogo. Eles entram, e um bibliotecário confere a ficha depois.
+                {daLista ? (
+                  <>
+                    <strong className="font-medium text-[var(--color-ink)]">{novos}</strong> não
+                    achamos no acervo. Ficam de fora: numa lista, linha que não casa é um chute, e
+                    chute não entra na estante. Confira a grafia, ou busque um por um.
+                  </>
+                ) : (
+                  <>
+                    <strong className="font-medium text-[var(--color-ink)]">{novos}</strong> ainda não
+                    existem no catálogo. Eles entram, e um bibliotecário confere a ficha depois.
+                  </>
+                )}
               </span>
             </li>
           )}
@@ -309,10 +351,13 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
           {ordem.map(({ a, i, aviso }) => {
             const dentro = !fora.has(i);
             const livro = previa.livros[i]!;
+            /** Na lista colada, o que não casou não tem como entrar. */
+            const travado = daLista && a.como === "novo";
 
             return (
               <li key={i}>
                 <button
+                  disabled={travado}
                   onClick={() =>
                     setFora((atual) => {
                       const novo = new Set(atual);
@@ -354,7 +399,7 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
                       )}
                   </span>
 
-                  <Selo como={a.como} aviso={aviso} />
+                  <Selo como={a.como} aviso={aviso} lista={daLista} />
 
                   <span className="hidden shrink-0 text-[11px] uppercase tracking-[0.12em] text-[var(--color-ink-faint)] sm:block">
                     {livro.estrelas !== null
@@ -377,7 +422,9 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
                  * quatrocentas estantes, quatrocentas leituras e quatrocentas notas — e isso
                  * não cabe numa requisição serverless.
                  */
-                const partes = await emLotes(escolhidos, async (lote) => [await importar(lote)]);
+                const partes = await emLotes(escolhidos, async (lote) => [
+                  await (daLista ? importarColado(lote) : importar(lote)),
+                ]);
 
                 setRelatorio(
                   partes.reduce<Relatorio>(
@@ -425,7 +472,10 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
   // ── 1. o arquivo ───────────────────────────────────────────────────
   return (
     <section className="mt-10">
-      <label className="surface flex cursor-pointer flex-col items-center gap-4 px-7 py-14 text-center transition-colors hover:border-[var(--color-ink)]">
+      {/* O arquivo e a lista, LADO A LADO. A lista não mora atrás de aba: no celular, que é
+          de onde vem quem chega pelo BookTok, ela é o único caminho que funciona. */}
+      <div className="grid gap-4 sm:grid-cols-2">
+      <label className="surface flex cursor-pointer flex-col items-center justify-center gap-4 px-7 py-14 text-center transition-colors hover:border-[var(--color-ink)]">
         <Upload size={22} strokeWidth={1.25} className="text-[var(--color-ink-faint)]" />
 
         <span className="voice text-[20px]">
@@ -448,6 +498,48 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
           onChange={(e) => escolher(e.target.files?.[0])}
         />
       </label>
+
+      <div className="surface flex flex-col gap-3 p-5" id="colar">
+        <label htmlFor="lista-colada" className="voice text-[20px]">
+          Ou cole uma lista
+        </label>
+        <p className="text-[13px] leading-relaxed text-[var(--color-ink-soft)]">
+          Um livro por linha. Serve só o título, ou &ldquo;Título - Autor&rdquo;, ou o ISBN.
+        </p>
+        <textarea
+          id="lista-colada"
+          maxLength={LIMITS.listLines * LIMITS.listLine}
+          value={colado}
+          onChange={(e) => setColado(e.target.value)}
+          rows={7}
+          placeholder={"Dom Casmurro - Machado de Assis\nTorto Arado\n9788535911664"}
+          className="w-full resize-y rounded-[var(--radius-control)] border border-[var(--color-rule)] bg-transparent px-3 py-2.5 text-[15px] outline-none focus:border-[var(--color-ink)]"
+        />
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={estanteDaLista}
+            onChange={(e) => setEstanteDaLista(e.target.value as Status)}
+            aria-label="em que estante eles entram"
+            className="rounded-[var(--radius-control)] border border-[var(--color-rule)] bg-transparent px-3 py-2 text-[13px] text-[var(--color-ink-soft)]"
+          >
+            <option value="want_to_read">entram como esperando</option>
+            <option value="reading">entram como lendo</option>
+            <option value="read">entram como lidos</option>
+          </select>
+          <button
+            type="button"
+            onClick={colar}
+            disabled={pendente || colado.trim().length === 0}
+            className="rounded-[var(--radius-control)] bg-[var(--color-ink)] px-4 py-2 text-[14px] font-medium text-[var(--color-canvas)] disabled:opacity-40"
+          >
+            Procurar
+          </button>
+        </div>
+        <p className="text-[12px] text-[var(--color-ink-faint)]">
+          Até {LIMITS.listLines} linhas por vez.
+        </p>
+      </div>
+      </div>
 
       {/* O Skoob NÃO tem exportação (a ajuda deles diz isso, e a API pública morreu em
           2025). Prometer "o arquivo que você baixou do Skoob" era prometer uma coisa que
@@ -479,7 +571,7 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
 type Aviso = "outro" | "repetido" | null;
 
 /** Casou por ISBN, por título, ou não casou. O selo é a única coisa que a pessoa precisa ler. */
-function Selo({ como, aviso }: { como: Achado["como"]; aviso: Aviso }) {
+function Selo({ como, aviso, lista }: { como: Achado["como"]; aviso: Aviso; lista: boolean }) {
   if (aviso) {
     return (
       <span
@@ -493,6 +585,14 @@ function Selo({ como, aviso }: { como: Achado["como"]; aviso: Aviso }) {
       >
         <ScanBarcode size={13} strokeWidth={1.5} aria-hidden />
         {aviso === "repetido" ? "isbn repetido" : "isbn não bate"}
+      </span>
+    );
+  }
+
+  if (como === "novo" && lista) {
+    return (
+      <span className="flex shrink-0 items-center gap-1.5 text-[11px] uppercase tracking-[0.1em] text-[var(--color-ink-faint)]">
+        não achamos
       </span>
     );
   }

@@ -61,10 +61,12 @@ export default function AjudaSkoob() {
           estante, e você desmarca o que ele errou.
         </p>
         <p>
-          <Link href="/buscar" className={LINK}>
+          <Link href="/importar#colar" className={LINK}>
             Colar uma lista
           </Link>
-          . É o caminho mais rápido. O que ele não traz: nota, data e resenha.
+          . É o caminho mais rápido, e você escolhe se eles entram como lidos, lendo ou
+          esperando. O que ele não traz: nota, data e resenha. Linha que o Gume não achar
+          fica de fora, e nunca entra no chute.
         </p>
       </Passo>
 

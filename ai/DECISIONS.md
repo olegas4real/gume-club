@@ -5693,3 +5693,29 @@ Decisões:
   terceiro.
 - A assinatura `["skoob_id", "estante"]` continua: "estante" casa o arquivo da extensão
   hipotética. `skoob_id` segue não verificada, porque não existe arquivo oficial.
+
+## Colar uma lista mudou para /importar, e passou a ser o mesmo fluxo do arquivo
+
+O "colar uma lista" já existia em /buscar, com um casamento próprio: a busca solta
+(`searchAll`), que podia trazer livro de fora do acervo e criar ficha, e um `addMany`
+que gravava sem passar pela importação. Era um segundo fluxo. Agora:
+
+- **Mora em /importar, ao lado do arquivo, sem aba.** No celular, de onde vem quem chega
+  pelo BookTok, é o único caminho que funciona (a extensão do concorrente que tira a
+  estante do Skoob só roda em Chrome no computador).
+- **Cada linha vira um `LivroImportado`** (`lib/import/colar.ts`: título; "título -
+  autor"; "título, autor"; "título (autor)"; "título por autor"; ISBN solto; e o ruído de
+  quem copia de um site) e passa pela mesma prévia e pela mesma gravação.
+- **Texto solto não casa pelo título exato**, então quando a cascata do arquivo não acha,
+  a linha tenta a busca do ACERVO (só a nossa base). O que ela acha vira palpite
+  ("confira"), e o candidato é reescrito com a identidade da ficha e casado de novo pela
+  cascata da gravação: prévia e gravação não divergem.
+- **O que não casa não entra.** No arquivo, linha sem casamento cria ficha (veio de uma
+  estante de verdade). Na lista, é chute: aparece como "não achamos", desmarcada e
+  travada, e `aplicarDoAcervo` recusa no servidor mesmo que o navegador mande.
+  `lib/import/colar.sql.test.ts` prova que ela não vira livro na estante nem ficha nova.
+- Limite de 100 linhas por vez; o que passa volta contado, num aviso.
+
+Rejeitado: manter o colar em /buscar e só trocar o casamento (seriam duas telas para a
+mesma coisa), e deixar a linha sem casamento criar ficha (um catálogo cheio de "Dom
+casmurro machado" é o lixo que o concorrente tem).

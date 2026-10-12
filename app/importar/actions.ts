@@ -7,6 +7,9 @@ import { parse, detectar } from "@/lib/import/parse";
 import { aplicar } from "@/lib/import/aplicar";
 import { procurarNoCatalogo, type Achado } from "@/lib/import/casar";
 import { LOTE, type LivroImportado, type Relatorio, type Fonte } from "@/lib/import/tipos";
+import { lerLista } from "@/lib/import/colar";
+import { procurarDaLista, aplicarDoAcervo } from "@/lib/import/colar-acervo";
+import { isStatus, type Status } from "@/lib/library";
 
 /**
  * A PRÉVIA VEM ANTES DA GRAVAÇÃO, SEMPRE.
@@ -156,6 +159,57 @@ export async function importar(livros: LivroImportado[]): Promise<Relatorio> {
   }
 
   const relatorio = await aplicar(actor, livros);
+
+  revalidatePath("/");
+  revalidatePath("/estante");
+  revalidatePath("/estatisticas");
+  return relatorio;
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  COLAR UMA LISTA. O MESMO CAMINHO DO ARQUIVO, com duas diferenças.
+ *
+ *  1. A procura tenta também a busca do acervo, e o que ela acha vira palpite.
+ *  2. A gravação recusa a linha sem ficha: texto livre que não casa é chute.
+ *
+ *  Ver lib/import/colar.ts (as formas de linha) e lib/import/colar-acervo.ts.
+ * ════════════════════════════════════════════════════════════════════
+ */
+export async function lerColado(texto: string, status: Status): Promise<Previa> {
+  await getActor();
+  if (!isStatus(status)) throw new Error("status inválido");
+
+  const { livros, sobra } = lerLista(String(texto ?? "").slice(0, LIMITS.listLines * LIMITS.listLine), status, {
+    limite: LIMITS.listLines,
+    tamanho: LIMITS.listLine,
+  });
+
+  const avisos: string[] = [];
+  if (sobra > 0) {
+    avisos.push(
+      `A lista tinha ${livros.length + sobra} linhas, e cabem ${LIMITS.listLines} por vez. ` +
+        `As ${sobra} últimas ficaram de fora: cole elas numa segunda vez.`,
+    );
+  }
+  avisos.push("Uma lista colada traz só o livro e a estante: sem nota, sem data e sem resenha.");
+
+  return { fonte: "lista", livros, avisos };
+}
+
+export async function procurarColado(
+  livros: LivroImportado[],
+): Promise<{ livros: LivroImportado[]; achados: Achado[] }> {
+  await getActor();
+  if (livros.length > LOTE) throw new Error("lote grande demais");
+  return procurarDaLista(livros);
+}
+
+export async function importarColado(livros: LivroImportado[]): Promise<Relatorio> {
+  const actor = await getActor();
+  if (livros.length > LOTE) throw new Error("lote grande demais");
+
+  const relatorio = await aplicarDoAcervo(actor, livros);
 
   revalidatePath("/");
   revalidatePath("/estante");

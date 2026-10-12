@@ -55,8 +55,21 @@ describe("a promessa do Skoob", () => {
     expect(promessasDoSkoob("Veio do Skoob? Ele não tem botão de exportar, mas tem caminho.")).toHaveLength(0);
   });
 
+  /**
+   * A página de ajuda do Skoob fala de arquivo e de Skoob em toda frase: ela é a
+   * explicação. A exceção é nominal, e paga um preço: ela tem que abrir dizendo que o
+   * Skoob não tem exportação (o teste de baixo cobra).
+   */
+  const EXCECOES = new Set([path.join("app", "ajuda", "skoob", "page.tsx")]);
+
+  it("a página de ajuda, que é a exceção, abre com a ressalva", () => {
+    const ajuda = readFileSync("app/ajuda/skoob/page.tsx", "utf8");
+    const abertura = ajuda.slice(ajuda.indexOf("<h1"), ajuda.indexOf("<Passo"));
+    expect(abertura).toMatch(RESSALVA);
+  });
+
   it("nenhuma tela promete um arquivo do Skoob", () => {
-    const telas = [...arquivos("app"), ...arquivos("components")];
+    const telas = [...arquivos("app"), ...arquivos("components")].filter((p) => !EXCECOES.has(p));
     const quebradas = telas.flatMap((p) => {
       // O nome da fonte que o importador reconhece ("do Skoob") não é promessa: é o
       // rótulo de um arquivo que a pessoa JÁ trouxe. Ver nome() em import-form.tsx.

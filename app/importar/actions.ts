@@ -65,6 +65,30 @@ export async function ler(texto: string): Promise<Previa> {
   }
 
   /**
+   * ═══ A NOTA COM CASA DECIMAL ═══
+   *
+   * O Skoob dá meia estrela (4,5) e o StoryGraph dá quarto (4,25). Aqui cada nota é uma
+   * palavra, então cada uma vai para a mais próxima, e o meio exato SOBE: quem deu 4,5
+   * gostou mais do que de um 4. Ver fromStars em lib/veredito.ts.
+   */
+  const quebradas = livros.filter((l) => l.estrelas !== null && !Number.isInteger(l.estrelas)).length;
+  if (quebradas > 0) {
+    avisos.push(
+      `${quebradas} ${quebradas === 1 ? "nota veio" : "notas vieram"} com casa decimal, como 4,5. ` +
+        "Aqui a nota é uma palavra, então cada uma vira a mais próxima, e o meio ponto sobe: 4,5 vira adorei.",
+    );
+  }
+
+  /** A releitura: entra como lendo, e a leitura anterior não vem. Ver LivroImportado.relendo. */
+  const relendo = livros.filter((l) => l.relendo).length;
+  if (relendo > 0) {
+    avisos.push(
+      `${relendo} ${relendo === 1 ? "livro estava" : "livros estavam"} em releitura. ` +
+        "Entram como lendo. A leitura anterior não veio no arquivo, então fica de fora: marque depois, no livro, se quiser.",
+    );
+  }
+
+  /**
    * ═══ AS COLUNAS QUE A GENTE IGNORA DE PROPÓSITO ═══
    *
    * Perda silenciosa é o que faz alguém descobrir dois anos depois que a estante mentiu. O

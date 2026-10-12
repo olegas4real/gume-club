@@ -5640,3 +5640,20 @@ nele por /contribuidores. Revê em parte "O código aparece pra quem já tem con
 - **A escolha da moldura ganhou tela.** A regra existia desde a migration 0042
   (`coroaDe`) e /insignias prometia "escolhe entre ela e a da honra", mas nenhum lugar
   gravava. Agora o bloco "seu apoio" do perfil mostra as duas, com a cara da pessoa.
+
+## O Skoob não tem exportação, e o Gume parou de dizer que tem
+
+Pesquisa de 2026-10-11: a central de ajuda do Skoob (abril de 2026) diz que ele não
+exporta nem importa estante; a API pública morreu em setembro de 2025; os exportadores
+de terceiros que dependiam dela estão fora do ar. O Gume prometia em três telas aceitar
+"o arquivo que você baixou do Skoob", e o perfil, o README e o arquivo exportado diziam
+que o Skoob importa o nosso CSV.
+
+- As telas citam só quem exporta de fato (Goodreads, StoryGraph, Fable), e o importador
+  ganhou a linha "Veio do Skoob? Ele não tem botão de exportar, mas tem caminho".
+- "Quem importa o nosso CSV" virou StoryGraph e Oku. O Fable saiu da frase também: não
+  conferimos que ele importe, e frase sem conferência é a mesma falha.
+- `lib/skoob-promessa.test.ts` quebra a build se "Skoob" aparecer perto de "baixou",
+  "exportar", "importar", "arquivo" ou "formato" sem a ressalva. O rótulo da fonte que o
+  importador reconhece (`skoob: "Skoob"`) é exceção: nomeia um arquivo que a pessoa já
+  trouxe, não promete um.

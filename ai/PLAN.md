@@ -177,3 +177,11 @@ Antes de mandar tráfego de rede social. Nesta ordem.
 - [x] **Foco do ⌘K.** Quem digita logo depois do atalho perde as primeiras letras.
 - [x] **Home vazia depois de importar.** Leituras sem data não caem no ano, e a home parece igual a antes.
 - [x] **Cliques mortos no primeiro acesso.** "Escolher um livro" leva a uma estante vazia.
+
+## Quem vem do Skoob (2026-10-11)
+
+O Skoob não tem exportação (a ajuda deles diz isso; a API pública morreu em setembro de 2025). Três fatias, nesta ordem.
+
+- [x] **1. Consertar a promessa.** As telas diziam aceitar "o arquivo que você baixou do Skoob", e o perfil dizia que o Skoob importa o nosso CSV. Nenhum dos dois existe.
+- [ ] **2. Medir o que já funciona, e a página de ajuda.** Fixtures do que circula no mundo, o importador comendo os dois, e `/ajuda/skoob`.
+- [ ] **3. Colar uma lista em /importar**, pelo mesmo caminho da importação por arquivo.

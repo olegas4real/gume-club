@@ -566,7 +566,7 @@ async function Casa({ viewerId }: { viewerId: string }) {
             acabou de criar a conta, era uma estante vazia com outro estado vazio: dois
             cliques sem função logo depois do cadastro, onde a paciência é menor. Agora
             o botão depende do que existe. Estante vazia: importar primeiro (quem vem
-            do Goodreads ou do Skoob já tem a vida inteira em outro lugar), buscar
+            de outro app já tem a vida inteira em outro lugar), buscar
             depois. Estante sem nada esperando: buscar. Só com livro esperando é que
             "escolher" tem do que escolher. */
         <section className="surface mt-10 flex flex-col items-center gap-6 px-7 py-14 text-center">

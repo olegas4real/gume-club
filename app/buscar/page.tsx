@@ -32,7 +32,7 @@ export default async function Buscar({
       <PasteList />
 
       <p className="mt-6 text-[13px] text-[var(--color-ink-faint)]">
-        Tem um arquivo do Goodreads, do StoryGraph, do Skoob ou do Fable?{" "}
+        Tem um arquivo do Goodreads, do StoryGraph ou do Fable?{" "}
         <Link href="/importar" className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
           Traga a estante inteira
         </Link>

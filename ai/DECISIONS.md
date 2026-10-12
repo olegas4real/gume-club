@@ -5755,3 +5755,16 @@ Não consertado, e por quê:
   do dono (encaminhamento de e-mail), e é o contato da /privacidade.
 - **Limite de 3 cadastros por hora por IP.** Celular no Brasil divide IP. Mantido: a
   frase nova diz o que aconteceu, e afrouxar é decisão do dono.
+
+## "Relatar um problema" não flutua no celular
+
+O botão redondo fixo no canto direito cobria, no celular, a ponta do que passasse por
+baixo. A varredura de 2026-10-12 (celular emulado, rolando a página inteira) achou em
+produção: o link da política de privacidade em /entrar, "arrumar este livro" e
+"edições" na ficha, e os cartões de apoio de R$ 4,90 e R$ 19,90 em /apoiar. "Isso é
+MUITO importante" — o dono.
+
+Numa tela de 390 px não existe canto vazio, então mudar de canto só mudaria o que fica
+coberto. No celular ele virou um link de texto no fim da página; o botão redondo ficou
+só a partir de `sm`. Depois da troca, a mesma varredura não acha nada coberto em nove
+páginas públicas. `lib/relatar-problema.test.ts` trava.

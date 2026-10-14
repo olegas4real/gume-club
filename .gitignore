@@ -75,3 +75,14 @@ operaçãomaiscapas/
 
 # Páginas de lista salvas à mão (material bruto da semeadura; não se versiona)
 seed/listas-goodreads/
+
+# O empacotamento Android (Bubblewrap/TWA) roda na máquina do dono, nunca no repo.
+# O keystore é SEGREDO de instância: num repo público, um keystore commitado é a
+# chave de assinar o app nas mãos de qualquer um. Os .aab/.apk são artefatos de
+# build, e o twa-manifest.json carrega caminhos locais. Ver docs/android.md.
+android/
+*.keystore
+*.jks
+twa-manifest.json
+*.aab
+*.apk

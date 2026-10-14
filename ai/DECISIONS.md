@@ -5823,3 +5823,27 @@ volta um "modo rápido" de vários seguidos. O Gume tinha o item no plano desde 
   aceita. A câmera ligada não deu para testar daqui (o Chrome sem janela não abre câmera
   no macOS, nem a falsa); o teste estrutural cobra que o botão some onde não há leitor e
   que a câmera desliga ao fechar.
+
+## O Gume vai para a Play Store como TWA, e continua sendo o site
+
+Decisão do dono: "Eu quero trazer o Gume para o Android (mas não deixar de ter a versão
+web)". O caminho é o TWA (Trusted Web Activity, via Bubblewrap): o mesmo site, embrulhado
+num app da loja, que se atualiza sozinho a cada deploy. Rejeitado: app nativo (Capacitor,
+Flutter): duas bases de código para um time de um, por nada que o TWA não dê hoje.
+
+- **O assetlinks.json é uma ROTA com variáveis de ambiente**
+  (`app/.well-known/assetlinks.json/route.ts`, `ANDROID_PACKAGE_NAME` e
+  `ANDROID_CERT_SHA256`), nunca um arquivo em `public/`: o pacote e o fingerprint são
+  dados da instância, e um arquivo commitado publicaria o vínculo do gume.club para toda
+  instância auto-hospedada. Sem as variáveis, 404, como o Stripe sem chave. O fingerprint
+  não é segredo (o arquivo é público por desenho), mas o verificador do Android não segue
+  redirect, e o certo é o fingerprint do Play App Signing. Ver docs/android.md.
+- **O manifesto ganhou identidade e o maskable.** `id: "/"` e `scope: "/"` fixam quem o
+  app é; `lang: "pt-BR"`. O ícone maskable (512, zona segura de 80% sobre o canvas
+  escuro) nasce em scripts/brand.mjs como tudo o mais: uma fonte só. `orientation` ficou
+  DE FORA de propósito: travar em retrato puniria o leitor de tablet deitado.
+- **Service worker e página offline ficaram para depois**, decididos e adiados: o TWA não
+  exige, e é uma fatia própria. Sem conexão, o app mostra a página de erro do navegador.
+- O processo fora do repo (Bubblewrap, keystore, Play Console, teste fechado de 12
+  testadores por 14 dias, a ficha da loja) mora em docs/android.md. O keystore nunca
+  entra no repo; o .gitignore ganhou o bloco Android ANTES de qualquer artefato existir.

@@ -106,6 +106,30 @@ await icone().resize(180, 180).png().toFile("app/apple-icon.png");
 await icone().resize(192, 192).png().toFile("public/icon-192.png");
 await icone().resize(512, 512).png().toFile("public/icon-512.png");
 
+// ── 2c. o ícone MASKABLE (Android): a mesma arte, com respiro ───────────────
+//
+// O launcher do Android recorta o ícone na forma que quiser (círculo, quadrado
+// de canto redondo), e só promete não cortar os 80% centrais. O icon-512 ocupa
+// o quadro inteiro: recortado em círculo, as asas da marca somem. Então o
+// maskable é a MESMA arte reduzida para a zona segura (~80%), centrada num
+// quadrado chapado da cor do canvas escuro (o #17151d de app/globals.css).
+// Nasce aqui, e nunca à mão: uma fonte só, ou os conjuntos divergem no dia em
+// que a arte for reexportada.
+const MASK = 512;
+const SEGURO = Math.round(MASK * 0.8); // 410: a zona que nenhum recorte come
+await sharp({
+  create: { width: MASK, height: MASK, channels: 4, background: "#17151d" },
+})
+  .composite([
+    {
+      input: await icone().resize(SEGURO, SEGURO).png().toBuffer(),
+      left: Math.round((MASK - SEGURO) / 2),
+      top: Math.round((MASK - SEGURO) / 2),
+    },
+  ])
+  .png()
+  .toFile("public/icon-maskable-512.png");
+
 // ── 3. favicon.ico: 16 + 32 + 48, com o ÍCONE (grafite) ─────────────────────
 //
 // Um .ico é um cabeçalho e uma lista de imagens, e cada uma pode ser um PNG
@@ -235,6 +259,7 @@ console.log("✓ app/icon.svg              a marca chapada, e ela vira nos dois 
 console.log("✓ app/apple-icon.png        180, o ícone grafite");
 console.log("✓ public/icon-192.png       192, para o manifesto (PWA)");
 console.log("✓ public/icon-512.png       512, para o manifesto (PWA)");
+console.log("✓ public/icon-maskable-512  512, o maskable do Android (zona segura de 80%)");
 console.log("✓ public/favicon.ico        16, 32, 48");
 console.log("✓ public/logo/              marca, lockups (h e v), preto e branco, svg e png");
 console.log("✓ public/logo/icone-*-1024  os dois ícones, para a loja");

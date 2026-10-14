@@ -11,4 +11,9 @@ Arquivos de teste, com livros e autores **fictícios**. Nenhum dado de pessoa re
   tela produziria: cabeçalho em português, separado por ponto e vírgula (Excel em
   português), estantes do Skoob, nota com vírgula, data dd/mm/aaaa, sem ISBN.
 
-O Skoob não tem exportação oficial. Ver lib/import/skoob.test.ts e ai/DECISIONS.md.
+- `openreads.csv`: o formato documentado em `doc/csv.md` do Openreads: status em inglês,
+  leituras com começo e fim, etiquetas separadas por `|||||`, e a lixeira junto (`deleted`).
+- `bookwyrm.csv`: as colunas que `views/preferences/export.py` do BookWyrm escreve: uma
+  estante por livro (`shelf` e `shelf_name`), datas de começar, terminar e parar.
+
+O Skoob não tem exportação oficial. Ver lib/import/skoob.test.ts, lib/import/openreads-bookwyrm.test.ts e ai/DECISIONS.md.

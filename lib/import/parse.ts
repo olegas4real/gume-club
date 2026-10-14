@@ -23,6 +23,10 @@ const ASSINATURAS: [Fonte, string[]][] = [
   ["goodreads", ["exclusive_shelf", "bookshelves", "my_rating"]],
   ["storygraph", ["read_status", "star_rating", "dates_read"]],
   ["fable", ["fable_id", "reading_status"]],
+  // Openreads: o formato está em doc/csv.md do projeto. "readings" é a coluna que só ele tem.
+  ["openreads", ["readings", "book_format"]],
+  // BookWyrm: views/preferences/export.py. "author_text" e "review_cw" são dele.
+  ["bookwyrm", ["author_text", "review_cw", "shelf_name"]],
   ["skoob", ["skoob_id", "estante"]],
 ];
 
@@ -46,24 +50,32 @@ export function detectar(texto: string): Fonte {
  */
 const APELIDOS = {
   titulo: ["title", "titulo", "book", "livro", "nome"],
-  autor: ["author", "authors", "autor", "autores", "primary_author", "author_l_f"],
+  autor: ["author", "authors", "autor", "autores", "primary_author", "author_l_f", "author_text"],
   isbn13: ["isbn13", "isbn_13", "isbn_uid", "isbn"],
   isbn10: ["isbn10", "isbn_10"],
   editora: ["publisher", "editora"],
   anoEdicao: ["year_published", "publication_year", "ano_de_publicacao", "ano_da_edicao"],
   anoObra: ["original_publication_year", "ano_em_que_a_obra_foi_escrita", "ano_da_obra"],
   paginas: ["number_of_pages", "pages", "paginas", "page_count"],
-  formato: ["binding", "format", "formato", "edition_format"],
+  formato: ["binding", "format", "formato", "edition_format", "book_format"],
   estrelas: ["my_rating", "star_rating", "rating", "nota", "minha_nota"],
-  resenha: ["my_review", "review", "resenha"],
+  resenha: ["my_review", "review", "resenha", "review_content"],
   notaPrivada: ["private_notes", "notes", "comments", "notas_privadas"],
   prateleiras: ["bookshelves", "tags", "shelves", "prateleiras", "estantes"],
-  statusBruto: ["exclusive_shelf", "read_status", "reading_status", "estante", "lido", "status"],
+  statusBruto: ["exclusive_shelf", "read_status", "reading_status", "estante", "lido", "status", "shelf"],
   possui: ["owned", "owned_copies", "possui"],
   vezes: ["read_count", "times_read"],
-  terminou: ["date_read", "last_date_read", "data_de_leitura", "finished"],
-  comecou: ["date_started", "started", "data_de_inicio"],
+  terminou: ["date_read", "last_date_read", "data_de_leitura", "finished", "finish_date"],
+  comecou: ["date_started", "started", "data_de_inicio", "start_date"],
+  /** BookWyrm: o dia em que a pessoa parou de ler. */
+  parou: ["stopped_date"],
   varias: ["dates_read"],
+  /** Openreads: "começo|fim|tempo" por leitura, as leituras separadas por ";". */
+  sessoes: ["readings"],
+  /** Openreads: o livro que a pessoa apagou lá continua no arquivo, marcado. */
+  apagado: ["deleted"],
+  /** BookWyrm: o NOME da estante, quando ela é uma que a pessoa criou. */
+  nomeDaEstante: ["shelf_name"],
 } as const;
 
 function pega(linha: Record<string, string>, apelidos: readonly string[]): string | undefined {
@@ -112,6 +124,13 @@ const STATUS_DE: Record<string, Status> = {
   // ("to-read" + "abandoned"). A etiqueta é o status de verdade. Ver statusDaEtiqueta.
   "rereading": "reading",
   "abandoned": "did_not_finish",
+
+  // Openreads.
+  "in_progress": "reading",
+  "planned": "want_to_read",
+
+  // BookWyrm: "parei de ler" é largar.
+  "stopped-reading": "did_not_finish",
 };
 
 /** A releitura. Não tem status próprio aqui: é "lendo", e a tela avisa o que se perde. */
@@ -166,12 +185,34 @@ function leituras(linha: Record<string, string>, st: Status): Leitura[] {
     ? varias.split(/[;|]/).map((d) => lerData(d)).filter((d): d is string => d !== null)
     : [];
 
+  /**
+   * O Openreads guarda cada leitura com COMEÇO e FIM ("2024-01-02T…|2024-02-10T…|"), e
+   * várias por livro. É o formato mais completo que chega aqui: nenhuma leitura vira
+   * leitura sem data.
+   */
+  const sessoes = (pega(linha, APELIDOS.sessoes) ?? "")
+    .split(";")
+    .map((s) => s.split("|"))
+    .map(([c, f]) => ({ comecou: lerData(c), terminou: lerData(f), abandonou: null }))
+    .filter((s) => s.comecou || s.terminou);
+  if (sessoes.length > 0) {
+    if (st === "read") return sessoes;
+    // Lendo: as leituras terminadas ficam, e a aberta é a de agora. Com data, "terminei"
+    // e "estou lendo" não se confundem.
+    if (st === "reading") return sessoes;
+    if (st === "did_not_finish") {
+      const ultima = sessoes[sessoes.length - 1]!;
+      return [{ comecou: ultima.comecou, terminou: null, abandonou: ultima.terminou }];
+    }
+    return [];
+  }
+
   const fim = lerData(pega(linha, APELIDOS.terminou));
   const inicio = lerData(pega(linha, APELIDOS.comecou));
   const vezes = Math.max(1, parseInt(pega(linha, APELIDOS.vezes) ?? "1", 10) || 1);
 
   if (st === "did_not_finish") {
-    return [{ comecou: inicio, terminou: null, abandonou: fim }];
+    return [{ comecou: inicio, terminou: null, abandonou: lerData(pega(linha, APELIDOS.parou)) ?? fim }];
   }
 
   if (st === "reading") {
@@ -235,10 +276,17 @@ function estrelas(bruto: string | undefined): number | null {
 }
 
 function prateleiras(linha: Record<string, string>): string[] {
+  // BookWyrm exporta UMA estante por livro. Se ela não é de leitura (to-read, read…), é
+  // uma que a pessoa criou, e o que vale é o nome que ela deu, não o identificador.
+  const estante = (pega(linha, APELIDOS.statusBruto) ?? "").trim().toLowerCase();
+  const nome = pega(linha, APELIDOS.nomeDaEstante);
+  if (nome && estante && !STATUS_DE[estante]) return [nome.slice(0, 60)];
+
   const bruto = pega(linha, APELIDOS.prateleiras);
   if (!bruto) return [];
   return bruto
-    .split(/[,;]/)
+    // O Openreads separa as etiquetas com "|||||".
+    .split(/\|{5}|[,;]/)
     .map((p) => p.trim())
     .filter((p) => p !== "" && !EXCLUSIVAS.has(p.toLowerCase()))
     .slice(0, 20);
@@ -296,6 +344,8 @@ export function parse(texto_: string): LivroImportado[] {
 function linha(l: Record<string, string>): LivroImportado | null {
   const titulo = pega(l, APELIDOS.titulo);
   if (!titulo) return null;
+  // Apagado na origem (o Openreads exporta a lixeira junto). Não é um livro da estante.
+  if ((pega(l, APELIDOS.apagado) ?? "").toLowerCase() === "true") return null;
 
   const { st, relendo } = statusDaEtiqueta(l, status(pega(l, APELIDOS.statusBruto)));
   const ids = lerIsbn(pega(l, APELIDOS.isbn13) ?? pega(l, APELIDOS.isbn10));

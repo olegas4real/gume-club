@@ -26,6 +26,8 @@ const PUBLICO: Record<string, string> = {
     "é o próprio login: exigir sessão aqui seria exigir sessão para poder ter sessão",
   "app/api/buscar/route.ts":
     "buscar livro no catálogo é público, como a vitrine de uma livraria. A busca de PESSOAS que ela devolve só traz o que é público, e isso é provado em lib/redteam.sql.test.ts",
+  "app/.well-known/assetlinks.json/route.ts":
+    "é o vínculo site-app que o verificador do Android lê, sem sessão por definição: um robô do Google abrindo uma URL pública. Só serve o que já é público (o nome do pacote e o fingerprint da chave que assina o app), lido de variável de ambiente, e sem as variáveis é 404. Ver o cabeçalho da rota",
   "app/entrar/invite.ts":
     "guarda o convite num cookie ANTES de a pessoa existir, e lê o NOME de quem convidou para a porta saudar. A leitura é só de dado público (handle e nome de exibição), nunca de linha de leitor, e não há sessão a quem perguntar porque a pessoa ainda não existe",
 

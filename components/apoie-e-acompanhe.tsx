@@ -64,7 +64,13 @@ const DOORS = [
   },
 ] as const;
 
-export function ApoieEAcompanhe() {
+/**
+ * `apoio` vem do servidor (lib/apoio-visivel.ts): dentro do app Android a porta de
+ * apoiar some (a Play exige o pagamento dela para benefício digital), e numa instância
+ * sem Stripe ela levaria a um 404 — o que, até esta prop existir, acontecia.
+ */
+export function ApoieEAcompanhe({ apoio }: { apoio: boolean }) {
+  const portas = DOORS.filter((p) => p.key !== "apoiar" || apoio);
   return (
     <nav className="mt-20 border-t pt-10" style={{ borderColor: "var(--color-rule)" }}>
       <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-ink-faint)]">
@@ -72,7 +78,7 @@ export function ApoieEAcompanhe() {
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-        {DOORS.map((p) => {
+        {portas.map((p) => {
           const dentro = (
             <>
               <span className="min-w-0 flex-1">

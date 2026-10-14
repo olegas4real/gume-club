@@ -37,8 +37,31 @@ import { imgSrc } from "@/lib/imagens";
  * ════════════════════════════════════════════════════════════════════
  */
 
-export function middleware(_req: NextRequest) {
+export function middleware(req: NextRequest) {
   const res = NextResponse.next();
+
+  /**
+   * ═══ A MARCA DE "ESTOU DENTRO DO APP ANDROID" ═══
+   *
+   * O app da Play Store é o site embrulhado (TWA, ver docs/android.md), e ele abre
+   * sempre em `/?origem=android`. A Play exige o sistema de pagamento dela para
+   * benefício digital, e a moldura/etiqueta de apoiador conta como benefício: dentro
+   * do app, o apoio via Stripe tem que sumir. Este cookie é como as telas e as rotas
+   * sabem disso (ver lib/apoio-visivel.ts).
+   *
+   * Renovado sempre que já existe, porque quem instala o app navega semanas sem voltar
+   * ao start URL. Esconder o botão é a cortesia; a defesa é a rota de checkout recusar.
+   * E forjar o cookie no navegador só esconde o apoio de si mesmo: inofensivo.
+   */
+  if (req.nextUrl.searchParams.get("origem") === "android" || req.cookies.has("gume_app")) {
+    res.cookies.set("gume_app", "android", {
+      maxAge: 60 * 60 * 24 * 365,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+  }
 
 
   /**

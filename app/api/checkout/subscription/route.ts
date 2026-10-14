@@ -5,6 +5,7 @@ import { getViewer } from "@/lib/viewer";
 import { RATES, limitar, varrer } from "@/lib/rate-limit";
 import { ehTier } from "@/lib/apoio";
 import { stripe, precoDo, urlDoApp } from "@/lib/stripe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 
 /** Node, e não Edge: o banco e o limitador não existem no Edge. */
 export const runtime = "nodejs";
@@ -32,6 +33,12 @@ export async function POST(req: Request) {
    * Gume não tem conta no Stripe. A rota simplesmente não existe ali.
    */
   if (!sdk) {
+    return NextResponse.json({ error: "não encontrado" }, { status: 404 });
+  }
+
+  // Dentro do app Android, vender benefício digital fora do pagamento da Play é
+  // violação, e esconder o botão não basta: a porta fecha aqui. Ver lib/apoio-visivel.ts.
+  if (!(await apoioVisivel())) {
     return NextResponse.json({ error: "não encontrado" }, { status: 404 });
   }
 

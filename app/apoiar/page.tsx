@@ -11,6 +11,7 @@ import { getCapasDaParede } from "@/lib/parede";
 import { FitaDeCapas } from "@/components/fita-de-capas";
 import { Placa } from "@/components/badges";
 import { AssinarBotao, AvulsoForm } from "@/components/apoiar-botoes";
+import { noAppAndroid } from "@/lib/apoio-visivel";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,66 @@ export default async function Apoiar({
 
   const { obrigado } = await searchParams;
   const viewer = await getViewer();
+
+  /**
+   * ═══ DENTRO DO APP ANDROID, ESTA PÁGINA NÃO VENDE ═══
+   *
+   * A Play exige o sistema de pagamento dela para benefício digital, e a insígnia e a
+   * moldura de apoiador contam como benefício. Então, no app, a página continua
+   * existindo (um 404 para um link que funciona na web pareceria app quebrado), mas sem
+   * preço, sem botão e sem convite: só diz, sem link, que o apoio acontece fora. Quem já
+   * apoia continua vendo o obrigado. A defesa de verdade é a rota de checkout recusar;
+   * ver lib/apoio-visivel.ts e docs/android.md.
+   */
+  if (await noAppAndroid()) {
+    const [capas, me] = await Promise.all([
+      getCapasDaParede(30),
+      viewer
+        ? db
+            .execute<{ apoia: boolean }>(
+              sql`select ${ehApoiador(sql`u`)} as apoia from users u where u.id = ${viewer.id}::uuid limit 1`,
+            )
+            .then((r) => r[0])
+        : Promise.resolve(undefined),
+    ]);
+
+    return (
+      <main className="mx-auto max-w-3xl px-6 pb-32 sm:px-10">
+        <p className="mt-16 flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] sm:mt-20">
+          <HeartHandshake size={14} strokeWidth={1.5} style={{ color: "var(--color-colaborar)" }} />
+          <span style={{ color: "var(--color-colaborar)" }}>apoiar</span>
+        </p>
+
+        <h1 className="voice mt-5 text-[44px] leading-[1.02] tracking-[-0.015em] sm:text-[56px]">
+          Quem apoia mantém o Gume <em className="italic text-[var(--color-ink-soft)]">no ar</em>.
+        </h1>
+
+        <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-[var(--color-ink-soft)]">
+          O apoio ao Gume acontece fora do aplicativo.
+        </p>
+
+        <FitaDeCapas capas={capas} />
+
+        {obrigado && (
+          <p className="surface mt-12 p-6 text-[15px] leading-relaxed text-[var(--color-ink)]">
+            Obrigado. O seu apoio já está valendo, e a insígnia aparece no seu perfil em
+            instantes.
+          </p>
+        )}
+
+        {me?.apoia && !obrigado && (
+          <p className="surface mt-12 p-6 text-[15px] leading-relaxed text-[var(--color-ink-soft)]">
+            <span className="font-medium text-[var(--color-ink)]">Você já apoia o Gume.</span>{" "}
+            Obrigado, de verdade. Dá para escolher se o seu nome aparece na lista em{" "}
+            <Link href="/perfil" className="underline decoration-[var(--color-ink)] underline-offset-4">
+              perfil
+            </Link>
+            .
+          </p>
+        )}
+      </main>
+    );
+  }
 
   const [capas, me, conta] = await Promise.all([
     /**

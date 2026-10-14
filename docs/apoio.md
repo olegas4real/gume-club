@@ -145,3 +145,10 @@ modos, e a trava foi mutada para confirmar que ela pega.
 
 O webhook não tem rate limit por IP, e é de propósito: quem bate nele é o Stripe, e
 limitar o Stripe é jogar fora aviso de pagamento. Quem não é o Stripe não passa do HMAC.
+
+## A exceção do app Android
+
+Dentro do app da Play Store, o apoio não aparece e as rotas de pagamento recusam: a Play
+exige o sistema de pagamento dela para benefício digital, e a insígnia e a moldura de
+apoiador contam como benefício. A regra mora em `lib/apoio-visivel.ts`, e o porquê
+inteiro na entrada "O apoio some dentro do app Android" do ai/DECISIONS.md.

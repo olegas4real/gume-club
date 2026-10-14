@@ -12,6 +12,7 @@ import { Barras, Vereditos, Seculos } from "@/components/graficos-leitura";
 import { MapaMundi } from "@/components/mapa-mundi";
 import { empacotar } from "@/lib/masonry";
 import { ApoieEAcompanhe } from "@/components/apoie-e-acompanhe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 
 export const dynamic = "force-dynamic";
 
@@ -286,7 +287,7 @@ export default async function Estatisticas({
         {/* "falta CTA pra isso" — o dono. Aqui, e não em toda tela: é o momento em
             que a pessoa acabou de olhar a própria trajetória de leitura. Ver o
             cabeçalho de components/apoie-e-acompanhe.tsx. */}
-        <ApoieEAcompanhe />
+        <ApoieEAcompanhe apoio={await apoioVisivel()} />
       </div>
     </main>
   );

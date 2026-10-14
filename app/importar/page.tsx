@@ -3,7 +3,7 @@ import { getViewer } from "@/lib/viewer";
 import { ScreenHeader } from "@/components/screen-header";
 import { Empty } from "@/components/empty";
 import { ImportForm } from "@/components/import-form";
-import { apoioLigado } from "@/lib/stripe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 import { apoiaHoje } from "@/lib/apoio-conta";
 import { CUSTO_MENSAL_CENTAVOS, reais } from "@/lib/apoio";
 
@@ -60,7 +60,7 @@ export default async function Importar() {
           apoia. Ver components/pedido-de-apoio.tsx. */}
       <ImportForm
         apoio={
-          apoioLigado() && !(await apoiaHoje(viewer.id))
+          (await apoioVisivel()) && !(await apoiaHoje(viewer.id))
             ? { custo: reais(CUSTO_MENSAL_CENTAVOS).replace(/,00$/, "") }
             : null
         }

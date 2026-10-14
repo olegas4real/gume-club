@@ -191,5 +191,5 @@ O Skoob não tem exportação (a ajuda deles diz isso; a API pública morreu em 
 O app Android é o site embrulhado (ver docs/android.md e a entrada no ai/DECISIONS.md). A web não muda.
 
 - [x] **1. Manifesto completo, ícone maskable, assetlinks por variável de ambiente.** O vínculo site ↔ app, desligado de fábrica.
-- [ ] **2. O apoio some dentro do app.** A Play exige o billing dela para benefício digital; cookie `gume_app` via `?origem=android`, as telas escondem e as rotas de checkout recusam.
+- [x] **2. O apoio some dentro do app.** A Play exige o billing dela para benefício digital; cookie `gume_app` via `?origem=android`, as telas escondem e as rotas de checkout recusam.
 - [ ] **3. Só o dono: empacotar e publicar.** Bubblewrap, Play Console (US$ 25), teste fechado (12 testadores, 14 dias), fingerprints no Railway. Roteiro em docs/android.md.

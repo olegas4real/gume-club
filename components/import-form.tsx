@@ -488,8 +488,8 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
         </span>
 
         <span className="max-w-sm text-[14px] leading-relaxed text-[var(--color-ink-soft)]">
-          O arquivo que você baixou do Goodreads, do StoryGraph ou do Fable. Também serve uma
-          planilha sua, e serve o arquivo que você baixou daqui.
+          O arquivo que você baixou do Goodreads, do StoryGraph, do Fable, do Openreads ou do
+          BookWyrm. Também serve uma planilha sua, e serve o arquivo que você baixou daqui.
         </span>
 
         <input
@@ -646,7 +646,7 @@ function peso(como: Achado["como"]): number {
 }
 
 function nome(fonte: string): string {
-  return { goodreads: "Goodreads", storygraph: "StoryGraph", skoob: "Skoob", fable: "Fable" }[
+  return { goodreads: "Goodreads", storygraph: "StoryGraph", skoob: "Skoob", fable: "Fable", openreads: "Openreads", bookwyrm: "BookWyrm" }[
     fonte
   ] ?? fonte;
 }

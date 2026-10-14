@@ -1,0 +1,6 @@
+title,subtitle,author,description,status,favourite,deleted,rating,pages,publication_year,isbn,olid,tags,my_review,notes,book_format,readings,date_added,date_modified
+Livro Fictício Um,,Autora Fictícia,,finished,true,false,4.5,300,2019,9780000000002,OL1M,fantasia|||||favoritos,Bom demais.,nota minha,hardcover,2024-01-02T00:00:00.000|2024-02-10T00:00:00.000|;2025-03-01T00:00:00.000|2025-03-20T00:00:00.000|,2023-12-01T00:00:00.000,2024-02-10T00:00:00.000
+Livro Fictício Dois,,Autor Imaginário,,in_progress,false,false,,200,,,,,,,,2025-06-01T00:00:00.000||,2025-05-01T00:00:00.000,
+Livro Fictício Três,,Autor Imaginário,,planned,false,false,,,,,,,,,,,2025-05-01T00:00:00.000,
+Livro Fictício Quatro,,Autora Fictícia,,abandoned,false,false,2,,,,,,,,paperback,2024-07-01T00:00:00.000||,2024-06-01T00:00:00.000,
+Livro Fictício Apagado,,Autora Fictícia,,finished,false,true,5,,,,,,,,,,2024-01-01T00:00:00.000,

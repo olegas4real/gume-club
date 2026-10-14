@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Cover } from "@/components/cover";
 import { SearchResults } from "@/components/search-results";
 import { ManualBookForm } from "@/components/manual-book-form";
+import { LeitorCodigo } from "@/components/leitor-codigo";
 import type { Hit, Autor } from "@/lib/catalog";
 
 type Pessoa = {
@@ -128,9 +129,14 @@ export function LiveSearch({ initial }: { initial: string }) {
           placeholder="Título, ISBN, ou o nome de alguém"
           className="w-full rounded-[var(--radius-control)] border border-[var(--color-rule)] bg-transparent px-4 py-3 text-[16px] outline-none placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-ink)]"
         />
-        <p className="mt-2 h-4 text-[12px] text-[var(--color-ink-faint)]">
-          {busy ? "procurando" : q.trim().length >= 2 ? "" : "O ISBN está na contracapa."}
-        </p>
+        <div className="mt-2 flex min-h-4 flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <p className="text-[12px] text-[var(--color-ink-faint)]">
+            {busy ? "procurando" : q.trim().length >= 2 ? "" : "O ISBN está na contracapa."}
+          </p>
+          {/* A câmera lê o ISBN, e ele vira a busca. Só aparece onde o navegador sabe
+              ler código de barras. Ver components/leitor-codigo.tsx. */}
+          <LeitorCodigo onLido={setQ} />
+        </div>
       </div>
 
       {pessoas.length > 0 && (

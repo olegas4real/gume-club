@@ -5781,3 +5781,22 @@ convite é novo (`discord.gg/ByC6SFRBPN`), conferido na API do Discord: servidor
 
 O convite trocou no mesmo dia para `discord.gg/7BPuNqvsut`, a pedido do dono. Mesmo
 servidor ("Gume.club"), também sem data para expirar. Mudou só a linha de `lib/onde.ts`.
+
+## O leitor de código de barras, só com o que o navegador já sabe
+
+Os dois projetos olhados (Openreads e Bibliotheca) têm; o Bibliotheca acabou de pôr de
+volta um "modo rápido" de vários seguidos. O Gume tinha o item no plano desde o começo.
+
+- **`BarcodeDetector`, do próprio navegador.** Sem biblioteca e sem nada baixado. O Chrome
+  do Android tem; o Safari do iPhone e o Firefox, não. Onde não tem, o botão não aparece.
+  Rejeitado por ora: uma biblioteca de leitura para o iPhone (dependência nova, e peso no
+  aparelho de todo mundo para servir um navegador).
+- **Não é fluxo novo.** Na busca, o ISBN lido vira a busca. No /importar, o modo rápido
+  deixa a câmera aberta e cada livro vira uma linha da lista colada, que segue o caminho
+  dela (prévia, conferir, gravar). 
+- **Só passa ISBN** (`lib/isbn-lido.ts`): 13 dígitos, 978 ou 979, verificador certo. Livro
+  brasileiro às vezes traz um segundo código, de preço; esse fica de fora.
+- Medido: o detector do Chrome leu `9788535911664` de uma imagem do código, e a validação
+  aceita. A câmera ligada não deu para testar daqui (o Chrome sem janela não abre câmera
+  no macOS, nem a falsa); o teste estrutural cobra que o botão some onde não há leitor e
+  que a câmera desliga ao fechar.

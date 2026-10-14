@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HeartHandshake } from "lucide-react";
 import { getApoiadores, getCatalogo, getCodigo } from "@/lib/contributors";
-import { apoioLigado } from "@/lib/stripe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 import { CODIGO } from "@/lib/onde";
 import { Cabecalho, Portas } from "@/components/casa-de-quem-faz";
 import { Avatar } from "@/components/avatar";
@@ -30,7 +30,8 @@ export default async function Contribuidores() {
    * e para ele a seção inteira não existe: um convite para apoiar que leva a uma página
    * que responde "não encontrado" é pior do que convite nenhum.
    */
-  const podeApoiar = apoioLigado();
+  // Dentro do app Android o apoio some inteiro, inclusive esta seção. Ver lib/apoio-visivel.ts.
+  const podeApoiar = await apoioVisivel();
 
   /**
    * "Ninguém contribuiu" e "não consegui perguntar" são coisas OPOSTAS, e a tela precisa

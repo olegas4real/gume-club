@@ -40,7 +40,7 @@ import { FORMAT_LABEL } from "@/lib/shelf-view";
 import { origemAceita } from "@/lib/imagens";
 import { nomeDoAutor } from "@/lib/autores";
 import { DOURADO } from "@/lib/dourado";
-import { apoioLigado } from "@/lib/stripe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 import { apoiaHoje } from "@/lib/apoio-conta";
 import { CUSTO_MENSAL_CENTAVOS, reais } from "@/lib/apoio";
 import { PedidoDeApoio } from "@/components/pedido-de-apoio";
@@ -345,7 +345,8 @@ export default async function BookPage({
       book.mine.statusAt &&
       Date.now() - new Date(book.mine.statusAt).getTime() < 15 * 60 * 1000,
   );
-  const pedirApoio = acabouDeTerminar && apoioLigado() && actor ? !(await apoiaHoje(actor.id)) : false;
+  const pedirApoio =
+    acabouDeTerminar && (await apoioVisivel()) && actor ? !(await apoiaHoje(actor.id)) : false;
 
   return (
     <main className="relative mx-auto max-w-7xl px-6 pb-32 sm:px-10">

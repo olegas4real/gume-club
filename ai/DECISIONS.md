@@ -5847,3 +5847,30 @@ Flutter): duas bases de código para um time de um, por nada que o TWA não dê 
 - O processo fora do repo (Bubblewrap, keystore, Play Console, teste fechado de 12
   testadores por 14 dias, a ficha da loja) mora em docs/android.md. O keystore nunca
   entra no repo; o .gitignore ganhou o bloco Android ANTES de qualquer artefato existir.
+## O apoio some dentro do app Android
+
+A Play exige o sistema de pagamento dela para benefício digital, e a insígnia e a
+moldura de apoiador contam como benefício. Então, dentro do app da Play (TWA, ver
+docs/android.md), o apoio via Stripe some; no site, nada muda.
+
+- **O app se anuncia pelo start URL** (`/?origem=android`), e o middleware grava o
+  cookie `gume_app` (1 ano, httpOnly, renovado sempre que já existe). Forjar o cookie no
+  navegador só esconde o apoio de si mesmo.
+- **A pergunta é uma só**: `apoioVisivel()` em `lib/apoio-visivel.ts` (a instância tem
+  apoio E a requisição não vem do app). Não mora em lib/stripe.ts porque robots.ts e
+  sitemap.ts importam de lá fora de uma requisição, e `cookies()` não existe fora de
+  uma. `lib/apoio-no-android.test.ts` proíbe `apoioLigado(` fora de lib/: a tela nova
+  que chamar a pergunta da instância direto esquece o app, e é isso que derruba o app na
+  revisão.
+- **/apoiar continua existindo no app, mas não vende**: sem preço, sem botão e sem
+  convite ("o apoio ao Gume acontece fora do aplicativo", sem link). Um 404 para um
+  link que funciona na web pareceria app quebrado. Quem já apoia continua vendo o
+  obrigado.
+- **As rotas de checkout recusam com 404** quando o cookie está presente, antes de falar
+  com o Stripe: esconder o botão é cortesia, a defesa é a porta fechada no servidor.
+- **De brinde**: o cartão "e também" (fim de /estatisticas e do próprio perfil) mostrava
+  a porta de apoiar sem checar se a instância tem Stripe: numa auto-hospedada, era um
+  404. A prop `apoio` consertou os dois casos de uma vez.
+- **Risco aceito**: um deep link aberto no app antes do primeiro launch pelo ícone ainda
+  não tem o cookie e mostraria o apoio. O revisor da Play testa pelo launcher, que passa
+  pelo start URL. Documentado em docs/android.md.

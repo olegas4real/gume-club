@@ -11,7 +11,7 @@ import { PublicHeader } from "@/components/public-header";
 import { Medicao } from "@/components/medicao";
 import { getViewer, getUser } from "@/lib/viewer";
 import { souIdealizador } from "@/lib/authz";
-import { apoioLigado } from "@/lib/stripe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 import { getCollections } from "@/lib/curation";
 import { getNovidades } from "@/lib/novidades";
 import "./globals.css";
@@ -138,7 +138,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             shelves={shelves}
             idealizador={idealizador}
             novidades={novidades}
-            apoio={apoioLigado()}
+            apoio={await apoioVisivel()}
           />
         </Suspense>
 

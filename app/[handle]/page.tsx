@@ -27,6 +27,7 @@ import { PerfilAbas } from "@/components/perfil-abas";
 import { CuradoriaCard } from "@/components/curadoria-card";
 import { EtiquetaDoNome } from "@/components/etiqueta-do-nome";
 import { ApoieEAcompanhe } from "@/components/apoie-e-acompanhe";
+import { apoioVisivel } from "@/lib/apoio-visivel";
 import { ChamadaConta } from "@/components/chamada-conta";
 import Link from "next/link";
 
@@ -332,7 +333,7 @@ export default async function Profile({ params }: { params: Promise<{ handle: st
       {/* "falta CTA pra isso" — o dono. Só para o DONO do perfil olhando o próprio:
           pedir a um visitante que siga o Gume na estante de outra pessoa é
           anúncio, não convite. Ver o cabeçalho de components/apoie-e-acompanhe.tsx. */}
-      {mine && <ApoieEAcompanhe />}
+      {mine && <ApoieEAcompanhe apoio={await apoioVisivel()} />}
     </main>
   );
 }

@@ -105,6 +105,20 @@ export async function ler(texto: string): Promise<Previa> {
     );
   }
 
+  if (fonte === "openreads") {
+    avisos.push(
+      "Os favoritos do Openreads não vêm como favoritos: aqui eles são poucos e escolhidos à mão, no seu perfil. " +
+        "As etiquetas viram prateleiras, e cada leitura vem com as datas.",
+    );
+  }
+
+  if (fonte === "bookwyrm") {
+    avisos.push(
+      "O BookWyrm exporta só uma estante por livro, então um livro que estava em duas vem só com uma. " +
+        "O título da resenha e o aviso de conteúdo dela também não vêm: o texto vem inteiro.",
+    );
+  }
+
   if (fonte === "desconhecida" && livros.length > 0) {
     avisos.push(
       "Não reconhecemos de onde veio este arquivo, então trouxemos o que deu para entender. Confira a lista antes de confirmar.",

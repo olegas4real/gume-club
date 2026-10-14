@@ -138,8 +138,9 @@ export function data(bruto: string | undefined): string | null {
   const s = (bruto ?? "").trim();
   if (!s) return null;
 
-  // 2019/03/07 e 2019-03-07
-  const iso = s.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
+  // 2019/03/07 e 2019-03-07, e o mesmo com hora (2019-03-07T00:00:00.000, do Openreads):
+  // o dia é o que vale, e a hora é descartada sem converter fuso.
+  const iso = s.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})(?:[T ][\d:.]+Z?)?$/);
   if (iso) return `${iso[1]}-${pad(iso[2]!)}-${pad(iso[3]!)}`;
 
   // 07/03/2019: dia primeiro, que é como se escreve em português

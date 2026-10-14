@@ -105,7 +105,7 @@ export type Relatorio = {
 };
 
 /** A fonte de onde o arquivo veio. `desconhecida` ainda é importável. */
-export type Fonte = "goodreads" | "storygraph" | "skoob" | "fable" | "desconhecida" | "lista";
+export type Fonte = "goodreads" | "storygraph" | "skoob" | "fable" | "openreads" | "bookwyrm" | "desconhecida" | "lista";
 
 /**
  * ════════════════════════════════════════════════════════════════════

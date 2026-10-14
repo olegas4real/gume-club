@@ -5781,3 +5781,27 @@ convite é novo (`discord.gg/ByC6SFRBPN`), conferido na API do Discord: servidor
 
 O convite trocou no mesmo dia para `discord.gg/7BPuNqvsut`, a pedido do dono. Mesmo
 servidor ("Gume.club"), também sem data para expirar. Mudou só a linha de `lib/onde.ts`.
+
+## Openreads e BookWyrm entram inteiros no importador
+
+Ideia tirada do Openreads (pedido de integração com o BookWyrm entre os mais votados lá).
+Medido antes com um arquivo no formato documentado deles: o Gume aceitava, mas o
+"lendo" do Openreads (`in_progress`) virava "quero ler", as leituras com data sumiam, as
+etiquetas viravam uma prateleira só com `|||||` no nome, e o formato se perdia.
+
+Agora, com fixtures fictícias e teste (`lib/import/openreads-bookwyrm.test.ts`):
+
+- **Openreads:** os quatro status; cada leitura com começo e fim (a coluna `readings`, o
+  formato mais completo que chega aqui); etiquetas separadas; formato; e o livro que a
+  pessoa apagou lá (`deleted=true`) não entra.
+- **BookWyrm:** `author_text`, as quatro estantes de leitura ("parei de ler" é largar,
+  com a data em que parou), a resenha limpa, e a estante que a pessoa criou vira
+  prateleira pelo NOME dela.
+- Datas com hora (`2024-01-02T00:00:00.000`) passam a valer pelo dia, sem converter
+  fuso: o dia que a pessoa marcou é o dia que entra.
+- A prévia declara as perdas: favoritos do Openreads não viram favoritos (aqui são
+  poucos, à mão), e o BookWyrm exporta uma estante por livro e não o título da resenha.
+
+Rejeitado por ora, por mexer na arquitetura: mais de um autor por obra (pedido nº 4 do
+Openreads; é mudança de banco), mandar correções para o Open Library, e a imagem mensal
+de resumo.

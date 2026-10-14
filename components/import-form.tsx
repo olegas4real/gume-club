@@ -10,6 +10,7 @@ import { LOTE, ehFato, isbnDiverge, isbnRepetido, type Relatorio, type Achado } 
 import { Cover } from "@/components/cover";
 import { mine } from "@/lib/veredito";
 import { PedidoDeApoio } from "@/components/pedido-de-apoio";
+import { LeitorCodigo } from "@/components/leitor-codigo";
 
 /** Para onde vai quem vem do Skoob: a página que diz a verdade e dá os caminhos. */
 const CAMINHO_DO_SKOOB = "/ajuda/skoob";
@@ -535,6 +536,13 @@ export function ImportForm({ apoio = null }: { apoio?: { custo: string } | null 
             Procurar
           </button>
         </div>
+        {/* O MODO RÁPIDO: a câmera fica aberta, e cada livro lido vira uma linha desta
+            lista. Daí em diante é a lista colada de sempre. Ver components/leitor-codigo.tsx. */}
+        <LeitorCodigo
+          varios
+          rotulo="ler os códigos de barras, um livro atrás do outro"
+          onLido={(isbn) => setColado((atual) => (atual.trim() ? `${atual.trimEnd()}\n${isbn}` : isbn))}
+        />
         <p className="text-[12px] text-[var(--color-ink-faint)]">
           Até {LIMITS.listLines} linhas por vez.
         </p>

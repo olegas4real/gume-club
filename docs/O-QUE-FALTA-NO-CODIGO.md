@@ -40,11 +40,13 @@ tira ele.
   (e é o importador de quem **coleciona**, que é a pessoa que o Gume modela melhor que qualquer
   outro app). → [issue 04](../.github/ISSUE_DRAFTS/04-importador-librarything.md)
 
-- **Leitor de código de barras.** A busca por ISBN já existe: falta a câmera. Um componente
-  cliente, sem dependência nova (`BarcodeDetector` é do navegador). → [issue 08](../.github/ISSUE_DRAFTS/08-leitor-de-codigo-de-barras.md)
+- ~~**Leitor de código de barras.**~~ Feito (2026-10-14): `components/leitor-codigo.tsx`, na
+  busca e em modo rápido no /importar. Falta o Safari do iPhone, que não tem `BarcodeDetector`:
+  ali o botão não aparece. → [issue 08](../.github/ISSUE_DRAFTS/08-leitor-de-codigo-de-barras.md)
 
-- **"Colar uma lista" usa o autor que a pessoa escreveu.** A tela pede o autor e a função joga
-  fora, na linha seguinte. E faz uma consulta por linha, em série. → [issue 10](../.github/ISSUE_DRAFTS/10-colar-uma-lista-usa-o-autor.md)
+- ~~**"Colar uma lista" usa o autor que a pessoa escreveu.**~~ Feito (2026-10-12): a lista
+  colada mudou para /importar, e o autor da linha entra no casamento (`lib/import/colar.ts` e
+  `lib/import/colar-acervo.ts`). → [issue 10](../.github/ISSUE_DRAFTS/10-colar-uma-lista-usa-o-autor.md)
 
 - **Vidro acessível.** Auditar toda superfície de vidro por contraste sobre uma capa preta, e
   honrar `prefers-reduced-transparency`. A régua está no [docs/design.md](./design.md), e vidro
@@ -206,7 +208,7 @@ Não é urgente e não é bug: são arquivos longos porque são **densamente com
 ### 7. O que o README promete e o código ainda não faz.
 
 - **Exportar em Markdown.** JSON e CSV já saem, e o perfil já baixa a estante (`lib/exportar.ts`). Falta só o formato Markdown; a porta de saída não é mais uma promessa vazia.
-- **Leitor de código de barras.** A busca por ISBN já existe: falta a câmera.
+- ~~**Leitor de código de barras.**~~ Feito, menos no Safari do iPhone.
 - **Tradutor.** A coluna existe e está vazia em **100%** das edições.
 - **O deploy.** O app funciona e não está no ar.
 

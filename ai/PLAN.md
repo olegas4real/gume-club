@@ -44,7 +44,7 @@ Código de login no spam = ninguém entra, e **ninguém reclama**: o e-mail sai 
 - [x] **Semear o catálogo** antes de qualquer um logar. Ver abaixo. Uma busca vazia no primeiro dia mata o usuário.
       _O import rodou (ver Fase 4). O dump da Open Library entrou, e a poda + a dedup de autores (migrations 0032–0035) o deixaram em ~262 mil obras / ~299 mil edições / ~123 mil autores._
 - [x] Busca de livro + lookup por ISBN
-- [ ] Leitura de código de barras (o leitor tem o livro físico na mão: o ISBN está na contracapa). A busca por ISBN já existe; falta a câmera.
+- [x] Leitura de código de barras (o leitor tem o livro físico na mão: o ISBN está na contracapa). Na busca, e em modo rápido no /importar. Só onde o navegador lê código de barras (Chrome do Android sim, Safari do iPhone ainda não).
 - [x] `library_entries`: quero ler / lendo / lido / DNF, em um toque
 - [x] `owned_copies`: **ter é separado de ler**, com procedência (sebo, feira, presente, herança, caixa do clube)
 - [x] Parede de capas

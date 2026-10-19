@@ -94,7 +94,20 @@ export function middleware(req: NextRequest) {
    */
   const medicaoScript = [
     process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && "https://static.cloudflareinsights.com",
-    process.env.NEXT_PUBLIC_CLARITY_ID && "https://www.clarity.ms",
+    /**
+     * ═══ O CLARITY FALA POR TRÊS HOSTS, E NÃO POR UM ═══
+     *
+     * `www.clarity.ms` só entrega a TAG, que é um carregador de dez linhas. A
+     * biblioteca de verdade vem de `scripts.clarity.ms`, e o pixel de
+     * `c.clarity.ms`. Liberando só o primeiro, a tag carrega, o navegador
+     * bloqueia a biblioteca, e o Clarity fica **morto em silêncio** — foi
+     * exatamente o que aconteceu, e ninguém percebeu, porque a tela não quebra:
+     * o painel só fica vazio, e painel vazio parece "ninguém entrou".
+     *
+     * É a armadilha que o bloco do GA logo abaixo descreve, e ela pegou aqui
+     * primeiro. O curinga cobre os três de uma vez, e o teste abaixo cobra.
+     */
+    process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
     // O PostHog carrega o script dos assets dele (o api_host com "-assets" no meio).
     process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us-assets.i.posthog.com",
@@ -153,6 +166,9 @@ export function middleware(req: NextRequest) {
   const medicaoImg = [
     process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
+    // O Clarity também fecha a sessão com um pixel (`c.clarity.ms/c.gif`), e ele
+    // estava bloqueado junto com a biblioteca. Ver o bloco do script acima.
+    process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
     // O pixel da Meta manda o evento como IMAGEM (o `<img src="facebook.com/tr?...">`
     // do snippet, e o caminho de reserva quando a porta normal falha).
     process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://www.facebook.com",

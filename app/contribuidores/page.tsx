@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
 /** O Google mostrava "Gume" como título desta página, e um resultado sem promessa
  *  não ganha clique. Ver a entrada de SEO no ai/DECISIONS.md. */
 export const metadata = {
-  title: "Quem faz o Gume",
+  // "Quem faz o Gume" + o sufixo "· Gume" do layout virava "Gume · Gume" na aba.
+  title: "Quem faz o Gume aberto",
   description:
     "Quem escreve o código e quem cuida do catálogo, lado a lado e com o mesmo peso. O Gume é aberto, e se constrói com quem lê.",
 };

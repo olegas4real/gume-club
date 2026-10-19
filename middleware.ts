@@ -96,6 +96,9 @@ export function middleware(req: NextRequest) {
     process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && "https://static.cloudflareinsights.com",
     process.env.NEXT_PUBLIC_CLARITY_ID && "https://www.clarity.ms",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
+    // O PostHog carrega o script dos assets dele (o api_host com "-assets" no meio).
+    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us-assets.i.posthog.com",
+    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://connect.facebook.net",
   ].filter(Boolean).join(" ");
   const medicaoConnect = [
     process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && "https://cloudflareinsights.com",
@@ -120,6 +123,12 @@ export function middleware(req: NextRequest) {
     process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.analytics.google.com",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
+    // O PostHog manda os eventos para o host de ingestão E busca a configuração
+    // remota nos assets. Faltando qualquer um, o navegador bloqueia calado (ver o
+    // aviso do GA logo acima: número menor não parece erro).
+    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us.i.posthog.com",
+    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us-assets.i.posthog.com",
+    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://connect.facebook.net",
   ].filter(Boolean).join(" ");
 
   /**
@@ -144,6 +153,9 @@ export function middleware(req: NextRequest) {
   const medicaoImg = [
     process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
+    // O pixel da Meta manda o evento como IMAGEM (o `<img src="facebook.com/tr?...">`
+    // do snippet, e o caminho de reserva quando a porta normal falha).
+    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://www.facebook.com",
   ].filter(Boolean).join(" ");
 
   const csp = [

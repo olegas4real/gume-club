@@ -37,6 +37,14 @@ const SERVICOS: { quem: string; para: string }[] = [
   { quem: "Stripe", para: "só se você apoiar: o pagamento acontece lá, e o número do cartão nunca passa pelo Gume." },
   { quem: "Sentry", para: "avisa quando uma tela dá erro, para a gente consertar." },
   {
+    quem: "Meta (Facebook e Instagram)",
+    para: "só quando você chega por um anúncio nosso: conta a visita, para sabermos se o anúncio funcionou. Não enviamos o que você lê.",
+  },
+  {
+    quem: "PostHog",
+    para: "mede o que é usado dentro do site (que telas abrem, que caminhos travam), para melhorar o produto. Usa cookies.",
+  },
+  {
     quem: "Google Analytics e Microsoft Clarity",
     para:
       "medem como o site é usado: de onde as pessoas chegam, onde clicam, onde a tela trava. Usam cookies. O Clarity grava o movimento na página com o texto escondido, e serve para achar o que está difícil de usar, nunca para ler a estante de ninguém.",

@@ -5892,3 +5892,29 @@ Contexto que esta entrada registra para não se perder: as impressões vêm quas
 fichas de livro de cauda longa (teses, catálogos de exposição, livros raros), que é o
 catálogo fazendo o trabalho dele. O que a home disputa ("gume") é palavra comum em
 português, e não vai render clique tão cedo.
+## O PostHog entra na medição, nas mesmas regras dos outros
+
+Pedido do dono. O GA diz de onde as pessoas vêm; o PostHog diz o que elas fazem depois
+que chegam (telas, caminhos, funis de produto). Entra pelo mesmo molde da medição toda:
+
+- **Desligado de fábrica**: só existe com `NEXT_PUBLIC_POSTHOG_KEY` no ambiente. A tag
+  (components/medicao.tsx) e as portas da CSP (middleware.ts) ligam pela MESMA variável.
+- **Sem replay de sessão** (`disable_session_recording`): replay é papel do Clarity, e
+  coletar duas vezes é coletar demais (a mesma régua do Sentry).
+- **Visitante anônimo não vira perfil** (`person_profiles: "identified_only"`).
+- A /privacidade nomeia o PostHog, e lib/privacidade.test.ts cobra isso.
+- A chave é pública por desenho (vai no HTML), como o G- do GA.
+
+De carona: a pasta `conteudo/` (notas pessoais do dono no disco) entrou no .gitignore e
+na lista FORA de lib/nome-do-repo.test.ts, como 4render/ e operaçãomaiscapas/.
+
+### E o pixel da Meta, pelo mesmo molde
+
+O dono vai rodar anúncio no Instagram, e sem pixel a plataforma otimiza no escuro. Ele
+entra com as mesmas três travas: desligado sem `NEXT_PUBLIC_FB_PIXEL_ID`, tag e portas
+da CSP pela mesma variável, e nomeado na /privacidade com teste cobrando.
+
+**Só `PageView`.** Nenhum evento de conversão, nenhum parâmetro de conteúdo: o Gume não
+vende nada, e mandar para a Meta o que a pessoa LÊ é exatamente o que o produto promete
+não fazer. Se um dia alguém quiser otimizar por cadastro, isso é uma decisão nova, e
+precisa passar por aqui antes.

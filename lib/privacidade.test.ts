@@ -27,6 +27,8 @@ describe("a política de privacidade", () => {
   const SERVICOS: [string, string, string][] = [
     ["components/medicao.tsx", "NEXT_PUBLIC_CLARITY_ID", "Microsoft Clarity"],
     ["components/medicao.tsx", "NEXT_PUBLIC_GA_ID", "Google Analytics"],
+    ["components/medicao.tsx", "NEXT_PUBLIC_POSTHOG_KEY", "PostHog"],
+    ["components/medicao.tsx", "NEXT_PUBLIC_FB_PIXEL_ID", "Meta"],
     ["instrumentation.ts", "SENTRY_DSN", "Sentry"],
     ["lib/stripe.ts", "STRIPE_SECRET_KEY", "Stripe"],
     ["lib/email.ts", "RESEND", "Resend"],

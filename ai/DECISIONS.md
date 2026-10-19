@@ -6005,3 +6005,17 @@ caminho. O teste cobra os dois lados: o que tem que barrar e o que tem que passa
 robô procurando buraco. Mandar ele para o endereço certo é entregar a resposta que ele
 veio buscar. E o 404 continua levando os cabeçalhos de segurança, como toda resposta que
 sai do middleware.
+
+### E a sincronização do Clarity com a Bing fica de fora
+
+Com o Clarity finalmente vivo, sobrou uma violação de CSP no console:
+`c.bing.com/c.gif?...&RedC=c.clarity.ms`. Ela não é um pedaço que faltou liberar: é a
+sincronização de identidade do Clarity com a rede de anúncios da Microsoft, que serve
+para casar quem está aqui com o perfil publicitário dele lá.
+
+**Fica bloqueada, e o erro no console é o certo.** O Gume promete "sem anúncio, sem
+algoritmo" na primeira linha do README; mapa de calor e gravação de sessão funcionam sem
+esse pixel, e o que ele acrescenta é exatamente o que o produto diz não fazer.
+
+Está escrito no middleware.ts porque a tentação de calar o console liberando mais um host
+é real, e quem for fazer isso merece ler o motivo antes.

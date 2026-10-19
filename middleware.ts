@@ -200,8 +200,26 @@ export function middleware(req: NextRequest) {
   const medicaoImg = [
     process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
     process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
-    // O Clarity também fecha a sessão com um pixel (`c.clarity.ms/c.gif`), e ele
-    // estava bloqueado junto com a biblioteca. Ver o bloco do script acima.
+    /**
+     * O Clarity também fecha a sessão com um pixel (`c.clarity.ms/c.gif`), e ele
+     * estava bloqueado junto com a biblioteca. Ver o bloco do script acima.
+     *
+     * ═══ E O `c.bing.com` FICA DE FORA DE PROPÓSITO ═══
+     *
+     * Com o Clarity vivo, o console passa a mostrar UMA violação que sobrou:
+     * `c.bing.com/c.gif?...&RedC=c.clarity.ms`. Ela não é um pedaço que faltou:
+     * é a sincronização de identidade do Clarity com a rede de anúncios da
+     * Microsoft, que serve para casar quem está aqui com o perfil publicitário
+     * dele lá.
+     *
+     * O Gume promete "sem anúncio, sem algoritmo" na primeira linha do README.
+     * Mapa de calor e gravação de sessão funcionam sem esse pixel; o que ele
+     * acrescenta é exatamente o que o produto diz não fazer.
+     *
+     * **Então o erro no console é o certo, e não um bug a consertar.** Está
+     * escrito aqui porque a tentação de calar o console liberando mais um host é
+     * real, e quem for fazer isso merece ler o motivo antes.
+     */
     process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
     // O pixel da Meta manda o evento como IMAGEM (o `<img src="facebook.com/tr?...">`
     // do snippet, e o caminho de reserva quando a porta normal falha).

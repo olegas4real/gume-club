@@ -158,3 +158,98 @@ describe("a medição e a CSP andam juntas", () => {
     ).toBeGreaterThanOrEqual(MEDIDORES.length);
   });
 });
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  E NÃO BASTA O HOST ESTAR LÁ: TÊM QUE ESTAR **TODOS** OS DELE.
+ *
+ *  O teste acima prova que cada host de medição depende de uma variável. Ele não
+ *  prova que a lista está COMPLETA — e foi aí que o Clarity morreu.
+ *
+ *  A CSP liberava `www.clarity.ms`, que entrega só a TAG: um carregador de dez
+ *  linhas. A biblioteca de verdade vem de `scripts.clarity.ms` e o pixel de
+ *  `c.clarity.ms`, os dois bloqueados. A tag carregava, o navegador recusava o
+ *  resto calado, e o painel ficava vazio — o que parece "ninguém entrou", e não
+ *  "a medição está quebrada". Descoberto num Chrome limpo, lendo as violações de
+ *  CSP, meses depois de instalado.
+ *
+ *  É a MESMA armadilha que o comentário do GA no middleware.ts já descrevia ("o
+ *  navegador bloqueia CALADO; um número menor não parece um erro"), e ela pegou
+ *  um medidor que não era o GA. Então vira teste, e não parágrafo.
+ *
+ *  Este teste chama o middleware DE VERDADE e lê o cabeçalho que ele devolve: a
+ *  pergunta é "esta CSP deixa o Clarity funcionar?", e nenhuma leitura de código
+ *  responde isso.
+ * ════════════════════════════════════════════════════════════════════
+ */
+describe("a CSP libera TODOS os hosts de cada medidor, e não só o primeiro", () => {
+  /** O que cada medidor precisa de verdade, por diretiva. Medido no navegador. */
+  const EXIGIDO: Record<string, { env: string; valor: string; script?: string[]; img?: string[]; connect?: string[] }> = {
+    clarity: {
+      env: "NEXT_PUBLIC_CLARITY_ID",
+      valor: "xxxxxxxxxx",
+      // A tag carrega de www, a biblioteca de scripts, e o pixel de c.
+      script: ["https://www.clarity.ms", "https://scripts.clarity.ms"],
+      img: ["https://c.clarity.ms"],
+      connect: ["https://x.clarity.ms"],
+    },
+    "google analytics": {
+      env: "NEXT_PUBLIC_GA_ID",
+      valor: "G-TESTE",
+      script: ["https://www.googletagmanager.com"],
+      img: ["https://www.google-analytics.com"],
+      connect: ["https://region1.google-analytics.com", "https://analytics.google.com"],
+    },
+    posthog: {
+      env: "NEXT_PUBLIC_POSTHOG_KEY",
+      valor: "phc_teste",
+      script: ["https://us-assets.i.posthog.com"],
+      connect: ["https://us.i.posthog.com", "https://us-assets.i.posthog.com"],
+    },
+    "pixel da meta": {
+      env: "NEXT_PUBLIC_FB_PIXEL_ID",
+      valor: "123456",
+      script: ["https://connect.facebook.net"],
+      img: ["https://www.facebook.com"],
+    },
+  };
+
+  /** `https://*.clarity.ms` cobre `https://scripts.clarity.ms`. */
+  function cobre(diretiva: string, host: string): boolean {
+    return diretiva.split(/\s+/).some((permitido) => {
+      if (permitido === host) return true;
+      if (!permitido.startsWith("https://*.")) return false;
+      const sufixo = permitido.slice("https://*.".length);
+      const dele = host.replace(/^https:\/\//, "");
+      return dele === sufixo || dele.endsWith(`.${sufixo}`);
+    });
+  }
+
+  it.each(Object.entries(EXIGIDO))("%s", async (nome, exigido) => {
+    const { NextRequest } = await import("next/server");
+    const antes = process.env[exigido.env];
+    process.env[exigido.env] = exigido.valor;
+
+    try {
+      const { middleware } = await import("@/middleware");
+      const csp = middleware(new NextRequest("https://gume.club/")).headers.get("content-security-policy") ?? "";
+
+      const diretiva = (qual: string) =>
+        csp.split(";").map((d) => d.trim()).find((d) => d.startsWith(`${qual} `)) ?? "";
+
+      for (const [qual, hosts] of [["script-src", exigido.script], ["img-src", exigido.img], ["connect-src", exigido.connect]] as const) {
+        for (const host of hosts ?? []) {
+          expect(
+            cobre(diretiva(qual), host),
+            `o ${nome} precisa falar com ${host}, e a ${qual} não libera. ` +
+              "O navegador vai bloquear CALADO: nada quebra na tela, e o painel " +
+              "mostra um número menor do que a verdade.",
+          ).toBe(true);
+        }
+      }
+    } finally {
+      if (antes === undefined) delete process.env[exigido.env];
+      else process.env[exigido.env] = antes;
+    }
+  });
+});

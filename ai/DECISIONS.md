@@ -5954,3 +5954,32 @@ ainda vai quebrar; dá para garantir que nada disso vire 500.
 De carona: `vitest.config.ts` ganhou `oxc: { jsx: { runtime: "automatic" } }`. O tsconfig
 do Next diz `jsx: "preserve"` (quem compila é o Next), o vite obedecia e entregava JSX
 cru ao parser. Sem isso, testar qualquer arquivo com JSX era impossível.
+
+## O Clarity estava morto em silêncio: a CSP liberava um host, e ele precisa de três
+
+Descoberto conferindo a medição no dia em que o primeiro anúncio pago subiu — ou seja,
+no dia em que medir errado passa a custar dinheiro.
+
+A `script-src` liberava `https://www.clarity.ms`, que entrega só a **tag**: um carregador
+de dez linhas. A biblioteca de verdade vem de `scripts.clarity.ms` e o pixel de fecho vem
+de `c.clarity.ms`. Os dois eram bloqueados. A tag carregava, o navegador recusava o resto
+**calado**, e o painel do Clarity ficava vazio — o que parece "ninguém entrou", e não
+"a medição está quebrada". Ficou assim desde que foi instalado.
+
+É a MESMA armadilha que o comentário do GA no middleware.ts já descrevia, com todas as
+letras: *"o navegador bloqueia CALADO: nada quebra na tela, e o relatório simplesmente
+vem menor do que a verdade"*. O parágrafo estava lá e não impediu nada, porque parágrafo
+não roda. Agora o curinga `https://*.clarity.ms` cobre os três, no script e na imagem.
+
+**E virou teste de comportamento, não de leitura de código.** `lib/medicao.test.ts` já
+provava que todo host de medição depende de uma variável; não provava que a lista está
+COMPLETA. O teste novo chama o middleware de verdade, lê o cabeçalho que ele devolve e
+pergunta, por medidor, "esta CSP deixa ele funcionar?" — com a lista de hosts que cada um
+realmente usa, medida no navegador. Ele foi conferido ao contrário: com o bug de volta,
+fica vermelho.
+
+Conferido ao mesmo tempo, num Chrome limpo (sem extensão): PostHog, GA e o pixel da Meta
+passam sem violação nenhuma, e o `tr/?ev=PageView` sai com a UTM inteira e com `fbc`/`fbp`.
+O 503 que aparece no navegador do dono é bloqueador dele, e não o site: pela linha de
+comando os mesmos endereços respondem 204 e 200. Vale lembrar disso antes de concluir que
+"o funil não está medindo".

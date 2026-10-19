@@ -1,9 +1,8 @@
-import { ImageResponse } from "next/og";
 import { and, eq, sql, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { visibleTo } from "@/lib/authz";
 import { users, libraryEntries } from "@/lib/db/schema";
-import { Moldura, CapaTile, capas, fontes, TAMANHO, OSSO, FRACO } from "@/lib/og";
+import { poster, Moldura, CapaTile, capas, TAMANHO, OSSO, FRACO } from "@/lib/og";
 
 export const runtime = "nodejs";
 export const size = TAMANHO;
@@ -37,7 +36,7 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
     .limit(1);
 
   if (!dono) {
-    return new ImageResponse(
+    return poster(
       (
         <Moldura>
           <div
@@ -53,7 +52,6 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
           </div>
         </Moldura>
       ),
-      { ...size, fonts: fontes() },
     );
   }
 
@@ -89,7 +87,7 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
 
   const parede = await capas(linhas.map((l) => l.coverUrl), 7);
 
-  return new ImageResponse(
+  return poster(
     (
       <Moldura>
         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
@@ -126,6 +124,5 @@ export default async function Image({ params }: { params: Promise<{ handle: stri
         </div>
       </Moldura>
     ),
-    { ...size, fonts: fontes() },
   );
 }

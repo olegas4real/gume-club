@@ -19,6 +19,14 @@ import {
 
 export const dynamic = "force-dynamic";
 
+/** O Google mostrava "Gume" como título desta página, e um resultado sem promessa
+ *  não ganha clique. Ver a entrada de SEO no ai/DECISIONS.md. */
+export const metadata = {
+  title: "Explorar livros e leitores",
+  description:
+    "Descubra livros, editoras e estantes de outros leitores. A lista muda a cada visita: quem lê devagar aparece tanto quanto quem lê rápido.",
+};
+
 /**
  * ════════════════════════════════════════════════════════════════════
  *  EXPLORAR, COM UM MENU DE VITRINES. A galeria ganhou corredores.

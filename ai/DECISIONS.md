@@ -5875,6 +5875,23 @@ docs/android.md), o apoio via Stripe some; no site, nada muda.
   não tem o cookie e mostraria o apoio. O revisor da Play testa pelo launcher, que passa
   pelo start URL. Documentado em docs/android.md.
 
+## Toda página pública diz o que é no Google
+
+Search Console de 2026-10-18: 2.260 impressões em 28 dias, **15 cliques** (0,7% de
+cliques). A posição média é 4,4, então o Gume APARECE: o que falta é o resultado
+convencer. E não convencia porque metade das páginas públicas aparecia no Google com o
+título "Gume", sem dizer o que havia ali.
+
+- `app/layout.tsx` ganhou `title.template` (`"%s · Gume"`) e um `default` que carrega a
+  promessa, não só a marca. As páginas que escreviam "· Gume" à mão perderam o sufixo,
+  que agora vem do template (senão duplicaria).
+- `/explorar`, `/queridinhos`, `/contribuidores` e `/listas` ganharam título e descrição
+  próprios. Antes não tinham nenhum, e herdavam o da casa.
+
+Contexto que esta entrada registra para não se perder: as impressões vêm quase todas de
+fichas de livro de cauda longa (teses, catálogos de exposição, livros raros), que é o
+catálogo fazendo o trabalho dele. O que a home disputa ("gume") é palavra comum em
+português, e não vai render clique tão cedo.
 ## O PostHog entra na medição, nas mesmas regras dos outros
 
 Pedido do dono. O GA diz de onde as pessoas vêm; o PostHog diz o que elas fazem depois

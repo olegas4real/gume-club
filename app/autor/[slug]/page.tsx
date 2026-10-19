@@ -54,7 +54,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const autor = await getAutor((await params).slug);
   if (!autor) return {};
-  return { title: `${autor.name} · Gume`, description: `As obras de ${autor.name}.` };
+  return { title: `${autor.name}`, description: `As obras de ${autor.name}.` };
 }
 
 export default async function Autor({ params }: { params: Promise<{ slug: string }> }) {

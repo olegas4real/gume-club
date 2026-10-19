@@ -9,7 +9,7 @@ import { RoadmapVote } from "@/components/roadmap-vote";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "O que vem por aí · Gume",
+  title: "O que vem por aí",
   description: "O que está planejado, em andamento, e as ideias. Vota quem quiser.",
 };
 

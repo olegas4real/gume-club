@@ -5,7 +5,7 @@ import { Empty } from "@/components/empty";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "O que já chegou · Gume",
+  title: "O que já chegou",
   description: "O que era ideia, virou planejado, e um dia saiu do ar direto pro app.",
 };
 

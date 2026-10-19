@@ -13,7 +13,7 @@ import { cor as matizDe } from "@/lib/badges-view";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "As insígnias · Gume",
+  title: "As insígnias",
   description: "O que cada uma é, e como se ganha.",
 };
 

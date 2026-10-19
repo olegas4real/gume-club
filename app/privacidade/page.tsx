@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Mark } from "@/components/mark";
 
 export const metadata = {
-  title: "Privacidade · Gume",
+  title: "Privacidade",
   description: "O que o Gume guarda sobre você, para quê, e como levar embora ou apagar.",
 };
 

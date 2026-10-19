@@ -37,8 +37,42 @@ import { imgSrc } from "@/lib/imagens";
  * ════════════════════════════════════════════════════════════════════
  */
 
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  O PONTO E A BARRA CODIFICADOS NÃO ENTRAM.
+ *
+ *  `GET /robots%2etxt` devolvia **erro 500**, e não 404: em algum ponto do
+ *  caminho o Next desfaz o `%2e` e passa a enxergar `/robots.txt`, mas quem já
+ *  tinha sido escolhido para atender era a rota dinâmica de perfil. As duas
+ *  discordam sobre o que a resposta é, e o Next aborta com "Invariant app-page
+ *  handler received invalid cache entry APP_ROUTE" (Sentry 7789689274).
+ *
+ *  É um defeito do Next, e não dá para consertar daqui. Dá para a requisição
+ *  nunca chegar lá.
+ *
+ *  ═══ POR QUE ISTO NÃO ATRAPALHA NINGUÉM DE VERDADE ═══
+ *
+ *  Handle é `^[a-z][a-z0-9-]{1,29}$` (ver lib/handles.ts) e slug é da mesma
+ *  família: nenhum endereço do Gume tem ponto ou barra dentro de um pedaço do
+ *  caminho, então nenhum precisa codificar os dois. Um `%C3%A3` de acento
+ *  continua passando — a regra mira SÓ nas duas codificações que fazem
+ *  normalizador de rota discordar de si mesmo, que é a sondagem clássica de
+ *  travessia de caminho.
+ *
+ *  404 e não redirecionamento: `/robots%2etxt` não é um endereço com erro de
+ *  digitação de alguém, é um robô procurando buraco. Mandar ele para o lugar
+ *  certo é dar a resposta que ele veio buscar.
+ * ════════════════════════════════════════════════════════════════════
+ */
+const PONTO_OU_BARRA_CODIFICADOS = /%2[ef]/i;
+
 export function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+  const res = PONTO_OU_BARRA_CODIFICADOS.test(req.nextUrl.pathname)
+    ? new NextResponse("Não encontrado.", {
+        status: 404,
+        headers: { "content-type": "text/plain; charset=utf-8" },
+      })
+    : NextResponse.next();
 
   /**
    * ═══ A MARCA DE "ESTOU DENTRO DO APP ANDROID" ═══

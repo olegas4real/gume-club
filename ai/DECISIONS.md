@@ -5983,3 +5983,25 @@ passam sem violação nenhuma, e o `tr/?ev=PageView` sai com a UTM inteira e com
 O 503 que aparece no navegador do dono é bloqueador dele, e não o site: pela linha de
 comando os mesmos endereços respondem 204 e 200. Vale lembrar disso antes de concluir que
 "o funil não está medindo".
+
+## Caminho com ponto ou barra codificados é 404, e não 500
+
+`GET /robots%2etxt` devolvia **erro 500** (Sentry 7789689274). Em algum ponto do caminho
+o Next desfaz o `%2e` e passa a enxergar `/robots.txt`, mas quem já tinha sido escolhido
+para atender era a rota dinâmica de perfil. As duas discordam sobre o que a resposta é, e
+o Next aborta: "Invariant app-page handler received invalid cache entry APP_ROUTE".
+
+É defeito do Next, e não dá para consertar daqui. Dá para a requisição nunca chegar lá: o
+middleware recusa, com 404, caminho que traga `%2e` ou `%2f`.
+
+**Por que isso não atrapalha ninguém de verdade.** Handle é `^[a-z][a-z0-9-]{1,29}$` (ver
+lib/handles.ts) e slug é da mesma família: nenhum endereço do Gume tem ponto ou barra
+dentro de um pedaço do caminho, então nenhum precisa codificar os dois. Acento codificado
+(`%C3%A3`) continua passando — a regra mira SÓ nas duas codificações que fazem
+normalizador de rota discordar de si mesmo, que é a sondagem clássica de travessia de
+caminho. O teste cobra os dois lados: o que tem que barrar e o que tem que passar.
+
+**404 e não redirecionamento.** `/robots%2etxt` não é erro de digitação de ninguém: é um
+robô procurando buraco. Mandar ele para o endereço certo é entregar a resposta que ele
+veio buscar. E o 404 continua levando os cabeçalhos de segurança, como toda resposta que
+sai do middleware.

@@ -6084,3 +6084,49 @@ E ele some junto com o resto: sem `NEXT_PUBLIC_POSTHOG_KEY` o script nunca entra
 página, `window.posthog` não existe, e a chamada não faz nada. Bloqueador de anúncio
 derruba o PostHog numa fatia real dos navegadores — é esperado, e é por isso que o funil
 do banco continua sendo quem conta a verdade.
+
+
+## Quantos desta lista você leu, e por que esse número não é um placar
+
+"Pensei em fazer no Gume igual letterboxd, quando tem uma lista, aparece quais da lista
+você já leu e quantos % dessa lista você já leu, + o número x de xx" — o dono.
+
+A primeira resposta foi uma objeção, e ela estava errada pela metade. A objeção: numa
+lista CANÔNICA, que é a mesma para todo mundo (os Queridinhos), uma porcentagem vira
+placar no segundo seguinte, porque "li 73% do Top 100" é comparável com o 12% de
+qualquer outra pessoa. O que a objeção não viu: **privado é privado.** Se o app nunca
+sabe o número de ninguém além de quem está na frente da tela, não existe o par que faria
+a comparação. Decisão do dono, e ela vale para toda lista ativa.
+
+**A garantia não é um filtro, é a ausência de uma pergunta.** `lib/progresso.ts` não tem
+parâmetro para pedir o progresso de outra pessoa: o id sai do viewer e de mais lugar
+nenhum. Trocar um UUID no corpo da requisição não leva a lugar nenhum, porque não há
+requisição que aceite um. Dois testes estruturais defendem isso: um quebra o build se
+uma consulta do módulo ler `library_entries` sem amarrar em `viewer.id`, outro quebra se
+alguma assinatura passar a aceitar `ownerId`/`userId`.
+
+**Por que o módulo é novo em vez de morar em `lib/listas.ts`.** Lá existe uma trava que
+quebra o build se qualquer consulta do módulo contar em volta de `readings` ou
+`library_entries`, e ela protege a recusa mais antiga do projeto. Esta conta não é dessa
+família (conta LIVROS SEUS, não gente), mas abrir mais uma exceção naquele regex deixaria
+a regra global um pouco mais frouxa para sempre. Módulo novo, trava nova, as duas
+inteiras.
+
+**Lido é leitura terminada** (`finished_on`), a mesma régua de `lib/stats.ts`. Ter o
+livro não conta, estar lendo não conta, e **abandonar não conta**: o contrário
+transformaria desistir num jeito de fechar a lista. Reler não infla, porque a pergunta é
+quais e não quantas vezes.
+
+**Rejeitado: a barra de progresso.** Barra pela metade pede para ser preenchida, e aí a
+lista deixa de ser convite e vira tarefa. É a mesma família da ofensiva e da meta de
+livros por mês, uma casa adiante. O número informa; a barra cobra.
+
+**Rejeitado: apagar as capas não lidas**, que era o precedente do mangá (o volume que
+falta aparece em cinza). Não serve aqui: numa lista de cem em que você leu oito, apagar
+noventa e duas capas não lê como lacuna, lê como página quebrada. O mangá funciona porque
+lá a regra é ter quase tudo. Então marca-se o LIDO, com tinta cheia e não com o accent:
+trinta marcas coloridas num Top 100 seriam trinta pontos disputando a tela.
+
+**Fora:** progresso na sua própria estante (ninguém pergunta isso da própria curadoria),
+progresso no card da grade de /listas, e qualquer tela que ponha o progresso de duas
+pessoas lado a lado.

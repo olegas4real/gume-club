@@ -193,3 +193,7 @@ O app Android é o site embrulhado (ver docs/android.md e a entrada no ai/DECISI
 - [x] **1. Manifesto completo, ícone maskable, assetlinks por variável de ambiente.** O vínculo site ↔ app, desligado de fábrica.
 - [x] **2. O apoio some dentro do app.** A Play exige o billing dela para benefício digital; cookie `gume_app` via `?origem=android`, as telas escondem e as rotas de checkout recusam.
 - [ ] **3. Só o dono: empacotar e publicar.** Bubblewrap, Play Console (US$ 25), teste fechado (12 testadores, 14 dias), fingerprints no Railway. Roteiro em docs/android.md.
+
+## Progresso na lista (2026-10-19)
+
+- [x] **Quantos desta lista você já leu.** Em toda lista que não é sua (a estante montada por alguém, os Queridinhos), quem entrou vê "você leu 12 de 40, 30%" e as capas que já passaram por ele ganham uma marca. O número é só de quem olha, e o app não tem como perguntar o de outra pessoa: `lib/progresso.ts` não aceita o id de ninguém além do viewer, e dois testes estruturais quebram o build se isso mudar. Sem barra de progresso, e nada disso na sua própria estante. Ver a entrada em ai/DECISIONS.md.

@@ -13,6 +13,7 @@ export function CoverWall({
   opinions = {},
   de,
   numerada = false,
+  lidos,
 }: {
   books: ShelfBook[];
   opinions?: Record<string, Opinion>;
@@ -20,6 +21,12 @@ export function CoverWall({
   de?: string;
   /** Estante NUMERADA: cada card ganha a posição (1, 2, 3), na ordem recebida. */
   numerada?: boolean;
+  /**
+   * AS OBRAS QUE QUEM OLHA JÁ LEU, para a marca na capa. Indefinido é o normal
+   * (a sua própria estante, o feed): ninguém marca nada. Ver lib/progresso.ts,
+   * que é o único lugar que sabe responder isso, e só sobre o próprio viewer.
+   */
+  lidos?: Set<string>;
 }) {
   return (
     <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
@@ -30,6 +37,7 @@ export function CoverWall({
           opinion={opinions[b.workId]}
           de={de}
           numero={numerada ? i + 1 : null}
+          euLi={lidos ? lidos.has(b.workId) : null}
         />
       ))}
     </ul>

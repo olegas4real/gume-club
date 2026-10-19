@@ -5890,3 +5890,14 @@ que chegam (telas, caminhos, funis de produto). Entra pelo mesmo molde da mediç
 
 De carona: a pasta `conteudo/` (notas pessoais do dono no disco) entrou no .gitignore e
 na lista FORA de lib/nome-do-repo.test.ts, como 4render/ e operaçãomaiscapas/.
+
+### E o pixel da Meta, pelo mesmo molde
+
+O dono vai rodar anúncio no Instagram, e sem pixel a plataforma otimiza no escuro. Ele
+entra com as mesmas três travas: desligado sem `NEXT_PUBLIC_FB_PIXEL_ID`, tag e portas
+da CSP pela mesma variável, e nomeado na /privacidade com teste cobrando.
+
+**Só `PageView`.** Nenhum evento de conversão, nenhum parâmetro de conteúdo: o Gume não
+vende nada, e mandar para a Meta o que a pessoa LÊ é exatamente o que o produto promete
+não fazer. Se um dia alguém quiser otimizar por cadastro, isso é uma decisão nova, e
+precisa passar por aqui antes.

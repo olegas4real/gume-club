@@ -42,7 +42,8 @@ const SERVICOS: { quem: string; para: string }[] = [
   },
   {
     quem: "PostHog",
-    para: "mede o que é usado dentro do site (que telas abrem, que caminhos travam), para melhorar o produto. Usa cookies.",
+    para:
+      "mede o que é usado dentro do site (que telas abrem, que caminhos travam), para melhorar o produto. Também registra o momento em que uma conta é criada, com o nome do anúncio que trouxe a pessoa, para sabermos qual anúncio funcionou. Vai o nome do anúncio, nunca o seu. Usa cookies.",
   },
   {
     quem: "Google Analytics e Microsoft Clarity",

@@ -6051,3 +6051,36 @@ Contando por linha, toda peça teria visita e zero cadastro, para sempre.
 Decisão deliberada de NÃO fazer: nada de `users.origem`. Seria um segundo sistema de
 atribuição, ligado à pessoa, ao lado de um que já existe e que escolheu não ser. O funil
 responde a pergunta sem isso.
+
+## O cadastro é contado no PostHog, e só o cadastro
+
+O funil do próprio banco (eventos_funil) conta a verdade, e vai continuar contando. O
+PostHog ganha UM evento, `cadastrou`, por um motivo específico: o funil visual (visita →
+cadastro, quebrado por criativo) sai pronto lá, sem ninguém montar consulta, e é o que o
+dono vai olhar de manhã enquanto o anúncio roda.
+
+**Só o cadastro.** O PostHog já captura visita e clique sozinho (`$pageview` e
+autocapture). Mandar o funil inteiro seria a mesma visita contada duas vezes, e um número
+dobrado é PIOR que um número que falta: ele parece certo, e ninguém vai conferir. O que
+falta lá é a CONVERSÃO — justamente o que nenhuma captura automática adivinha, porque ela
+acontece depois de uma volta pelo Google.
+
+**A porta é uma só.** O cadastro é registrado em dois pontos de app/entrar/page.tsx, e vai
+ganhar um terceiro no dia em que entrar outro jeito de criar conta. Então quem avisa o
+PostHog é o próprio `registrarEvento()` (lib/funil-client.ts), e não cada tela: a chamada
+esquecida não quebra nada, só faz o funil mentir para menos, que é o jeito mais difícil de
+perceber. Um teste estrutural proíbe `posthog.capture` fora desse arquivo.
+
+**O que vai: o nome do cartaz, nunca quem passou na frente.** Vão o rótulo do anúncio e o
+balde de origem. A pessoa continua anônima (`person_profiles: "identified_only"`, e
+ninguém chama `identify`). Isso NÃO relitiga a decisão do pixel da Meta: lá a recusa é
+mandar para a plataforma de anúncio o que a pessoa LÊ, e aqui não vai nada da pessoa nem
+do que ela lê.
+
+A /privacidade passou a dizer isso em frase humana, e lib/privacidade.test.ts continua
+cobrando que todo medidor esteja nomeado.
+
+E ele some junto com o resto: sem `NEXT_PUBLIC_POSTHOG_KEY` o script nunca entra na
+página, `window.posthog` não existe, e a chamada não faz nada. Bloqueador de anúncio
+derruba o PostHog numa fatia real dos navegadores — é esperado, e é por isso que o funil
+do banco continua sendo quem conta a verdade.

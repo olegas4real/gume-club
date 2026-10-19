@@ -646,6 +646,27 @@ export function Painel({ dados, itensRoadmap }: { dados: Dados; itensRoadmap: Ro
           </div>
         )}
 
+        {/* A peça do anúncio. Só aparece quando existe: sem campanha rodando, um
+            bloco vazio escrito "por peça" só ocupa espaço e confunde. */}
+        {funil.porPeca.length > 0 && (
+          <div className="mt-4 rounded-2xl border p-5" style={{ borderColor: "var(--color-rule)", background: "var(--surface-1)" }}>
+            <div className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">
+              por peça de anúncio, visitas → cadastros
+            </div>
+            <div className="mt-4 flex flex-col gap-1.5 text-[13px] text-[var(--color-ink-soft)]">
+              {funil.porPeca.map((p) => (
+                <div key={`${p.campanha}/${p.criativo}`} className="flex items-baseline justify-between gap-4 tabular">
+                  <span>
+                    {p.criativo}
+                    <span className="ml-2 text-[11px] text-[var(--color-ink-faint)]">{p.campanha}</span>
+                  </span>
+                  <span>{n(p.visitas)} → {n(p.cadastros)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
           <div className="rounded-2xl border p-5" style={{ borderColor: "var(--color-rule)", background: "var(--surface-1)" }}>
             <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-ink-faint)]">visitas por dia</span>

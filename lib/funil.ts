@@ -64,6 +64,34 @@ export function normalizarOrigem(bruto: unknown): Bucket | null {
   return "outro";
 }
 
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  O RÓTULO DA PEÇA: `utm_campaign` e `utm_content`. Ver a migration 0070.
+ *
+ *  Por que estes podem ser gravados e o referrer não: eles são rótulos que
+ *  NÓS escrevemos, no nosso próprio gerenciador de anúncios, iguais para
+ *  todo mundo que clica naquela peça. "angulos-out2026" e "estante" são o
+ *  nome do cartaz, e não quem passou na frente dele.
+ *
+ *  Não dá para ser lista fechada como os baldes de `origem`: campanha nova
+ *  nasce toda semana, e uma lista no código obrigaria um deploy para medir
+ *  um anúncio. Então o limite é de FORMA, e não de conteúdo — minúsculas,
+ *  só `a-z 0-9 - _`, no máximo 40. O que não couber vira nulo, inteiro: um
+ *  `utm_content` forjado com um e-mail dentro não é "limpo e gravado pela
+ *  metade", ele simplesmente não vira linha.
+ * ════════════════════════════════════════════════════════════════════
+ */
+const ROTULO_MAXIMO = 40;
+
+export function normalizarRotulo(bruto: unknown): string | null {
+  if (typeof bruto !== "string") return null;
+  const limpo = bruto.trim().toLowerCase();
+  if (!limpo || limpo.length > ROTULO_MAXIMO) return null;
+  // Tudo ou nada: sanear o que sobra depois de tirar o que não era para estar
+  // ali grava um rótulo que ninguém escreveu, e que não casa com nenhum anúncio.
+  return /^[a-z0-9_-]+$/.test(limpo) ? limpo : null;
+}
+
 export function ehTipoDeEvento(v: unknown): v is TipoDeEvento {
   return typeof v === "string" && (TIPOS_DE_EVENTO as readonly string[]).includes(v);
 }
@@ -82,11 +110,16 @@ export async function registrarEventoFunil(dados: {
   origem: Bucket | null;
   modoInicial: ModoInicial | null;
   sessaoAnon: string;
+  campanha?: string | null;
+  criativo?: string | null;
 }): Promise<void> {
   try {
     await db.execute(sql`
-      insert into eventos_funil (tipo, origem, modo_inicial, sessao_anon)
-      values (${dados.tipo}, ${dados.origem}, ${dados.modoInicial}, ${dados.sessaoAnon}::uuid)
+      insert into eventos_funil (tipo, origem, modo_inicial, sessao_anon, campanha, criativo)
+      values (
+        ${dados.tipo}, ${dados.origem}, ${dados.modoInicial}, ${dados.sessaoAnon}::uuid,
+        ${dados.campanha ?? null}, ${dados.criativo ?? null}
+      )
     `);
   } catch {
     // Ver o cabeçalho: o caderninho é problema nosso, nunca da pessoa navegando.

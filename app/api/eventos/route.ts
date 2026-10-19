@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { RATES, limitar, quem, varrer } from "@/lib/rate-limit";
 import {
-  registrarEventoFunil, normalizarOrigem, ehTipoDeEvento, ehModoInicial,
+  registrarEventoFunil, normalizarOrigem, normalizarRotulo, ehTipoDeEvento, ehModoInicial,
   SESSAO_ANON_COOKIE, SESSAO_ANON_MAX_AGE,
 } from "@/lib/funil";
 
@@ -41,6 +41,11 @@ export async function POST(req: Request): Promise<Response> {
 
   const origemBruta = (corpo as Record<string, unknown>).origem;
   const modoBruto = (corpo as Record<string, unknown>).modoInicial;
+  // O rótulo da peça do anúncio. Mesma lei do resto do corpo: o que não tem a
+  // forma esperada vira null, e nunca derruba o evento inteiro — medir de onde
+  // veio é melhor que não medir nada porque a campanha veio torta.
+  const campanhaBruta = (corpo as Record<string, unknown>).campanha;
+  const criativoBruto = (corpo as Record<string, unknown>).criativo;
 
   const sessaoAnon = lerOuCriarSessaoAnon(req);
 
@@ -51,6 +56,8 @@ export async function POST(req: Request): Promise<Response> {
     // um valor mandado por engano é ignorado, e não gravado por acidente.
     modoInicial: tipo === "viu_entrar" && ehModoInicial(modoBruto) ? modoBruto : null,
     sessaoAnon: sessaoAnon.valor,
+    campanha: normalizarRotulo(campanhaBruta),
+    criativo: normalizarRotulo(criativoBruto),
   });
 
   const res = NextResponse.json({ ok: true });

@@ -6019,3 +6019,35 @@ esse pixel, e o que ele acrescenta é exatamente o que o produto diz não fazer.
 
 Está escrito no middleware.ts porque a tentação de calar o console liberando mais um host
 é real, e quem for fazer isso merece ler o motivo antes.
+
+## O criativo entra no funil: "de que rede" parou de bastar
+
+A migration 0069 montou o funil de entrada e respondeu "de que REDE vêm os cadastros".
+Com três criativos pagos rodando no mesmo Instagram, isso parou de responder qualquer
+coisa: os três caem no balde "instagram", e o relatório volta a ser o número inútil que o
+funil existe para matar — agora um degrau acima. A pergunta que paga a conta do anúncio é
+**qual PEÇA traz quem vira gente**.
+
+**Por que `utm_campaign` e `utm_content` podem ser gravados, e o referrer não.** A 0069
+recusa a URL crua de referrer com um motivo específico: ela mesma pode identificar (um
+link mandado numa DM é um link só). `utm_campaign` e `utm_content` são de outra natureza:
+são rótulos que NÓS escrevemos, no nosso gerenciador de anúncios, iguais para todo mundo
+que clica naquela peça. São o nome do cartaz, e não quem passou na frente dele.
+
+Ainda assim chegam pela URL, e URL é texto de fora. Passam por `normalizarRotulo()`:
+minúsculas, só `a-z 0-9 - _`, no máximo 40 caracteres. **Tudo ou nada** — sanear o que
+sobra depois de tirar o que não era para estar ali grava um rótulo que ninguém escreveu e
+que não casa com anúncio nenhum, que é um dado errado parecendo certo. Um `utm_content`
+forjado com um e-mail dentro vira nulo, e o evento continua valendo.
+
+**A tabela continua sem coluna que aponte para uma pessoa**, continua fora do schema.ts, e
+o teste da 0069 foi repetido na fatia nova de propósito: a hora em que alguém acrescenta
+um `user_id` "só para cruzar com o cadastro" é exatamente a hora em que a tabela cresce.
+
+**A leitura costura pela sessão, como o `porOrigem` já fazia.** A peça é observada na
+VISITA (é ali que a URL traz o utm) e o cadastro acontece depois, sem parâmetro nenhum.
+Contando por linha, toda peça teria visita e zero cadastro, para sempre.
+
+Decisão deliberada de NÃO fazer: nada de `users.origem`. Seria um segundo sistema de
+atribuição, ligado à pessoa, ao lado de um que já existe e que escolheu não ser. O funil
+responde a pergunta sem isso.

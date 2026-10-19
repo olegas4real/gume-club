@@ -292,6 +292,13 @@ export type Painel = {
     taxaCliqueEntrar: number | null;
     taxaEntrarCadastro: number | null;
     porOrigem: { origem: string; visitas: number; cliques: number; viuEntrar: number; cadastros: number }[];
+    /**
+     * A PEÇA do anúncio, que a origem sozinha não distingue: três criativos no
+     * mesmo Instagram caem todos no balde "instagram". Vazio quando não há
+     * anúncio rodando, e é assim que tem que ser — a linha só existe quando
+     * alguém pagou para ela existir. Ver a migration 0070.
+     */
+    porPeca: { campanha: string; criativo: string; visitas: number; cadastros: number }[];
     visitasPorDia: Ponto[];
     cadastrosPorDia: Ponto[];
   };
@@ -834,6 +841,8 @@ async function getFunil(): Promise<Painel["funil"]> {
     serieDoFunil("cadastro_ok"),
   ]);
 
+  const porPeca = await getPorPeca();
+
   const taxa = (de: number, para: number): number | null => (de > 0 ? para / de : null);
 
   return {
@@ -845,9 +854,51 @@ async function getFunil(): Promise<Painel["funil"]> {
     // Mais cadastros primeiro: é a pergunta que motivou a fatia inteira —
     // "de onde vêm os cadastros", e não só "de onde vêm as visitas".
     porOrigem: [...porOrigemMapa.values()].sort((a, b) => b.cadastros - a.cadastros || b.visitas - a.visitas),
+    porPeca,
     visitasPorDia,
     cadastrosPorDia,
   };
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  QUAL PEÇA DO ANÚNCIO TROUXE QUEM VIROU GENTE.
+ *
+ *  Mesma lei do `porOrigem` logo acima, e pelo mesmo motivo: a peça é
+ *  observada na VISITA (é ali que a URL traz o utm), e o cadastro acontece
+ *  depois, já sem parâmetro nenhum na URL. Contar por linha diria que a peça
+ *  teve visita e zero cadastro, sempre.
+ *
+ *  Então a primeira peça vista na sessão vale para a sessão inteira, e cada
+ *  passo conta SESSÕES distintas — nunca linhas. Uma pessoa que recarrega a
+ *  home cinco vezes é uma visita, e não cinco.
+ * ════════════════════════════════════════════════════════════════════
+ */
+async function getPorPeca(): Promise<Painel["funil"]["porPeca"]> {
+  const linhas = await db.execute<{
+    campanha: string; criativo: string; visitas: number; cadastros: number;
+  }>(sql`
+    with peca_por_sessao as (
+      select sessao_anon,
+             (array_agg(campanha order by criado_em) filter (where campanha is not null))[1] as campanha,
+             (array_agg(criativo order by criado_em) filter (where criativo is not null))[1] as criativo
+        from eventos_funil
+       where criado_em >= now() - interval '30 days'
+       group by sessao_anon
+    )
+    select p.campanha,
+           coalesce(p.criativo, 'sem-criativo') as criativo,
+           count(distinct e.sessao_anon) filter (where e.tipo = 'visita_home')::int as visitas,
+           count(distinct e.sessao_anon) filter (where e.tipo = 'cadastro_ok')::int as cadastros
+      from eventos_funil e
+      join peca_por_sessao p using (sessao_anon)
+     where e.criado_em >= now() - interval '30 days'
+       and p.campanha is not null
+     group by 1, 2
+  `);
+
+  // Mais cadastros primeiro: é a pergunta que paga a conta do anúncio.
+  return linhas.sort((a, b) => b.cadastros - a.cadastros || b.visitas - a.visitas);
 }
 
 /** Uma série diária de um tipo de evento, contando SESSÕES distintas, não linhas. */

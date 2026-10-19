@@ -28,6 +28,7 @@ export function Medicao() {
   const cloudflare = process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN;
   const clarity = process.env.NEXT_PUBLIC_CLARITY_ID;
   const ga = process.env.NEXT_PUBLIC_GA_ID;
+  const posthog = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
   return (
     <>
@@ -59,6 +60,30 @@ export function Medicao() {
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
               y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
             })(window, document, "clarity", "script", "${clarity}");`,
+          }}
+        />
+      )}
+
+      {/**
+       * ═══ POSTHOG: PRODUTO, E NÃO AUDIÊNCIA ═══
+       *
+       * O GA diz DE ONDE as pessoas vêm; o PostHog diz O QUE elas fazem depois
+       * que chegam (que telas abrem, onde param, que funil completa). O loader é
+       * o snippet oficial reduzido ao que a gente usa: ele registra o init numa
+       * fila e baixa o script dos assets; nada roda antes de a página pintar.
+       *
+       * As escolhas de privacidade, escritas aqui porque são decisão e não
+       * padrão: `person_profiles: "identified_only"` (visitante anônimo não vira
+       * perfil), e `disable_session_recording` (replay é papel do Clarity; ver
+       * ai/DECISIONS.md — coletar duas vezes é coletar demais). O host é o dos
+       * EUA, o mesmo do painel do dono; quem auto-hospeda não tem a variável e
+       * não manda um byte.
+       */}
+      {posthog && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `!function(t,e){if(!e.__SV){window.posthog=e,e._i=[],e.init=function(i,s,a){var p=t.createElement("script");p.type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js";var r=t.getElementsByTagName("script")[0];r.parentNode.insertBefore(p,r),e._i.push([i,s,a])},e.__SV=1}}(document,window.posthog||[]);
+            posthog.init("${posthog}",{api_host:"https://us.i.posthog.com",defaults:"2025-05-24",person_profiles:"identified_only",disable_session_recording:true});`,
           }}
         />
       )}

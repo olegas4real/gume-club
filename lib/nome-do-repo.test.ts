@@ -33,6 +33,11 @@ const FORA = [
   ".git",
   "lib/db/migrations",
   "pnpm-lock.yaml",
+  // Material pessoal do dono que mora no disco, fora do controle de versão (ver o
+  // .gitignore): nota antiga dele pode citar o nome velho, e não é o repo falando.
+  "conteudo",
+  "dosto",
+  "gume-painel.md",
   ESTE_ARQUIVO,
 ];
 

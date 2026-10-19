@@ -5874,3 +5874,19 @@ docs/android.md), o apoio via Stripe some; no site, nada muda.
 - **Risco aceito**: um deep link aberto no app antes do primeiro launch pelo ícone ainda
   não tem o cookie e mostraria o apoio. O revisor da Play testa pelo launcher, que passa
   pelo start URL. Documentado em docs/android.md.
+
+## O PostHog entra na medição, nas mesmas regras dos outros
+
+Pedido do dono. O GA diz de onde as pessoas vêm; o PostHog diz o que elas fazem depois
+que chegam (telas, caminhos, funis de produto). Entra pelo mesmo molde da medição toda:
+
+- **Desligado de fábrica**: só existe com `NEXT_PUBLIC_POSTHOG_KEY` no ambiente. A tag
+  (components/medicao.tsx) e as portas da CSP (middleware.ts) ligam pela MESMA variável.
+- **Sem replay de sessão** (`disable_session_recording`): replay é papel do Clarity, e
+  coletar duas vezes é coletar demais (a mesma régua do Sentry).
+- **Visitante anônimo não vira perfil** (`person_profiles: "identified_only"`).
+- A /privacidade nomeia o PostHog, e lib/privacidade.test.ts cobra isso.
+- A chave é pública por desenho (vai no HTML), como o G- do GA.
+
+De carona: a pasta `conteudo/` (notas pessoais do dono no disco) entrou no .gitignore e
+na lista FORA de lib/nome-do-repo.test.ts, como 4render/ e operaçãomaiscapas/.

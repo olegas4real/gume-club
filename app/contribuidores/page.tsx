@@ -11,6 +11,14 @@ import { getViewer } from "@/lib/viewer";
 
 export const dynamic = "force-dynamic";
 
+/** O Google mostrava "Gume" como título desta página, e um resultado sem promessa
+ *  não ganha clique. Ver a entrada de SEO no ai/DECISIONS.md. */
+export const metadata = {
+  title: "Quem faz o Gume",
+  description:
+    "Quem escreve o código e quem cuida do catálogo, lado a lado e com o mesmo peso. O Gume é aberto, e se constrói com quem lê.",
+};
+
 /**
  * CONTRIBUIDORES. Duas listas, o mesmo peso visual, a mesma tipografia.
  *

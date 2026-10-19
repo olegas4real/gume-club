@@ -5,7 +5,7 @@ import { ChamadaConta } from "@/components/chamada-conta";
 import { getViewer } from "@/lib/viewer";
 
 export const metadata = {
-  title: "Sobre · Gume",
+  title: "Sobre",
   description: "A mente leitora nunca perde o fio.",
 };
 

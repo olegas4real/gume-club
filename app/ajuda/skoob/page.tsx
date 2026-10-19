@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Trazer a estante do Skoob · Gume",
+  title: "Trazer a estante do Skoob",
   description:
     "O Skoob não tem exportação. Os caminhos que funcionam hoje para trazer seus livros de lá para o Gume.",
 };

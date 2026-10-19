@@ -12,6 +12,14 @@ import { GuardarCuradoria } from "@/components/guardar-curadoria";
 
 export const dynamic = "force-dynamic";
 
+/** O Google mostrava "Gume" como título desta página, e um resultado sem promessa
+ *  não ganha clique. Ver a entrada de SEO no ai/DECISIONS.md. */
+export const metadata = {
+  title: "Os queridinhos da comunidade",
+  description:
+    "Os livros que os leitores do Gume mais gostaram e adoraram. Ninguém edita esta lista: ela se monta sozinha, pela palavra de quem leu.",
+};
+
 /**
  * ════════════════════════════════════════════════════════════════════
  *  /queridinhos: o top 100 da comunidade, montado por ela mesma.

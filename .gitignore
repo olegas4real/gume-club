@@ -72,6 +72,10 @@ scripts/importar-biblioteca.mjs
 # material bruto local (pesquisa de catálogo, site da 4/RL): nunca do repo
 operaçãomaiscapas/
 4render/
+# notas pessoais do dono (vault/Obsidian) que às vezes moram dentro desta pasta
+conteudo/
+dosto/
+gume-painel.md
 
 # Páginas de lista salvas à mão (material bruto da semeadura; não se versiona)
 seed/listas-goodreads/

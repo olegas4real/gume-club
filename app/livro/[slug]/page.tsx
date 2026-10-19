@@ -88,7 +88,7 @@ export async function generateMetadata({
     : `${titulo}. Guarde na sua estante no Gume.`;
 
   return {
-    title: `${titulo} · Gume`,
+    title: `${titulo}`,
     description,
     openGraph: { title: titulo, description },
     twitter: { title: titulo, description },

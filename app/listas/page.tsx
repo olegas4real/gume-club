@@ -8,6 +8,14 @@ import { getTodasAsListas } from "@/lib/listas";
 
 export const dynamic = "force-dynamic";
 
+/** O Google mostrava "Gume" como título desta página, e um resultado sem promessa
+ *  não ganha clique. Ver a entrada de SEO no ai/DECISIONS.md. */
+export const metadata = {
+  title: "Listas de livros feitas por leitores",
+  description:
+    "Listas montadas por quem lê, por tema, fase ou vibe. Guarde as que gostar: elas continuam vivas quando quem fez acrescenta um livro.",
+};
+
 /**
  * ════════════════════════════════════════════════════════════════════
  *  /listas: TODAS as listas públicas, numa galeria só.

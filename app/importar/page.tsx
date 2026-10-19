@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
  * entrega uma estante mutilada, que ela vai ter que consertar à mão para sempre.
  */
 export const metadata = {
-  title: "Trazer a sua estante · Gume",
+  title: "Trazer a sua estante",
   description: "Os seus livros são seus, e eles vêm inteiros.",
 };
 

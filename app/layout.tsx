@@ -55,8 +55,17 @@ export const metadata: Metadata = {
   // A base das URLs absolutas (Open Graph, Twitter). Sem ela, o Next usa localhost
   // e as imagens de compartilhamento quebram fora da máquina. Vem do APP_URL.
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
-  title: "Gume",
-  description: "A mente leitora nunca perde o fio.",
+  /**
+   * O `template` dá o sufixo "· Gume" a toda página que define o próprio título, e o
+   * `default` é o da home. Antes, toda página sem metadata própria aparecia no Google
+   * como "Gume", sem dizer o que era: resultado sem promessa não ganha clique.
+   */
+  title: {
+    default: "Gume · Seu registro de leitura, sem anúncio e sem nota média",
+    template: "%s · Gume",
+  },
+  description:
+    "Registre o que você lê, monte listas e descubra livros com outros leitores. De graça, sem anúncio, e a sua estante vai embora com você quando quiser.",
 };
 
 /**

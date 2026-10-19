@@ -87,7 +87,7 @@ export async function generateMetadata({
    * ════════════════════════════════════════════════════════════════════
    */
   return {
-    title: `${name} · Gume`,
+    title: `${name}`,
     description: `A estante de ${name}.`,
     robots: profile.emailVerified
       ? undefined

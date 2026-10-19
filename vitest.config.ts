@@ -34,4 +34,15 @@ export default defineConfig({
     globalSetup: ["./lib/test-setup.ts"],
   },
   resolve: { alias: { "@": path.resolve(__dirname, ".") } },
+  /**
+   * O tsconfig do Next diz `jsx: "preserve"`, porque quem compila o JSX de
+   * verdade é o próprio Next. O vite obedece esse ajuste e, ao importar um
+   * arquivo `.tsx` num teste, entrega JSX cru ao parser — que morre em
+   * "invalid JS syntax", apontando para uma linha inocente do componente.
+   *
+   * Aqui o JSX é compilado pelo runtime automático, e só aqui: nada disso chega
+   * ao build. Sem esta linha, testar qualquer arquivo com JSX é impossível, e o
+   * pôster (lib/og.tsx) é exatamente um deles.
+   */
+  oxc: { jsx: { runtime: "automatic" } },
 });

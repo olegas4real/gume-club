@@ -1,8 +1,7 @@
-import { ImageResponse } from "next/og";
 import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { works, authors, editions } from "@/lib/db/schema";
-import { Moldura, CapaTile, capa, fontes, TAMANHO, OSSO, FRACO } from "@/lib/og";
+import { poster, Moldura, CapaTile, capa, TAMANHO, OSSO, FRACO } from "@/lib/og";
 
 export const runtime = "nodejs";
 export const size = TAMANHO;
@@ -39,7 +38,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const titulo = livro?.title ?? "Um livro";
   const src = await capa(livro?.coverUrl ?? null);
 
-  return new ImageResponse(
+  return poster(
     (
       <Moldura>
         <div style={{ display: "flex", alignItems: "center", gap: 56, width: "100%" }}>
@@ -76,6 +75,5 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         </div>
       </Moldura>
     ),
-    { ...size, fonts: fontes() },
   );
 }

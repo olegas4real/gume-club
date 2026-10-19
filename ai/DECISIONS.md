@@ -5918,3 +5918,39 @@ da CSP pela mesma variável, e nomeado na /privacidade com teste cobrando.
 vende nada, e mandar para a Meta o que a pessoa LÊ é exatamente o que o produto promete
 não fazer. Se um dia alguém quiser otimizar por cadastro, isso é uma decisão nova, e
 precisa passar por aqui antes.
+
+## O pôster é desenhado INTEIRO antes de responder, e capa que não desenha não entra
+
+Dois erros do Sentry, a mesma causa de fundo: o `lib/og.tsx` prometia no cabeçalho que
+"o pôster nunca pode estourar", e a promessa só cobria a CAPA. O desenho ficava
+descoberto, e o pôster é a superfície mais pública do app — um 500 ali é o retângulo
+cinza no WhatsApp, que é o único canal de crescimento que o Gume tem.
+
+**A causa raiz (Sentry 7647294007):** `capa()` aceitava qualquer `image/*`, e o satori
+não lê **WebP nem AVIF**. Capa WebP da fonte externa ⇒ `TypeError: u2 is not iterable`,
+lá dentro, sem citar a capa, o formato ou o livro. Reproduzido localmente antes do
+conserto. Agora a lista é dos formatos que ele DESENHA (png, jpeg, gif, svg), e o resto
+vira `null`, igual a uma capa que deu 404 — o `CapaTile` põe a capa tipográfica no lugar.
+
+**E por que um try/catch na rota não resolvia:** `new ImageResponse(...)` não desenha
+nada; ele devolve uma resposta cujo corpo ainda VAI ser desenhado. O erro acontece na
+transmissão, depois de a rota ter retornado, fora do alcance de qualquer try/catch dela.
+Era por isso que o Sentry mostrava "failed to pipe response" como consequência e a causa
+como um erro solto, sem dono.
+
+Então o `poster()` desenha tudo (`arrayBuffer()`) antes de responder, que é onde o erro
+cai dentro do try. Custa a transmissão em partes, e não custa nada de verdade: são
+dezenas de quilobytes, cacheados por um ano, e agora com o tamanho declarado. Quando o
+desenho falha, sai a moldura muda — feia, e infinitamente melhor que 500.
+
+**A porta é uma só, e isso é estrutural.** `lib/og.test.ts` proíbe `ImageResponse` fora
+de `lib/og.tsx`: um pôster novo nasce protegido sem ninguém lembrar. De carona, a rota
+da home deixou de ter a segunda cópia do carregador de fontes e do tamanho.
+
+Texto em árabe derruba o desenhista pelo mesmo caminho ("lookupType: 5 - substFormat: 3
+is not yet supported"), e o catálogo é de livros do mundo todo. Não dá para listar o que
+ainda vai quebrar; dá para garantir que nada disso vire 500.
+
+De carona: `vitest.config.ts` ganhou `oxc: { jsx: { runtime: "automatic" } }`. O tsconfig
+do Next diz `jsx: "preserve"` (quem compila é o Next), o vite obedecia e entregava JSX
+cru ao parser. Sem isso, testar qualquer arquivo com JSX era impossível.

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ImageResponse } from "next/og";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -57,6 +58,23 @@ export function fontes() {
 }
 
 /**
+ * ═══ OS FORMATOS QUE O DESENHISTA SABE DESENHAR, E SÓ ELES ═══
+ *
+ * "É uma imagem" não basta. O satori (quem desenha o pôster) lê PNG, JPEG, GIF e
+ * SVG, e **não lê WebP nem AVIF** — e não falha dizendo isso: ele estoura com
+ * `TypeError: u2 is not iterable`, lá dentro, sem citar a capa nem o formato.
+ *
+ * Isso derrubou o pôster de um livro em produção (Sentry 7647294007). A capa veio
+ * em WebP da fonte externa, `image/webp` passou pelo `startsWith("image/")`, e o
+ * pôster inteiro virou erro 500 — que é o retângulo cinza que este arquivo existe
+ * para matar.
+ *
+ * Uma capa em formato que não desenha é uma capa que não entra, igual a uma que
+ * respondeu 404. O `CapaTile` desenha a capa tipográfica no lugar dela.
+ */
+const DESENHAVEIS = new Set(["image/png", "image/jpeg", "image/jpg", "image/gif", "image/svg+xml"]);
+
+/**
  * Uma capa, embutida como dado.
  *
  * Não é uma otimização: é o que impede o pôster de estourar. O desenhista de
@@ -73,8 +91,10 @@ export async function capa(url: string | null): Promise<string | null> {
     });
     if (!res.ok) return null;
 
-    const tipo = res.headers.get("content-type") ?? "image/jpeg";
-    if (!tipo.startsWith("image/")) return null;
+    // O cabeçalho vem com parâmetro às vezes ("image/jpeg; charset=binary"), e o
+    // que interessa é só o tipo.
+    const tipo = (res.headers.get("content-type") ?? "image/jpeg").split(";")[0]!.trim().toLowerCase();
+    if (!DESENHAVEIS.has(tipo)) return null;
 
     const bytes = Buffer.from(await res.arrayBuffer());
     // Uma capa de mais de 3 MB não é uma capa: é um erro de alguém, e ela não
@@ -100,7 +120,7 @@ export async function capas(urls: (string | null)[], quantas: number): Promise<s
  * procurando o Gume: está olhando o livro do amigo. A marca é a assinatura, e
  * assinatura não grita.
  */
-export function Moldura({ children }: { children: React.ReactNode }) {
+export function Moldura({ children }: { children?: React.ReactNode }) {
   return (
     <div
       style={{
@@ -196,4 +216,60 @@ export function CapaTile({
       </div>
     </div>
   );
+}
+
+/**
+ * ════════════════════════════════════════════════════════════════════
+ *  O PÔSTER SAI, SEMPRE. É a promessa do cabeçalho deste arquivo, e até agora
+ *  ela só valia para a capa; o DESENHO ficava descoberto.
+ *
+ *  ═══ POR QUE UM try/catch EM VOLTA DA ImageResponse NÃO RESOLVE ═══
+ *
+ *  `new ImageResponse(...)` não desenha nada: ele devolve uma resposta com um
+ *  corpo que ainda vai ser desenhado. O erro acontece quando o servidor TRANSMITE
+ *  esse corpo, já depois de a rota ter retornado — fora do alcance de qualquer
+ *  try/catch da rota. É por isso que o Sentry mostrava "failed to pipe response"
+ *  como consequência, e a causa (`u2 is not iterable`) como um erro solto, sem
+ *  dono.
+ *
+ *  Então aqui o pôster é desenhado INTEIRO antes de responder (`arrayBuffer()`),
+ *  que é onde o erro cai dentro do try. Custa a transmissão em partes, e não
+ *  custa nada de verdade: o pôster tem dezenas de quilobytes, é cacheado por um
+ *  ano, e agora vai com o tamanho declarado no cabeçalho.
+ *
+ *  ═══ O QUE SOBRA QUANDO O DESENHO FALHA ═══
+ *
+ *  A moldura muda: fundo preto e a assinatura. Não é bonito, e é infinitamente
+ *  melhor que 500 — porque quem está do outro lado é o robô do WhatsApp, e um
+ *  500 ali é o retângulo cinza, que é o canal de crescimento morrendo em
+ *  silêncio.
+ *
+ *  Texto em árabe derruba o desenhista do mesmo jeito que a capa WebP derrubava
+ *  ("lookupType: 5 - substFormat: 3 is not yet supported"), e o catálogo é um
+ *  catálogo de livros do mundo todo. Não dá para listar o que ainda vai quebrar:
+ *  dá para garantir que nada disso vire 500.
+ * ════════════════════════════════════════════════════════════════════
+ */
+export async function poster(conteudo: React.ReactElement): Promise<Response> {
+  try {
+    return await desenhar(conteudo);
+  } catch {
+    // A segunda tentativa não tem texto de ninguém nem capa nenhuma: só a
+    // moldura. Se ESTA falhar, o problema é a fonte ou o processo, e aí o erro
+    // tem que subir para o Sentry de verdade, em vez de virar silêncio.
+    return await desenhar(<Moldura />);
+  }
+}
+
+async function desenhar(conteudo: React.ReactElement): Promise<Response> {
+  const img = new ImageResponse(conteudo, { ...TAMANHO, fonts: fontes() });
+  const bytes = await img.arrayBuffer();
+
+  // O `content-length` não vem de graça, e aqui ele é sabido: o pôster já está
+  // inteiro na memória. Quem busca isto é um robô de prévia, que decide se baixa
+  // pelo tamanho anunciado.
+  const cabecalhos = new Headers(img.headers);
+  cabecalhos.set("content-length", String(bytes.byteLength));
+
+  return new Response(bytes, { headers: cabecalhos });
 }

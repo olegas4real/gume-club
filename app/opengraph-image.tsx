@@ -1,9 +1,7 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { ImageResponse } from "next/og";
+import { poster, TAMANHO } from "@/lib/og";
 
 export const runtime = "nodejs";
-export const size = { width: 1200, height: 630 };
+export const size = TAMANHO;
 export const contentType = "image/png";
 export const alt = "Gume: a mente leitora nunca perde o fio.";
 
@@ -38,10 +36,8 @@ const SOLID =
  * Os dois arquivos são SUBSETADOS: só as letras que esta imagem escreve. Quatro
  * quilobytes e cinco, em vez de duzentos. Ver scripts/brand.mjs.
  */
-const fonte = (nome: string) => readFileSync(join(process.cwd(), "assets/fonts", nome));
-
 export default function OpenGraphImage() {
-  return new ImageResponse(
+  return poster(
     (
       <div
         style={{
@@ -87,12 +83,5 @@ export default function OpenGraphImage() {
         </div>
       </div>
     ),
-    {
-      ...size,
-      fonts: [
-        { name: "Marca", data: fonte("Fraunces-700.ttf"), weight: 700, style: "normal" },
-        { name: "Voz", data: fonte("Newsreader-400.ttf"), weight: 400, style: "normal" },
-      ],
-    },
   );
 }

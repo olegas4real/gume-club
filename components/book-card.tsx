@@ -57,10 +57,13 @@ export function BookCard({
    * ════════════════════════════════════════════════════════════════════
    *  "ESTE AQUI VOCÊ JÁ LEU", numa lista que não é sua.
    *
-   *  Só tem valor onde o card mostra o livro de OUTRA pessoa (a estante montada
-   *  por alguém, os queridinhos da casa): ali, `book.status` é o status de quem
-   *  montou, e esta é a única marca que fala de você. Na sua própria estante não
-   *  serve para nada, e por isso o padrão é nulo: quem chama decide.
+   *  Vale em QUALQUER lista, inclusive na sua. Na lista de outra pessoa é a
+   *  única marca da tela que fala de você (`book.status` ali é o status de quem
+   *  montou); na sua, uma lista de "quero ler" que você mesmo montou é
+   *  exatamente onde "quais destes eu já li" é a pergunta do dia.
+   *
+   *  O padrão continua nulo porque há telas que não perguntam isso (o feed, a
+   *  sua estante inteira): quem chama decide.
    *
    *  ═══ MARCA O LIDO, NÃO APAGA O NÃO LIDO ═══
    *

@@ -6127,6 +6127,10 @@ noventa e duas capas não lê como lacuna, lê como página quebrada. O mangá f
 lá a regra é ter quase tudo. Então marca-se o LIDO, com tinta cheia e não com o accent:
 trinta marcas coloridas num Top 100 seriam trinta pontos disputando a tela.
 
-**Fora:** progresso na sua própria estante (ninguém pergunta isso da própria curadoria),
-progresso no card da grade de /listas, e qualquer tela que ponha o progresso de duas
-pessoas lado a lado.
+**Na sua própria lista também.** O primeiro desenho excluía, com o argumento de que
+ninguém pergunta isso da própria curadoria. O dono reverteu na mesma fatia, antes de ela
+chegar ao main, e o argumento dele desmonta o meu: uma lista de "quero ler" que você
+mesmo montou é exatamente onde "quais destes eu já li" é a pergunta do dia.
+
+**Fora:** progresso no card da grade de /listas (polui, e é uma consulta por card), e
+qualquer tela que ponha o progresso de duas pessoas lado a lado.

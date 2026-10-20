@@ -196,4 +196,4 @@ O app Android é o site embrulhado (ver docs/android.md e a entrada no ai/DECISI
 
 ## Progresso na lista (2026-10-19)
 
-- [x] **Quantos desta lista você já leu.** Em toda lista que não é sua (a estante montada por alguém, os Queridinhos), quem entrou vê "você leu 12 de 40, 30%" e as capas que já passaram por ele ganham uma marca. O número é só de quem olha, e o app não tem como perguntar o de outra pessoa: `lib/progresso.ts` não aceita o id de ninguém além do viewer, e dois testes estruturais quebram o build se isso mudar. Sem barra de progresso, e nada disso na sua própria estante. Ver a entrada em ai/DECISIONS.md.
+- [x] **Quantos desta lista você já leu.** Em toda lista (a sua, a estante montada por alguém, os Queridinhos), quem entrou vê "você leu 12 de 40, 30%" e as capas que já passaram por ele ganham uma marca. O número é só de quem olha, e o app não tem como perguntar o de outra pessoa: `lib/progresso.ts` não aceita o id de ninguém além do viewer, e dois testes estruturais quebram o build se isso mudar. Sem barra de progresso. Ver a entrada em ai/DECISIONS.md.

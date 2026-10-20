@@ -134,14 +134,16 @@ export default async function Estante({ params }: { params: Promise<{ slug: stri
    * leitura da página que fala de QUEM OLHA, e ela é sempre sobre o próprio
    * viewer: lib/progresso.ts não tem parâmetro para pedir a de outra pessoa.
    *
-   * Na sua própria estante o progresso não entra: "você leu 12 de 40 da sua
-   * lista" é uma pergunta que ninguém faz sobre a própria curadoria, e a marca
-   * na capa competiria com o status que já está ali.
+   * NA SUA PRÓPRIA LISTA TAMBÉM, e isto foi decidido depois de um primeiro
+   * desenho que a excluía. O argumento de excluir era que ninguém pergunta isso
+   * da própria curadoria — e é falso justamente onde a lista mais importa: uma
+   * lista de "quero ler" que você montou é exatamente onde "quais destes eu já
+   * li" é a pergunta do dia. O dono reverteu, e ele está certo.
    *
    * E quem não entrou não vê linha nenhuma: "você leu 0 de 40" para um visitante
    * deslogado é uma afirmação falsa sobre alguém que o app nem conhece.
    */
-  const lidos = viewer && !mine ? await jaLiQuais(viewer, books.map((b) => b.workId)) : null;
+  const lidos = viewer ? await jaLiQuais(viewer, books.map((b) => b.workId)) : null;
   const progresso = lidos ? progressoDe(lidos.size, books.length) : null;
 
   /**

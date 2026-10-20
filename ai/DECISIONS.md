@@ -6117,9 +6117,10 @@ livro não conta, estar lendo não conta, e **abandonar não conta**: o contrár
 transformaria desistir num jeito de fechar a lista. Reler não infla, porque a pergunta é
 quais e não quantas vezes.
 
-**Rejeitado: a barra de progresso.** Barra pela metade pede para ser preenchida, e aí a
-lista deixa de ser convite e vira tarefa. É a mesma família da ofensiva e da meta de
-livros por mês, uma casa adiante. O número informa; a barra cobra.
+**~~Rejeitado: a barra de progresso.~~ REVERTIDO no mesmo dia, ver a entrada "A barra de
+progresso entra na lista" logo abaixo.** O argumento era que barra pela metade pede para
+ser preenchida e a lista vira tarefa. Ele ignorava que o Gume já tem barra de progresso
+de leitura no perfil.
 
 **Rejeitado: apagar as capas não lidas**, que era o precedente do mangá (o volume que
 falta aparece em cinza). Não serve aqui: numa lista de cem em que você leu oito, apagar
@@ -6134,3 +6135,31 @@ mesmo montou é exatamente onde "quais destes eu já li" é a pergunta do dia.
 
 **Fora:** progresso no card da grade de /listas (polui, e é uma consulta por card), e
 qualquer tela que ponha o progresso de duas pessoas lado a lado.
+
+
+## A barra de progresso entra na lista, e a recusa de ontem era incoerente
+
+"eu queria uma barra de progresso bonitinha" — o dono, no mesmo dia em que a fatia do
+progresso subiu sem barra.
+
+A recusa estava escrita na entrada acima: barra pela metade pede para ser preenchida,
+lista vira tarefa. **O argumento é fraco porque o produto já decidiu o contrário.** O
+Gume tem barra de progresso de leitura desde as honras, no perfil, e a virada está em
+docs/design.md ("A barra de progresso") e numa entrada própria aqui. Recusar barra numa
+lista enquanto existe uma no perfil não é fidelidade a um princípio, é o produto
+discordando de si mesmo, e quem paga é o leitor, que vê duas gramáticas na mesma casa.
+
+**A linha que o projeto de fato guarda não é "nada de barra".** É que nada olha para o
+relógio e nada compara pessoas, que é a tabela de docs/design.md: tempo nunca, placar
+nunca. Uma barra sobre uma lista fechada não faz nem uma nem outra: o fim não se move (é
+o tamanho da lista, não uma meta que alguém escolheu), e o número é só de quem olha.
+
+**É a MESMA barra da honra**, e isso é a decisão de verdade: mesma altura de 3px, mesmo
+trilho de tinta a 8%, mesmo canto, mesmo rótulo em cima com o valor à esquerda e o alvo à
+direita. Ver `Barra` em components/moldura.tsx. Uma segunda barra com geometria própria
+faria a tela parecer montada por duas pessoas diferentes.
+
+**O que muda é a tinta.** Na honra a cor é a do degrau, porque ali a cor É a informação.
+Na lista não há degrau, então o preenchimento é tinta cheia, em gradiente de 55% a 100%.
+O accent fica de fora: ele é link, estado ligado, foco e moldura de apoiador, e nada
+mais.

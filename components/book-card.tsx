@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { Cover } from "@/components/cover";
 import { tintaDeHonra, nomeDaHonra } from "@/lib/honras";
 import { Verdict } from "@/components/veredito";
@@ -32,6 +33,7 @@ export function BookCard({
   focused = false,
   de,
   numero = null,
+  euLi = null,
 }: {
   book: ShelfBook;
   opinion?: Opinion;
@@ -51,6 +53,33 @@ export function BookCard({
    * placar de gente. Nulo em todo outro contexto.
    */
   numero?: number | null;
+  /**
+   * ════════════════════════════════════════════════════════════════════
+   *  "ESTE AQUI VOCÊ JÁ LEU", numa lista que não é sua.
+   *
+   *  Vale em QUALQUER lista, inclusive na sua. Na lista de outra pessoa é a
+   *  única marca da tela que fala de você (`book.status` ali é o status de quem
+   *  montou); na sua, uma lista de "quero ler" que você mesmo montou é
+   *  exatamente onde "quais destes eu já li" é a pergunta do dia.
+   *
+   *  O padrão continua nulo porque há telas que não perguntam isso (o feed, a
+   *  sua estante inteira): quem chama decide.
+   *
+   *  ═══ MARCA O LIDO, NÃO APAGA O NÃO LIDO ═══
+   *
+   *  A primeira ideia era o contrário, pelo precedente do mangá (o volume que
+   *  falta aparece em cinza). Não serve aqui: numa lista de cem livros em que
+   *  você leu oito, apagar noventa e duas capas não lê como lacuna, lê como
+   *  página quebrada. O mangá dá certo porque lá a regra é ter quase tudo.
+   *
+   *  ═══ E A MARCA É DE TINTA, NÃO DE COR ═══
+   *
+   *  Sem o accent: trinta capas marcadas num Top 100 seriam trinta pontos de cor
+   *  disputando a tela, e o accent é um por tela. Tinta cheia sobre o papel, do
+   *  mesmo jeito que o número do pódio resolve "primeiro lugar" sem ouro.
+   * ════════════════════════════════════════════════════════════════════
+   */
+  euLi?: boolean | null;
 }) {
   const status = STATUS_LABEL[book.status] ?? book.status;
 
@@ -181,6 +210,19 @@ export function BookCard({
           }
         >
           <Cover title={book.title} author={book.author} src={book.coverUrl} />
+
+          {/* A marca de "você já leu este". Fica na quina de baixo, do lado
+              oposto ao número do pódio, e o anel da cor do papel a descola da
+              capa sem precisar de sombra. */}
+          {euLi && (
+            <span
+              className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-ink)] text-[var(--color-canvas)] ring-2 ring-[var(--color-canvas)]"
+              title="Você já leu este"
+            >
+              <Check size={13} strokeWidth={2.5} aria-hidden />
+              <span className="sr-only">você já leu este</span>
+            </span>
+          )}
         </span>
 
         {honra && (

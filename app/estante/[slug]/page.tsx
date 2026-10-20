@@ -23,6 +23,8 @@ import { QuemGuardouEsta } from "@/components/quem-guardou";
 import { origemAceita } from "@/lib/imagens";
 import { contarUpvotesLista } from "@/lib/upvotes";
 import { UpvoteLista } from "@/components/upvote-lista";
+import { jaLiQuais, progressoDe } from "@/lib/progresso";
+import { ProgressoNaLista } from "@/components/progresso-na-lista";
 
 export const dynamic = "force-dynamic";
 
@@ -125,6 +127,24 @@ export default async function Estante({ params }: { params: Promise<{ slug: stri
     .orderBy(collectionItems.position, collectionItems.addedAt);
 
   const opinions = await getFriendRatings(viewer, books.map((b) => b.workId));
+
+  /**
+   * QUANTOS DESTES VOCÊ JÁ LEU. Os joins lá de cima são todos do DONO da estante
+   * (status, nota, exemplar): é a estante dele que está na tela. Esta é a única
+   * leitura da página que fala de QUEM OLHA, e ela é sempre sobre o próprio
+   * viewer: lib/progresso.ts não tem parâmetro para pedir a de outra pessoa.
+   *
+   * NA SUA PRÓPRIA LISTA TAMBÉM, e isto foi decidido depois de um primeiro
+   * desenho que a excluía. O argumento de excluir era que ninguém pergunta isso
+   * da própria curadoria — e é falso justamente onde a lista mais importa: uma
+   * lista de "quero ler" que você montou é exatamente onde "quais destes eu já
+   * li" é a pergunta do dia. O dono reverteu, e ele está certo.
+   *
+   * E quem não entrou não vê linha nenhuma: "você leu 0 de 40" para um visitante
+   * deslogado é uma afirmação falsa sobre alguém que o app nem conhece.
+   */
+  const lidos = viewer ? await jaLiQuais(viewer, books.map((b) => b.workId)) : null;
+  const progresso = lidos ? progressoDe(lidos.size, books.length) : null;
 
   /**
    * AS TAGS DA ESTANTE, derivadas dos próprios livros: os gêneros que mais aparecem.
@@ -276,6 +296,9 @@ export default async function Estante({ params }: { params: Promise<{ slug: stri
           entrou para que quem monta estante boa saiba que ela serviu. */}
       <QuemGuardouEsta quantos={contagem?.n ?? 0} quem={guardaram} souDono={mine} />
 
+      {/* O seu progresso nesta curadoria, e só seu. Ver components/progresso-na-lista.tsx. */}
+      {progresso && <ProgressoNaLista progresso={progresso} />}
+
       {mine && <PorNaEstante slug={shelf.slug} collectionId={shelf.id} />}
 
       {mine && books.length > 0 && (
@@ -310,6 +333,7 @@ export default async function Estante({ params }: { params: Promise<{ slug: stri
           }))}
           opinions={opinions}
           numerada={shelf.ranked}
+          lidos={lidos ?? undefined}
         />
       )}
     </main>

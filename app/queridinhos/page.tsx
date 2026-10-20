@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Crown, BookOpenCheck, Bookmark, Heart } from "lucide-react";
+import { Crown, BookOpenCheck, Bookmark, Heart, Check } from "lucide-react";
 import { DOURADO } from "@/lib/dourado";
 import { Cover } from "@/components/cover";
 import { Empty } from "@/components/empty";
@@ -9,6 +9,8 @@ import { getQueridinhos } from "@/lib/queridinhos";
 import { origemAceita } from "@/lib/imagens";
 import { jaGuardei } from "@/lib/curadoria-guardada";
 import { GuardarCuradoria } from "@/components/guardar-curadoria";
+import { jaLiQuais, progressoDe } from "@/lib/progresso";
+import { ProgressoNaLista } from "@/components/progresso-na-lista";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +43,15 @@ export default async function Queridinhos() {
 
   const livros = await getQueridinhos(100);
 
+  /**
+   * QUANTOS DO TOP 100 VOCÊ JÁ LEU. A lista é a mesma para todo mundo, e este
+   * número é o único pedaço da página que é só seu: ele nunca sai do servidor
+   * para outra pessoa, e não existe tela que ponha o seu ao lado do de alguém.
+   * Ver lib/progresso.ts.
+   */
+  const lidos = await jaLiQuais(viewer, livros.map((l) => l.id));
+  const progresso = progressoDe(lidos.size, livros.length);
+
   return (
     <main className="relative mx-auto max-w-7xl px-6 pb-32 sm:px-10">
       {/* A aura do 1º colocado banha o topo: a lista editorial abre com a cara do
@@ -72,6 +83,8 @@ export default async function Queridinhos() {
             <GuardarCuradoria chave="queridinhos" guardada={guardada} />
           </div>
         )}
+
+        {viewer && <ProgressoNaLista progresso={progresso} />}
 
         <p className="voice mt-5 max-w-2xl text-[17px] leading-relaxed text-[var(--color-ink-soft)]">
           Os livros que a comunidade mais amou, na ordem do amor recebido. Ninguém edita esta
@@ -126,8 +139,20 @@ export default async function Queridinhos() {
                       parada — diferente do resto do app (favoritos-vitrine.tsx,
                       book-card.tsx), onde a capa ganha um lift PRÓPRIO, por cima do
                       card. Mesmo tratamento aqui. */}
-                  <span className="cover-lift block w-[58%] transition-transform duration-200 group-hover:-translate-y-1">
+                  <span className="cover-lift relative block w-[58%] transition-transform duration-200 group-hover:-translate-y-1">
                     <Cover title={livro.title} author={livro.author} src={livro.coverUrl} />
+
+                    {/* "este você já leu". A mesma marca da estante montada, pelo
+                        mesmo motivo, e com a mesma tinta: ver components/book-card.tsx. */}
+                    {lidos.has(livro.id) && (
+                      <span
+                        className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-ink)] text-[var(--color-canvas)] ring-2 ring-[var(--color-canvas)]"
+                        title="Você já leu este"
+                      >
+                        <Check size={13} strokeWidth={2.5} aria-hidden />
+                        <span className="sr-only">você já leu este</span>
+                      </span>
+                    )}
                   </span>
 
                   <span className="voice mt-5 line-clamp-2 text-[15px] leading-snug text-[var(--color-ink)]">

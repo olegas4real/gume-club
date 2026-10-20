@@ -71,6 +71,9 @@ import { db } from "@/lib/db";
  */
 
 export type Queridinho = {
+  /** O id da OBRA. Não aparece em tela: serve para cruzar a lista com a leitura
+      de quem olha, em lib/progresso.ts. */
+  id: string;
   slug: string;
   title: string;
   author: string | null;
@@ -90,7 +93,8 @@ export type Queridinho = {
 
 export async function getQueridinhos(limite = 100): Promise<Queridinho[]> {
   const rows = await db.execute<Queridinho>(sql`
-    select w.slug,
+    select w.id,
+           w.slug,
            w.title,
            a.name as author,
            -- A capa é a da edição que MAIS GENTE tem na estante, e só entre
@@ -148,6 +152,7 @@ export async function getQueridinhos(limite = 100): Promise<Queridinho[]> {
      limit ${limite}`);
 
   return rows.map((r) => ({
+    id: r.id,
     slug: r.slug,
     title: r.title,
     author: r.author,

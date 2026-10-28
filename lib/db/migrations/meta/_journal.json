@@ -498,6 +498,13 @@
       "when": 1784700817023,
       "tag": "0070_o_criativo_no_funil",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1784700817024,
+      "tag": "0071_sem_medicao",
+      "breakpoints": true
     }
   ]
 }

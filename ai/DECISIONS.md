@@ -6243,3 +6243,50 @@ disco do dono (foi o que quase aconteceu, e o disco estava com 4 GB livres).
 **Efeito colateral que vale mais que o arquivamento:** clonar o Gume agora entrega um catálogo
 cheio. Antes, quem clonava subia um app vazio e tinha horas de importação da Open Library pela
 frente, o que fazia de "quem quiser roda o seu" meia verdade.
+
+## A medição sai inteira do código, e um teste impede que ela volte (2026-10-28)
+
+Com o site fora do ar, o pedido do dono foi "um repositório virgem pra quem vai usar". A
+medição era o que tinha de menos virgem ali dentro.
+
+**O que saiu:** Cloudflare Web Analytics, Microsoft Clarity, Google Analytics 4, pixel da
+Meta, PostHog e Sentry, mais o funil próprio (`eventos_funil`, `lib/funil.ts`,
+`lib/funil-client.ts`, `app/api/eventos/route.ts`), a seção de funil do painel, os hosts
+de medição da CSP, as seis variáveis do `.env.example` e a dependência `@sentry/nextjs`.
+Uma migration nova derruba a tabela.
+
+**Por que, se nenhum id estava no código.** É verdade que nada disso ligava sozinho: sem
+as variáveis, nenhum byte saía. Mas "desligado de fábrica" responde a uma pergunta de
+segurança, e a pergunta aqui era outra. O que o repositório ENSINA é o que ele contém: um
+registro de leitura que recusa anúncio e algoritmo na primeira linha do README, e que
+trazia junto seis maneiras de mandar o comportamento do leitor para fora, comentadas com
+carinho e prontas para ligar. Quem clonasse herdaria a tentação, não o risco.
+
+**O Sentry foi junto, e ele é o caso menos óbvio**, porque alarme de erro é ferramenta de
+quem mantém, e não vigilância de quem lê. Foi junto por dois motivos: ele mandava exceção
+do navegador de outra pessoa para um terceiro, e era uma das três vulnerabilidades
+críticas abertas. A tela de erro agora escreve no console, que é onde quem roda o próprio
+Gume vai olhar de qualquer jeito.
+
+**O que FICOU, e a régua é de quem é o dado:** `buscas_vazias` (migration 0031) guarda o
+que alguém procurou e não achou, sem nenhuma coluna de pessoa. É fila de trabalho de
+bibliotecário, mede o catálogo, e some do caminho quando o buraco é tapado. Ficaram também
+os serviços de que o app PRECISA para funcionar: Resend, Vercel Blob, Google (só no login)
+e Stripe.
+
+**A trava.** Documento não defende código, então a regra virou teste:
+`lib/privacidade.test.ts` varre `app/`, `components/`, `lib/` e o `middleware.ts` atrás de
+clarity, googletagmanager, google-analytics, posthog, `fbq(`, connect.facebook.net,
+cloudflareinsights e `@sentry/`, e quebra a build se qualquer um voltar. Ele ignora
+comentário de propósito: contar comentário faria o teste acusar justamente os textos que
+explicam a decisão, e o conserto seria apagar a explicação.
+
+**Considerado e rejeitado:** deixar tudo e confiar no "desligado sem a variável" (é
+proteção contra vazamento, não contra herança); tirar os de marketing e manter o PostHog
+"que é de produto" (sem instância não há produto para medir, e a fronteira entre produto e
+audiência é exatamente onde esse tipo de coisa cresce de volta); e manter o Sentry por ser
+de desenvolvedor (ver acima).
+
+**Efeito colateral medido:** o middleware caiu de 89 kB para 33 kB, e a CSP voltou a ser
+`default-src 'self'` de verdade, sem exceção nenhuma.
+

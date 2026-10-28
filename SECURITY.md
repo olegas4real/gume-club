@@ -76,4 +76,12 @@ Por isso ficam abertos de propósito: a correção não é pontual. Ela vem quan
 
 ## Como reportar
 
-Achou algo? Escreva para olegas@4real.ventures (ou abra um security advisory privado no GitHub). Por favor, não abra uma issue pública. A gente dá o crédito a você, a não ser que você prefira que não.
+Achou algo? Abra um **security advisory privado** no GitHub, ou escreva para
+olegas@4real.ventures. Por favor, não abra uma issue pública.
+
+**Mas leia isto antes de contar com uma resposta.** Não existe mais instância hospedada do
+Gume, e ninguém mantém este repositório. Não há sistema no ar para ser invadido por uma
+falha daqui, e não há quem se comprometa a corrigir num prazo. Se você encontrou algo que
+afeta **quem roda a própria cópia**, o caminho que funciona de verdade é abrir o advisory
+(ele fica registrado para quem vier depois) e, se for grave e você souber consertar, mandar
+o PR junto: o CI é o porteiro, e ele continua de pé.

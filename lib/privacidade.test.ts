@@ -39,6 +39,26 @@ describe("a política de privacidade", () => {
     expect(pagina).toContain(nome);
   });
 
+  /**
+   * A página não pode cravar endereço de contato. O gume.club saiu do ar em outubro de
+   * 2026, e quem roda o Gume agora é outra pessoa: um endereço fixo aqui mandaria o
+   * pedido de LGPD de quem usa a cópia dela para uma caixa que não é dela, e que no caso
+   * do antigo nem recebe mais. Ver o cabeçalho de app/privacidade/page.tsx.
+   */
+  it("pega o contato do ambiente, e não crava nenhum endereço", () => {
+    expect(pagina).toContain("NEXT_PUBLIC_CONTATO");
+    expect(pagina).not.toMatch(/[\w.+-]+@[\w-]+\.[\w.]+/);
+  });
+
+  /**
+   * E não pode afirmar no presente o que só valia para a instância hospedada. A lista de
+   * serviços continua inteira (é o que o código sabe ligar), mas o texto tem que dizer
+   * que o que está LIGADO depende de quem hospeda.
+   */
+  it("não fala como se existisse uma instância hospedada", () => {
+    expect(pagina).toContain("depende de quem hospeda");
+  });
+
   it("a página promete apagar a conta, e o botão existe", () => {
     expect(pagina).toContain("Apagar a minha conta");
     expect(ler("components/apagar-conta.tsx")).toContain("Apagar a minha conta");

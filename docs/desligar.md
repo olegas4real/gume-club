@@ -137,7 +137,7 @@ binário não faz.
 
 | Onde | O que fazer |
 |---|---|
-| **Railway** | Apagar o serviço do app e o do Postgres, e depois o projeto. **Apagar o serviço não apaga o volume:** em 2026-10-28 os dois serviços sumiram e o `postgres-volume` ficou para trás, "detached", com 1 GB ocupado e ainda na conta. Volume órfão é o que continua cobrando depois que você acha que desligou tudo. O `railway status` lista em "All resources". |
+| **Railway** | Apagar o serviço do app e o do Postgres, e depois o projeto. **O volume sobrevive ao serviço, mas não para sempre:** em 2026-10-28 os dois serviços sumiram e o `postgres-volume` ficou "detached", com 1 GB, e o Railway agendou a exclusão dele para dois dias depois, sozinho. Ele some do canvas quando isso acontece, então procurar na tela não adianta: quem mostra é `railway volume list`, com a data em "Deletes on". Confira **antes** que o dado dele já esteja guardado em outro lugar, porque essa data chega mesmo. |
 | **Vercel Blob** | Apagar a store. São as imagens que os leitores subiram, e elas também são dado pessoal. |
 | **Resend** | Revogar a `RESEND_API_KEY`. O domínio pode ficar verificado se você for usar `gume.club` para e-mail; se não, remova o domínio. |
 | **Google Cloud** | Nas credenciais do OAuth, apagar o client (ou ao menos tirar `gume.club` das origens e dos redirects). Revogar a chave do Google Books. |

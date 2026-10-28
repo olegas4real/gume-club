@@ -152,6 +152,16 @@ um PR que fica parado.
   `pnpm db:catalogo` carrega num banco limpo, e o filtro de licença mora no exportador, não na
   cabeça de quem roda.
 
+- **Subir o `better-auth` para a 1.7, que é uma correção de segurança crítica.** Tentado em
+  2026-10-28 e revertido no mesmo dia: a 1.7 quebra o `typecheck` em
+  `components/codigo-email.tsx` (o tipo do segundo fator não tem mais `backupCodes`) e
+  derruba dois testes, o do cadastro pelo Google vindo de convite
+  (`lib/auth.convite.test.ts`) e o que prova a defesa contra tomada de conta pelo vínculo
+  automático (`lib/auth.vinculo.test.ts`). Nenhum dos dois é mock desatualizado por acaso:
+  são as duas travas de login do repo. **Isto é fatia de auth, escrita à mão e lida linha
+  por linha**, nunca `pnpm update` e pronto. Enquanto não subir, quem clonar roda com a
+  versão vulnerável, e vale dizer isso na issue.
+
 - **Clubes, e notificações.** Estão no plano, e estão no "depois, se o v0.1 merecer". Só se as
   pessoas de fato usarem. Não antes.
 

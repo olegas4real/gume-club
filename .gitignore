@@ -90,3 +90,7 @@ android/
 twa-manifest.json
 *.aab
 *.apk
+
+# Os zips e os e-mails do desligamento: dado pessoal de leitores, nunca versionado.
+saida-export/
+saida-catalogo/

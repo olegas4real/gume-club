@@ -125,7 +125,11 @@ O catálogo veio de um acervo aberto e chegou incompleto: **quase 266 mil ediç�
 sem ano e sem editora. Isso não se conserta sozinho, e não precisa de programador: precisa de
 **quem tem o livro na mão**.
 
-Entre, abra a página [**o que falta**](https://gume.club/o-que-falta), e comece pelos livros que
+> **Desde outubro de 2026 não há instância hospedada**, então a correção que você faz fica no
+> **seu** Gume: não existe mais um catálogo comum de pé para recebê-la. O caminho continua
+> inteiro no código, para quem roda o seu, e para o dia em que um catálogo comum voltar a existir.
+
+Rode o Gume, abra a página **o que falta**, e comece pelos livros que
 estão **na sua própria estante**. Você é a única pessoa no mundo que pode arrumar aqueles agora,
 porque basta virar o livro e olhar a lombada.
 
@@ -175,8 +179,8 @@ escolha oposta.
 
 ## Governança, sem rodeios
 
-Quem mantém o Gume roda a instância hospedada em gume.club e tem a palavra final sobre as
-promessas de produto e o rumo. Todo o resto é conversa.
+Quem mantém o Gume tem a palavra final sobre as promessas de produto e o rumo. Todo o resto
+é conversa.
 
 O código é AGPL-3.0. Se esse arranjo não funciona pra você, **faça um fork**: a licença é
 escrita pra que você possa, e pra que quem fizer um fork do seu mantenha os mesmos direitos que

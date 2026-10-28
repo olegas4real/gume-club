@@ -9,7 +9,7 @@
 
 Um registro de leitura aberto, construído com quem lê.
 
-[English](./README.en.md) · [gume.club](https://gume.club) · [Discussões](https://github.com/olegas4real/gume-club/discussions) · [Como contribuir](./CONTRIBUTING.md)
+[English](./README.en.md) · [Discussões](https://github.com/olegas4real/gume-club/discussions) · [Como contribuir](./CONTRIBUTING.md)
 
 [![Licença: AGPL-3.0](https://img.shields.io/badge/licen%C3%A7a-AGPL--3.0-blue.svg)](./LICENSE)
 [![CI](https://github.com/olegas4real/gume-club/actions/workflows/ci.yml/badge.svg)](https://github.com/olegas4real/gume-club/actions/workflows/ci.yml)
@@ -51,7 +51,7 @@ Então: Gume. A parte interessante não é o registro. É o "nós".
 - **Uma estante.** Quero ler, lendo, lido, abandonado. Releituras. Físico e digital, no mesmo lugar. A nota é uma **palavra** (adorei, gostei, achei ok, não gostei, não terminei), e nunca um número: estrela é escala, escala vira média, média vira placar.
 - **Um feed de amigos, e uma galeria para descobrir.** O feed é cronológico e só de quem você segue: o que os seus amigos leram, sem nada injetado no meio. E há o Explorar, uma galeria de curadores: estantes de gente que você ainda não segue e coleções montadas à mão, sorteadas e não ordenadas. Você entra nela quando quer, em vez de ela entrar em você.
 - **Coleções, montadas à mão.** Você monta uma coleção com capa, descrição e, se a ordem for o ponto, com 1º, 2º e 3º. A coleção boa de outra pessoa você **guarda**: ela aparece no seu perfil com o crédito de quem fez, e quem montou vê quantas pessoas guardaram. Guardar não é curtir: curtir custa um toque, guardar é pôr a curadoria de alguém dentro do seu perfil, assinada com o nome dela. É o único número de gente que existe aqui, e ele existe porque curadoria é o que a gente quer que aconteça mais. E existe uma lista que ninguém edita: o **Top 100 dos queridinhos**, os livros que a comunidade mais adorou, refeito a cada veredito. É ranking de livro, e nunca de gente: livro no pódio é curadoria; gente no pódio é a corrida que a gente recusou.
-- **Um grafo aberto de livros.** Dados de livros contribuídos por leitores, e a intenção declarada de publicá-los de volta como um dataset aberto, para que, se este projeto um dia acabar, os dados sobrevivam a ele. A parte do leitor corrigir o catálogo já funciona; a publicação do dump é um passo ainda por vir.
+- **Um grafo aberto de livros.** Dados de livros contribuídos por leitores, publicados de volta como um dataset aberto, para que, se este projeto um dia acabar, os dados sobrevivam a ele. O projeto acabou, e a frase virou arquivo: o catálogo está [publicado em domínio público](https://github.com/olegas4real/gume-club/releases/tag/catalogo-2026-10-28), 265 mil obras, 302 mil edições e 124 mil autores em português, CC0, sem pedir nada em troca. Dado de leitor nunca entrou nele.
 - **Arquivos que você pode levar embora.** Um clique, e o arquivo desce: JSON e CSV, com a estante, as datas de leitura, as notas, as resenhas (inclusive as privadas) e as correções que você fez no catálogo. Sem fila, sem e-mail, sem "estamos preparando o seu arquivo", que é atrito disfarçado de cuidado. **E o CSV usa as colunas do export do Goodreads**, que é o formato que o StoryGraph e o Oku sabem importar: *uma exportação só é uma saída se outro app conseguir ler*. Um JSON proprietário que ninguém importa é um bilhete de sequestro em fonte bonita. Sair deveria ser fácil. É isso que faz ficar significar alguma coisa.
 
 <table>
@@ -79,11 +79,13 @@ Se algum desses pontos é um impedimento para você, tudo bem, e existem bons ap
 
 As estatísticas dizem quem você é (a idade das obras que você lê, os países dos autores), e nunca quanto você leu. Comparar gosto é o produto; comparar esforço é o veneno.
 
-## Como isso se paga
+## Não há instância hospedada
 
-O `gume.club` é hospedado e pago para que o app seja de graça para quem lê. Quem quiser ajudar com a conta pode **apoiar**, e o apoio é opcional e **cosmético**: uma insígnia no perfil, e o nome na lista de quem apoia. Apoio não destrava função nenhuma: quem paga e quem não paga usam exatamente o mesmo Gume. Isso está escrito aqui de propósito, porque é uma promessa.
+O `gume.club` esteve no ar e saiu em outubro de 2026. Hospedar custa dinheiro, e custa sobretudo manutenção: o banco, o e-mail, as imagens, a moderação, e estar de plantão quando cai. O Gume é um projeto de fim de semana, e manter um serviço de pé para outras pessoas é um compromisso de outro tamanho. O endereço continua registrado, e leva para cá.
 
-A licença é a garantia. Se a instância hospedada um dia deixar de honrar a lista acima, você pode pegar o código, pegar os seus dados e rodar por conta própria. A saída é o ponto: é ela que torna as promessas reais, em vez de só bonitas.
+O que existe é isto: o código inteiro, auto-hospedável, de pé na sua máquina com dois comandos. Nenhuma conta para criar, nenhum servidor de outra pessoa no meio, e nada para apoiar.
+
+A licença era a garantia, e aqui ela deixou de ser teórica. Quando a instância parou, quem lia saiu com tudo pelo clique de sempre: JSON e CSV, com as colunas do export do Goodreads, que é o formato que os outros apps sabem ler. A saída é o ponto: é ela que torna as promessas reais, em vez de só bonitas.
 
 ## Rodando
 
@@ -111,6 +113,8 @@ pnpm install && pnpm db:migrate && pnpm dev
 
 Quer uma estante de exemplo para não começar com o app vazio? `pnpm db:seed`.
 
+**E o catálogo você não precisa montar do zero.** `pnpm db:catalogo` baixa as 265 mil obras em português e carrega no seu banco em alguns minutos. É o mesmo catálogo que o site usava.
+
 Se qualquer um dos dois falhar numa máquina limpa, isso é um bug e a gente quer a issue. Código aberto que você não consegue rodar é decoração.
 
 ## Como contribuir
@@ -121,7 +125,9 @@ Essa é a parte que importa. O Gume existe para ser construído por quem usa.
 consertar uma capa errada, preencher um ano que falta, apontar uma edição trocada: tudo isso
 é contribuição, aplicada na hora, com o seu nome no histórico. Na página de quem faz o Gume,
 quem cuida do catálogo e quem escreve o código aparecem lado a lado, com o mesmo peso, porque
-**um conserto de capa vale o que vale um commit.**
+**um conserto de capa vale o que vale um commit.** Hoje isso vale dentro do Gume que **você**
+roda: sem instância hospedada, não há mais um catálogo comum de pé para receber a correção. O
+caminho está inteiro no código, e volta a valer no dia em que um catálogo comum voltar a existir.
 
 <table>
 <tr>
@@ -156,9 +162,9 @@ O modelo:
 
 ## Status
 
-**Funciona.** O produto está de pé e é usado todo dia por quem o mantém: estante, busca sobre um catálogo em português de centenas de milhares de edições, feed cronológico, recomendação de pessoa para pessoa (com o rosto de quem indicou na capa), coleções com ordem e capa, o Top 100 da comunidade, estatísticas de curadoria, correções do catálogo, convite com procedência, importação e exportação sem perdas.
+**Funciona.** O produto está inteiro: estante, busca sobre um catálogo em português de centenas de milhares de edições, feed cronológico, recomendação de pessoa para pessoa (com o rosto de quem indicou na capa), coleções com ordem e capa, o Top 100 da comunidade, estatísticas de curadoria, correções do catálogo, convite com procedência, importação e exportação sem perdas.
 
-**Está no ar em [gume.club](https://gume.club).** A instância oficial roda no [Railway](https://railway.app) (o app Next.js e o Postgres, na mesma rede privada), com [Vercel Blob](https://vercel.com/storage/blob) para as imagens que o leitor sobe. Nada disso é obrigatório: sendo auto-hospedável, você roda a sua com um Postgres e um lugar qualquer para as imagens.
+**Não está no ar.** A instância hospedada rodou no [Railway](https://railway.app) (o app Next.js e o Postgres, na mesma rede privada), com [Vercel Blob](https://vercel.com/storage/blob) para as imagens que o leitor subia, e foi desligada em outubro de 2026. Nada disso é obrigatório: sendo auto-hospedável, você roda a sua com um Postgres e um lugar qualquer para as imagens.
 
 O schema, o plano e o sistema de design são públicos de propósito, porque são as decisões caras de mudar depois e baratas de discutir agora. Se você acha que uma delas está errada, abra uma issue. Isso não é formalidade.
 

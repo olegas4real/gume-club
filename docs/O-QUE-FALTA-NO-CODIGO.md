@@ -1,6 +1,6 @@
 # O que falta no código
 
-O [`/o-que-falta`](https://gume.club/o-que-falta) mostra o trabalho aberto do **catálogo**:
+A página `/o-que-falta` do app mostra o trabalho aberto do **catálogo**:
 os livros sem capa, sem ano, sem editora. Este arquivo é o espelho dele, no **código**.
 
 Mesma ideia, e ela é a do OpenStreetMap: **ninguém atende a um "contribua!" abstrato, e todo
@@ -133,16 +133,24 @@ um PR que fica parado.
   cravado nas telas. Isso é um trabalho grande e chato, e é o que decide se o Gume existe fora
   do Brasil.
 
-- **O deploy.** O app **funciona** e **não está no ar**. Não há conta pra criar hoje, e não há
-  nada pra alguém usar. Enquanto isso for verdade, todo o resto dessa lista é ensaio.
+- ~~**O deploy.**~~ **Decidido em 2026-10-28: não vai ter.** O app **funciona** e **não está
+  no ar**. A instância hospedada foi desligada e o Gume vive como repositório: quem usa, roda
+  o seu. Ver `desligar.md` e a entrada no `ai/DECISIONS.md`. O resto desta lista continua
+  valendo, porque agora o código é o produto.
 
 - **Trechos (highlights).** O `My Clippings.txt` do Kindle e a tabela `Bookmark` do Kobo têm
   tudo que a pessoa grifou em dez anos. **Não existe tabela pra isso**, e criar uma é uma
   decisão de produto, não um puxadinho de importador. Por isso os importadores do Kindle e do
   Kobo **excluem grifos do escopo, de propósito**.
 
-- **Climas, ritmo, avisos de conteúdo, e o dataset CC0.** O grafo aberto de livros que o README
-  promete devolver pro mundo. É o que sobrevive ao projeto se o projeto acabar.
+- **Climas, ritmo e avisos de conteúdo.** O schema está pronto, a tela não existe. Ficaram de
+  fora do v0.1 e não têm mais para onde ir, já que não há instância hospedada recebendo voto.
+
+- **O dataset CC0 saiu, e é o que sobrevive ao projeto.** O catálogo foi [publicado em domínio
+  público](https://github.com/olegas4real/gume-club/releases/tag/catalogo-2026-10-28) no dia do desligamento:
+  265 mil obras, 302 mil edições, 124 mil autores. `pnpm catalogo:exportar` gera o arquivo,
+  `pnpm db:catalogo` carrega num banco limpo, e o filtro de licença mora no exportador, não na
+  cabeça de quem roda.
 
 - **Clubes, e notificações.** Estão no plano, e estão no "depois, se o v0.1 merecer". Só se as
   pessoas de fato usarem. Não antes.
@@ -210,7 +218,7 @@ Não é urgente e não é bug: são arquivos longos porque são **densamente com
 - **Exportar em Markdown.** JSON e CSV já saem, e o perfil já baixa a estante (`lib/exportar.ts`). Falta só o formato Markdown; a porta de saída não é mais uma promessa vazia.
 - ~~**Leitor de código de barras.**~~ Feito, menos no Safari do iPhone.
 - **Tradutor.** A coluna existe e está vazia em **100%** das edições.
-- **O deploy.** O app funciona e não está no ar.
+- ~~**O deploy.**~~ Não vai ter, e é decisão, não pendência: ver o `ai/DECISIONS.md`. O app funciona, e roda na sua máquina.
 
 ### O que fazer primeiro, se você tiver uma tarde
 

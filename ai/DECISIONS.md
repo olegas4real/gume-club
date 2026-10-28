@@ -6163,3 +6163,83 @@ faria a tela parecer montada por duas pessoas diferentes.
 Na lista não há degrau, então o preenchimento é tinta cheia, em gradiente de 55% a 100%.
 O accent fica de fora: ele é link, estado ligado, foco e moldura de apoiador, e nada
 mais.
+
+
+## O Gume sai do ar, e o repositório é o que fica
+
+**2026-10-28.** A instância hospedada em `gume.club` foi desligada. Não é pausa, não é
+troca de provedor, não é "volta quando der": não existe mais um Gume de pé para outras
+pessoas usarem, e nenhum texto do repo deve sugerir que existe.
+
+**O motivo é pequeno e é honesto: custo e trabalho.** A conta do Railway é baixa, e nunca
+foi ela sozinha. Um serviço com gente dentro cobra manutenção que não acaba: o banco, o
+e-mail que está no caminho crítico do login, as imagens, a fila de moderação, e estar de
+plantão quando cai. O Gume sempre foi um projeto de fim de semana, e essa frase deixa de
+ser charme no dia em que a estante de outra pessoa depende dela.
+
+**O que foi rejeitado:**
+
+- **Trocar o Railway por algo mais barato.** Resolveria a conta, que não era o problema. A
+  manutenção e o plantão seguem iguais em qualquer provedor.
+- **Deixar no ar sem manutenção, "até quebrar".** É a pior versão para quem lê: o app não
+  avisa que morreu, ele só para de abrir um dia, com a estante dentro.
+- **Arquivar o repositório.** O código funciona, roda numa máquina limpa, e a licença
+  existe exatamente para este caso. Arquivar seria apagar a saída junto com a porta.
+
+**O que a decisão obriga, nesta ordem** (o roteiro está em `docs/desligar.md`): cancelar
+as assinaturas do Stripe antes de tudo, porque cobrança em aberto é o único item que custa
+dinheiro de outra pessoa; **devolver a estante de quem lê, por e-mail, com o arquivo em
+anexo**; guardar o dump do banco e **restaurá-lo uma vez** antes de apagar o original; só
+então apagar o serviço, o Blob e o resto.
+
+**Sem prazo, e sem aviso prévio: o dono desligou no mesmo dia.** Isso troca o papel do
+e-mail, que deixa de avisar que a saída existe e passa a SER a saída, com o zip anexado.
+E põe o envio antes de qualquer `drop`: o script lê o banco de produção para montar os
+arquivos, então banco apagado é estante perdida de todo mundo. **Quem tem 10 livros ou
+menos não recebe nada**, e é decisão do dono: abaixo disso não há uma vida de leitura para
+devolver, e um disparo para a base inteira custa entrega e reputação de domínio.
+
+**O que a decisão não muda:** nenhuma promessa de produto. Nada de número comparável,
+nota é palavra, sem IA generativa, sem algoritmo. Elas continuam valendo porque continuam
+no código, e o código é o que sobrou.
+
+**E uma frase do README deixou de ser teórica.** "A saída é o ponto: é ela que torna as
+promessas reais, em vez de só bonitas." A instância parou e quem lia saiu com tudo, pelo
+mesmo clique de sempre, num CSV que outro app abre. Um registro de leitura que fecha e
+leva a estante junto é o normal da categoria. Este não fez isso, e é o único teste dessa
+promessa que importava.
+
+## O catálogo é publicado em CC0, e as pessoas não (2026-10-28)
+
+No dia do desligamento, a pergunta foi: dá para subir o banco no GitHub, já que não é
+sensível? Dá, mas só metade dele, e não dentro do repositório.
+
+**O catálogo vai, e foi:** [release de 2026-10-28](https://github.com/olegas4real/gume-club/releases/tag/catalogo-2026-10-28), 265 mil obras, 302 mil edições,
+124 mil autores, 473 mil identificadores, CC0, 66 MB. Fato bibliográfico não é obra autoral e
+não tem dono, e o README promete esse dataset desde o primeiro commit. O projeto acabou: era
+agora ou nunca.
+
+**A parte das pessoas não vai, e a régua não é "é sensível?".** É "de quem é isso?". Estante,
+resenha, quem segue quem e e-mail são dos seis leitores, não do projeto. Saíram em CSV para
+uma pasta fora do repositório, sem credencial junto, e cada pessoa já tinha recebido a própria
+estante por e-mail. Veja `docs/desligar.md`.
+
+**Release, e não commit.** Arquivo grande no git fica no histórico para sempre e é baixado por
+todo mundo que clonar, inclusive dez anos depois. O hook de pre-commit barra acima de 10 MB e
+o GitHub recusa acima de 100 MB, mas a razão não é o limite: é que o histórico do git é o
+lugar errado para dado que muda de versão inteira a cada exportação.
+
+**Dois scripts, e o filtro de licença mora num deles.** `pnpm catalogo:exportar` escolhe coluna
+por coluna (nada de `select *`), tira `created_by` por ser ponta de volta para uma pessoa, e
+remove todo texto de fonte Wikipédia, porque CC BY-SA dentro de um CC0 é uma licença
+impossível de cumprir. `pnpm db:catalogo` carrega num banco limpo e **se recusa** a rodar sobre
+catálogo que já tem linha, porque carregar por cima duplicaria tudo.
+
+**Considerado e rejeitado:** publicar o banco inteiro anonimizado (anonimização de dado de
+leitura é promessa que não se consegue cumprir: estante é digital), publicar só os CSVs sem o
+carregador (dataset que não volta para dentro do produto é arquivo morto), e guardar tudo só no
+disco do dono (foi o que quase aconteceu, e o disco estava com 4 GB livres).
+
+**Efeito colateral que vale mais que o arquivamento:** clonar o Gume agora entrega um catálogo
+cheio. Antes, quem clonava subia um app vazio e tinha horas de importação da Open Library pela
+frente, o que fazia de "quem quiser roda o seu" meia verdade.

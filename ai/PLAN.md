@@ -27,6 +27,9 @@ O produto inteiro. Se isso for tudo que um dia existir, ainda vale a pena ter.
 
 ### ⚠️ ANTES DE LANÇAR: o e-mail está no caminho crítico do LOGIN
 
+> **Encerrado (2026-10-28):** a instância hospedada saiu do ar e o e-mail dela foi desligado.
+> A lista abaixo vale para quem for subir uma instância própria, com o próprio domínio.
+
 **e-mail caído agora quer dizer que NINGUÉM ENTRA.** E o domínio não está pronto:
 
 - [ ] **SPF** em `gume.club` (o valor exato está no painel do Resend)
@@ -138,7 +141,7 @@ Só se as pessoas de fato usarem. Não antes.
 - **Clubes**, tidos e tocados por criadores (o schema já está em docs/schema.md)
 - Programa de bibliotecários com um curso curto
 - Trechos (highlights), importação de Kindle/Kobo, sync com Obsidian
-- Climas, ritmo, avisos de conteúdo, e o dataset CC0
+- Climas, ritmo, avisos de conteúdo (o **dataset CC0 saiu**: [publicado em 2026-10-28](https://github.com/olegas4real/gume-club/releases/tag/catalogo-2026-10-28), com `pnpm catalogo:exportar` e `pnpm db:catalogo` no repo)
 
 _(Convites e linhagem, recomendar um livro, e a fila de moderação **subiram para o v0.1** e já estão feitos — ver Fase 3 e `app/moderacao`.)_
 
@@ -192,8 +195,22 @@ O app Android é o site embrulhado (ver docs/android.md e a entrada no ai/DECISI
 
 - [x] **1. Manifesto completo, ícone maskable, assetlinks por variável de ambiente.** O vínculo site ↔ app, desligado de fábrica.
 - [x] **2. O apoio some dentro do app.** A Play exige o billing dela para benefício digital; cookie `gume_app` via `?origem=android`, as telas escondem e as rotas de checkout recusam.
-- [ ] **3. Só o dono: empacotar e publicar.** Bubblewrap, Play Console (US$ 25), teste fechado (12 testadores, 14 dias), fingerprints no Railway. Roteiro em docs/android.md.
+- [ ] ~~**3. Só o dono: empacotar e publicar.**~~ **Cancelado (2026-10-28):** o TWA embrulha o site, e não há mais site. O roteiro fica preservado em docs/android.md para quem subir uma instância.
 
 ## Progresso na lista (2026-10-19)
 
 - [x] **Quantos desta lista você já leu.** Em toda lista (a sua, a estante montada por alguém, os Queridinhos), quem entrou vê "você leu 12 de 40, 30%" e as capas que já passaram por ele ganham uma marca. O número é só de quem olha, e o app não tem como perguntar o de outra pessoa: `lib/progresso.ts` não aceita o id de ninguém além do viewer, e dois testes estruturais quebram o build se isso mudar. Sem barra de progresso. Ver a entrada em ai/DECISIONS.md.
+
+## O Gume sai do ar (2026-10-28)
+
+Não é fatia de produto, é o desligamento. A decisão está em ai/DECISIONS.md e o roteiro do
+que roda fora do repo, nas contas do dono, está em docs/desligar.md.
+
+- [x] **Os textos param de prometer um site.** README (PT e EN), AGENTS.md, CLAUDE.md, CONTRIBUTING.md, SECURITY.md, o modelo de issue de bug, docs/apoio.md, docs/android.md e este plano. O `.github/FUNDING.yml` saiu junto: não há mais conta de servidor para ajudar a pagar.
+- [x] **O roteiro de desligamento existe** (docs/desligar.md), e a ordem dele é a decisão: parar de cobrar, avisar com prazo, guardar o banco, só então apagar.
+- [ ] ~~**O aviso na tela, com a data e o botão de baixar a estante.**~~ **Cancelado (2026-10-28):** o dono desligou no mesmo dia, então não existe janela para avisar dentro do app. O e-mail com o anexo virou a entrega inteira.
+- [ ] **Só o dono: cancelar as assinaturas no Stripe**, imediatamente e com reembolso do que foi cobrado nos últimos dias. É o primeiro item de todos.
+- [x] **A estante volta para quem leu, em anexo.** `scripts/exportar-e-enviar.mjs` monta o MESMO zip do botão (reusa `lib/exportar.ts` via `scripts/alias.mjs`) e manda pelo Resend, para quem tem e-mail verificado e mais de 10 livros. Ensaio por padrão, grava à medida que manda, retoma de onde parou. `pnpm devolver-estantes`.
+- [ ] **Só o dono: rodar o envio**, primeiro para si mesmo, depois para todos. Quem tem 10 livros ou menos não é avisado, e é decisão dele: ver docs/desligar.md.
+- [ ] **Só o dono: dump do banco, restauração testada, e aí apagar** o Railway, o Vercel Blob, o Resend, o Sentry e as contas de medição.
+- [ ] **Só o dono: o redirect de gume.club para o repositório**, e o About do GitHub sem o site.

@@ -1,5 +1,10 @@
 # O Gume na Play Store (Android)
 
+> **Parado (outubro de 2026).** O app Android é o site embrulhado, e o site saiu do ar. Sem
+> instância hospedada não existe o que embrulhar, e nada daqui vai acontecer. O que o repo já
+> garante (manifesto, ícones, assetlinks por variável de ambiente) continua de pé para quem
+> subir a própria instância, e este roteiro fica para esse dia.
+
 O app Android do Gume é o próprio site, embrulhado num TWA (Trusted Web Activity) com o
 [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap). Não existe uma segunda base
 de código: cada deploy do site atualiza o app sozinho. Este documento é o roteiro do que

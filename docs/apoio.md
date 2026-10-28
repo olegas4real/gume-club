@@ -2,6 +2,11 @@
 
 Como o apoio funciona no Gume, e o que precisa ser configurado para ele existir.
 
+> **O apoio acabou junto com a instância hospedada (outubro de 2026).** As assinaturas foram
+> canceladas no Stripe e não há cobrança nenhuma de pé. O que este documento descreve é o
+> mecanismo, que continua no código e só liga se quem roda uma instância puser as próprias
+> chaves do Stripe no ambiente.
+
 > **A AbacatePay foi descartada.** A spec antiga dela está aposentada: nada no código lê
 > `ABACATE_*`, e essas variáveis podem sair de qualquer `.env` antigo.
 

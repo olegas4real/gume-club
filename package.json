@@ -29,7 +29,10 @@
     "poda": "node scripts/poda.mjs",
     "podar": "pnpm db:migrate && node scripts/poda.mjs --executar && node scripts/poda.mjs --vacuum",
     "brand": "node scripts/brand.mjs",
-    "mapa-mundi": "node --experimental-strip-types scripts/gerar-mapa-mundi.mjs"
+    "devolver-estantes": "node --experimental-strip-types --import ./scripts/alias.mjs scripts/exportar-e-enviar.mjs",
+    "mapa-mundi": "node --experimental-strip-types scripts/gerar-mapa-mundi.mjs",
+    "catalogo:exportar": "node scripts/exportar-catalogo.mjs",
+    "db:catalogo": "node scripts/importar-catalogo.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.70.0",

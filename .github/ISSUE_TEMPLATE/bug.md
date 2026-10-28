@@ -10,4 +10,4 @@ labels: bug
 
 **Passos para reproduzir**
 
-**Onde**: gume.club / auto-hospedado (versão:)
+**Onde**: rodando local / auto-hospedado (versão:)

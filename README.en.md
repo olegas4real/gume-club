@@ -9,7 +9,7 @@
 
 An open reading log, built with the people who read it.
 
-[Português](./README.md) · [gume.club](https://gume.club) · [Discussions](https://github.com/olegas4real/gume-club/discussions) · [How to contribute](./CONTRIBUTING.md)
+[Português](./README.md) · [Discussions](https://github.com/olegas4real/gume-club/discussions) · [How to contribute](./CONTRIBUTING.md)
 
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](./LICENSE)
 [![CI](https://github.com/olegas4real/gume-club/actions/workflows/ci.yml/badge.svg)](https://github.com/olegas4real/gume-club/actions/workflows/ci.yml)
@@ -51,7 +51,7 @@ So: Gume. The interesting part isn't the log. It's the "us".
 - **A shelf.** Want to read, reading, read, abandoned. Rereads. Physical and digital, in the same place. The rating is a **word** (loved it, liked it, it was ok, didn't like it, didn't finish), never a number: a star is a scale, a scale becomes an average, an average becomes a scoreboard.
 - **A friends feed, and a gallery to discover.** The feed is chronological and only from people you follow: what your friends read, with nothing injected in the middle. And there's Explore, a gallery of curators: shelves of people you don't follow yet and collections assembled by hand, shuffled and not ranked. You go into it when you want, instead of it coming into you.
 - **Collections, assembled by hand.** You build a collection with a cover, a description and, if the order is the point, a 1st, 2nd and 3rd. Someone else's good collection you **keep**: it shows up on your profile with credit to whoever made it, and whoever made it sees how many people kept it. Keeping is not liking: a like costs a tap, keeping puts someone else's curation inside your own profile, signed with their name. It is the only count of people in the app, and it exists because curation is the thing we most want to happen. And there is one list nobody edits: the **Top 100 favorites**, the books the community loved the most, rebuilt with every verdict. It ranks books, never people: a book on the podium is curation; a person on the podium is the race we refused.
-- **An open book graph.** Book data contributed by readers, and the declared intent to publish it back as an open dataset, so that if this project ever ends, the data outlives it. The part where a reader corrects the catalog already works; publishing the dump is a step still to come.
+- **An open book graph.** Book data contributed by readers, published back as an open dataset, so that if this project ever ends, the data outlives it. The project ended, and the sentence became a file: the catalog is [published into the public domain](https://github.com/olegas4real/gume-club/releases/tag/catalogo-2026-10-28), 265k works, 302k editions and 124k authors in Portuguese, CC0, no strings. No reader data ever went into it.
 - **Files you can take with you.** One click and the file downloads: JSON and CSV, with your shelf, reading dates, ratings, reviews (including the private ones), and the catalog corrections you made. No queue, no email, no "we're preparing your file", which is friction disguised as care. **And the CSV uses the Goodreads export columns**, the format that StoryGraph and Oku know how to import: *an export is only an exit if another app can read it*. A proprietary JSON nobody imports is a ransom note in a pretty font. Leaving should be easy. That's what makes staying mean something.
 
 <table>
@@ -79,11 +79,13 @@ If any of these is a dealbreaker for you, that's fine, and there are good apps t
 
 The statistics tell you who you are (the age of the works you read, the countries your authors come from), and never how much you read. Comparing taste is the product; comparing effort is the poison.
 
-## How it pays for itself
+## There is no hosted instance
 
-`gume.club` is hosted and paid for so the app stays free for readers. Anyone who wants to help with the bill can **support it**, and support is optional and **cosmetic**: a badge on the profile, and your name on the supporters list. Support unlocks no features: people who pay and people who don't use exactly the same Gume. This is written here on purpose, because it's a promise.
+`gume.club` was up, and it went down in October 2026. Hosting costs money, and it mostly costs upkeep: the database, the email, the images, moderation, and being on call when it breaks. Gume is a weekend project, and keeping a service running for other people is a commitment of a different size. The address is still registered, and it points here.
 
-The license is the guarantee. If the hosted instance ever stops honoring the list above, you can take the code, take your data, and run your own. The exit is the point: it's what makes the promises real instead of merely pretty.
+What exists is this: the whole codebase, self-hostable, up on your machine in two commands. No account to create, nobody else's server in the middle, and nothing to support.
+
+The license was the guarantee, and here it stopped being theoretical. When the instance stopped, the people who read there left with everything, in the same one click as always: JSON and CSV, with the columns from the Goodreads export, which is the format other apps know how to read. The exit is the point: it's what makes the promises real instead of merely pretty.
 
 ## Running it
 
@@ -111,13 +113,15 @@ pnpm install && pnpm db:migrate && pnpm dev
 
 Want a sample shelf so you don't start with an empty app? `pnpm db:seed`.
 
+**And you don't have to build the catalog from scratch.** `pnpm db:catalogo` downloads the 265k Portuguese works and loads them into your database in a few minutes. It's the same catalog the site ran on.
+
 If either one fails on a clean machine, that's a bug and we want the issue. Open source you can't run is decoration.
 
 ## How to contribute
 
 This is the part that matters. Gume exists to be built by the people who use it.
 
-**And you can contribute without writing a line of code.** The catalog belongs to everyone: fixing a wrong cover, filling in a missing year, flagging a swapped edition — all of it is a contribution, applied on the spot, with your name in the history. On the page of who makes Gume, the people who tend the catalog and the people who write the code appear side by side, with equal weight, because **a cover fix is worth what a commit is worth.**
+**And you can contribute without writing a line of code.** The catalog belongs to everyone: fixing a wrong cover, filling in a missing year, flagging a swapped edition — all of it is a contribution, applied on the spot, with your name in the history. On the page of who makes Gume, the people who tend the catalog and the people who write the code appear side by side, with equal weight, because **a cover fix is worth what a commit is worth.** Today that happens inside the Gume **you** run: with no hosted instance, there is no longer a common catalog standing to receive the fix. The path is all there in the code, and it counts again the day a common catalog exists again.
 
 <table>
 <tr>
@@ -152,9 +156,9 @@ The model:
 
 ## Status
 
-**It works.** The product is up and used every day by the person who maintains it: shelf, search over a Portuguese catalog of hundreds of thousands of editions, chronological feed, person-to-person recommendation (with the recommender's face on the cover), collections with order and cover, the community's Top 100, curation statistics, catalog corrections, invitations with provenance, and lossless import and export.
+**It works.** The product is whole: shelf, search over a Portuguese catalog of hundreds of thousands of editions, chronological feed, person-to-person recommendation (with the recommender's face on the cover), collections with order and cover, the community's Top 100, curation statistics, catalog corrections, invitations with provenance, and lossless import and export.
 
-**It's live at [gume.club](https://gume.club).** The official instance runs on [Railway](https://railway.app) (the Next.js app and Postgres, on the same private network), with [Vercel Blob](https://vercel.com/storage/blob) for reader-uploaded images. None of that is required: being self-hostable, you can run your own with a Postgres and any place to keep the images.
+**It's no longer live.** The hosted instance ran on [Railway](https://railway.app) (the Next.js app and Postgres, on the same private network), with [Vercel Blob](https://vercel.com/storage/blob) for reader-uploaded images, and it was shut down in October 2026. None of that is required: being self-hostable, you can run your own with a Postgres and any place to keep the images.
 
 The schema, the plan, and the design system are public on purpose, because they're the decisions that are expensive to change later and cheap to argue about now. If you think one of them is wrong, open an issue. That's not a formality.
 

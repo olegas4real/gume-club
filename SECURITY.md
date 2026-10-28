@@ -68,7 +68,7 @@ Nada sobe até que cada linha esteja verde.
 
 Com o repositório público, a aba **Security** mostra os avisos do Dependabot — e hoje eles apontam para a **cadeia de build e de teste**, nunca para o serviço no ar.
 
-Os pacotes citados vêm por baixo, sem serem dependência direta nossa: `vite` e `esbuild` chegam pelo `vitest` (o test runner), `postcss` roda no `build` sobre o **nosso próprio CSS**, e o utilitário que abre o editor a partir do overlay de erro só existe no `next dev`. **Nenhum deles atende requisição de usuário em produção.** No pior caso, a falha exige alguém na mesma rede local enquanto um desenvolvedor roda `pnpm dev` ou os testes — é uma superfície da máquina de quem desenvolve, não do `gume.club`.
+Os pacotes citados vêm por baixo, sem serem dependência direta nossa: `vite` e `esbuild` chegam pelo `vitest` (o test runner), `postcss` roda no `build` sobre o **nosso próprio CSS**, e o utilitário que abre o editor a partir do overlay de erro só existe no `next dev`. **Nenhum deles atende requisição de usuário em produção.** No pior caso, a falha exige alguém na mesma rede local enquanto um desenvolvedor roda `pnpm dev` ou os testes — é uma superfície da máquina de quem desenvolve, não de um Gume em produção.
 
 Por isso ficam abertos de propósito: a correção não é pontual. Ela vem quando o `vitest` e o `next` sobem de versão maior, e isso é uma decisão de upgrade, não um remendo de véspera de deploy. O Dependabot abre os PRs; a gente mescla quando passam no CI sem quebrar nada.
 

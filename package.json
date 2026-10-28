@@ -35,7 +35,7 @@
     "db:catalogo": "node scripts/importar-catalogo.mjs"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.70.0",
+    "@sentry/nextjs": "^10.75.3",
     "@vercel/blob": "^2.8.0",
     "better-auth": "^1.6.29",
     "drizzle-orm": "^0.45.2",

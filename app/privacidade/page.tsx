@@ -18,8 +18,8 @@ export const metadata = {
  *  ═══ CADA LINHA AQUI É UMA AFIRMAÇÃO SOBRE O CÓDIGO ═══
  *
  *  A lista de serviços espelha o que está LIGADO na instância hospedada (as variáveis
- *  de components/medicao.tsx, instrumentation.ts, lib/email.ts, lib/guardar.ts,
- *  lib/stripe.ts, lib/auth.ts). Ligar um serviço novo sem acrescentá-lo aqui transforma
+ *  de lib/email.ts, lib/guardar.ts, lib/stripe.ts,
+ *  lib/auth.ts). Ligar um serviço novo sem acrescentá-lo aqui transforma
  *  esta página numa mentira educada. O mesmo vale para o que se apaga: ver lib/conta.ts.
  *
  *  `ATUALIZADA` muda junto com qualquer mudança de conteúdo.
@@ -35,21 +35,6 @@ const SERVICOS: { quem: string; para: string }[] = [
   { quem: "Vercel", para: "guarda a foto de perfil, se você puser uma." },
   { quem: "Google", para: "só se você entrar com a conta do Google: recebemos o seu nome, e-mail e foto." },
   { quem: "Stripe", para: "só se você apoiar: o pagamento acontece lá, e o número do cartão nunca passa pelo Gume." },
-  { quem: "Sentry", para: "avisa quando uma tela dá erro, para a gente consertar." },
-  {
-    quem: "Meta (Facebook e Instagram)",
-    para: "só quando você chega por um anúncio nosso: conta a visita, para sabermos se o anúncio funcionou. Não enviamos o que você lê.",
-  },
-  {
-    quem: "PostHog",
-    para:
-      "mede o que é usado dentro do site (que telas abrem, que caminhos travam), para melhorar o produto. Também registra o momento em que uma conta é criada, com o nome do anúncio que trouxe a pessoa, para sabermos qual anúncio funcionou. Vai o nome do anúncio, nunca o seu. Usa cookies.",
-  },
-  {
-    quem: "Google Analytics e Microsoft Clarity",
-    para:
-      "medem como o site é usado: de onde as pessoas chegam, onde clicam, onde a tela trava. Usam cookies. O Clarity grava o movimento na página com o texto escondido, e serve para achar o que está difícil de usar, nunca para ler a estante de ninguém.",
-  },
 ];
 
 export default function Privacidade() {

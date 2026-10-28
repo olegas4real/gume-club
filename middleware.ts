@@ -120,115 +120,23 @@ export function middleware(req: NextRequest) {
    * busca no Open Library é o servidor, e não o cliente.
    */
   /**
-   * A MEDIÇÃO abre a CSP só quando está ligada (ver components/medicao.tsx):
-   * uma instância auto-hospedada sem os tokens continua com a política de
-   * "não fala com ninguém". As duas listas (o script que entra na página e o
-   * host que a CSP deixa falar) ligam e desligam JUNTAS, pela mesma variável,
-   * para nunca existir script bloqueado em silêncio nem porta aberta à toa.
+   * ═══ NENHUM HOST DE MEDIÇÃO ABRE ESTA POLÍTICA, PORQUE NÃO HÁ MEDIÇÃO ═══
+   *
+   * Aqui moravam três listas (o script que entrava na página, o host com quem ele
+   * podia falar, e o pixel que ele mandava como imagem) para Cloudflare Analytics,
+   * Clarity, Google Analytics, PostHog, pixel da Meta e Sentry. Elas ligavam e
+   * desligavam junto com as variáveis, e sem as variáveis não abriam nada.
+   *
+   * Saíram inteiras quando a medição saiu. A política voltou a ser o que a frase
+   * acima diz: o app não fala com ninguém de fora do navegador. Se um dia alguém
+   * quiser medir a própria instância, a lista volta junto com o script, pela mesma
+   * variável, e nunca uma sem a outra: porta aberta sem script é buraco, e script
+   * sem porta é medidor morto em silêncio.
    */
-  const medicaoScript = [
-    process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && "https://static.cloudflareinsights.com",
-    /**
-     * ═══ O CLARITY FALA POR TRÊS HOSTS, E NÃO POR UM ═══
-     *
-     * `www.clarity.ms` só entrega a TAG, que é um carregador de dez linhas. A
-     * biblioteca de verdade vem de `scripts.clarity.ms`, e o pixel de
-     * `c.clarity.ms`. Liberando só o primeiro, a tag carrega, o navegador
-     * bloqueia a biblioteca, e o Clarity fica **morto em silêncio** — foi
-     * exatamente o que aconteceu, e ninguém percebeu, porque a tela não quebra:
-     * o painel só fica vazio, e painel vazio parece "ninguém entrou".
-     *
-     * É a armadilha que o bloco do GA logo abaixo descreve, e ela pegou aqui
-     * primeiro. O curinga cobre os três de uma vez, e o teste abaixo cobra.
-     */
-    process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
-    // O PostHog carrega o script dos assets dele (o api_host com "-assets" no meio).
-    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us-assets.i.posthog.com",
-    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://connect.facebook.net",
-  ].filter(Boolean).join(" ");
-  const medicaoConnect = [
-    process.env.NEXT_PUBLIC_CF_ANALYTICS_TOKEN && "https://cloudflareinsights.com",
-    process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
-    // O alarme de erro (Sentry) manda o rastro para o host de ingestão do DSN.
-    process.env.NEXT_PUBLIC_SENTRY_DSN && "https://*.sentry.io",
-    /**
-     * ═══ O GOOGLE ANALYTICS FALA POR TRÊS PORTAS, E NÃO POR UMA ═══
-     *
-     * O erro clássico é liberar só `www.google-analytics.com`, ver a medição
-     * funcionar na sua máquina, e descobrir semanas depois que faltava metade.
-     * O GA4 manda os eventos para um host REGIONAL (`region1.`, `region12.`,
-     * o que couber em quem está lendo), então tem que ser o curinga. E ele
-     * também fala com o googletagmanager, de onde veio o script, e com o
-     * analytics.google.com quando o painel está aberto em modo de depuração.
-     *
-     * Faltando qualquer um, o navegador bloqueia CALADO: nada quebra na tela,
-     * e o relatório simplesmente vem menor do que a verdade. É a armadilha do
-     * AGENTS.md com outra roupa, e a mais difícil de perceber, porque um
-     * número menor não parece um erro.
-     */
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.analytics.google.com",
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
-    // O PostHog manda os eventos para o host de ingestão E busca a configuração
-    // remota nos assets. Faltando qualquer um, o navegador bloqueia calado (ver o
-    // aviso do GA logo acima: número menor não parece erro).
-    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us.i.posthog.com",
-    process.env.NEXT_PUBLIC_POSTHOG_KEY && "https://us-assets.i.posthog.com",
-    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://connect.facebook.net",
-  ].filter(Boolean).join(" ");
-
-  /**
-   * ═══ E ELE AINDA MANDA ALGUNS EVENTOS COMO IMAGEM ═══
-   *
-   * Quando o navegador não tem como mandar o evento pela porta normal (a aba
-   * sendo fechada é o caso comum), o gtag cai para um pixel. Sem isto, esses
-   * eventos somem, e somem calados, como todo o resto.
-   *
-   * ═══ POR QUE ISTO NÃO ENTRA EM lib/imagens.ts ═══
-   *
-   * Aquela lista é a das FONTES DE CAPA, e ela alimenta duas outras coisas: o
-   * otimizador de imagem do Next e o formulário que valida o endereço que um
-   * leitor cola. Pôr um host de medição lá dentro faria o formulário aceitar
-   * `google-analytics.com/...` como capa de livro.
-   *
-   * São duas listas porque são duas perguntas ("de onde vem capa" e "para onde
-   * a medição manda pixel"), e não porque alguém esqueceu de juntar. A lista de
-   * capas continua vindo de um lugar só, e `lib/imagens.test.ts` continua
-   * provando isso.
-   */
-  const medicaoImg = [
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.google-analytics.com",
-    process.env.NEXT_PUBLIC_GA_ID && "https://*.googletagmanager.com",
-    /**
-     * O Clarity também fecha a sessão com um pixel (`c.clarity.ms/c.gif`), e ele
-     * estava bloqueado junto com a biblioteca. Ver o bloco do script acima.
-     *
-     * ═══ E O `c.bing.com` FICA DE FORA DE PROPÓSITO ═══
-     *
-     * Com o Clarity vivo, o console passa a mostrar UMA violação que sobrou:
-     * `c.bing.com/c.gif?...&RedC=c.clarity.ms`. Ela não é um pedaço que faltou:
-     * é a sincronização de identidade do Clarity com a rede de anúncios da
-     * Microsoft, que serve para casar quem está aqui com o perfil publicitário
-     * dele lá.
-     *
-     * O Gume promete "sem anúncio, sem algoritmo" na primeira linha do README.
-     * Mapa de calor e gravação de sessão funcionam sem esse pixel; o que ele
-     * acrescenta é exatamente o que o produto diz não fazer.
-     *
-     * **Então o erro no console é o certo, e não um bug a consertar.** Está
-     * escrito aqui porque a tentação de calar o console liberando mais um host é
-     * real, e quem for fazer isso merece ler o motivo antes.
-     */
-    process.env.NEXT_PUBLIC_CLARITY_ID && "https://*.clarity.ms",
-    // O pixel da Meta manda o evento como IMAGEM (o `<img src="facebook.com/tr?...">`
-    // do snippet, e o caminho de reserva quando a porta normal falha).
-    process.env.NEXT_PUBLIC_FB_PIXEL_ID && "https://www.facebook.com",
-  ].filter(Boolean).join(" ");
 
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' 'unsafe-eval'${medicaoScript ? ` ${medicaoScript}` : ""}`,
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
     "style-src 'self' 'unsafe-inline'",
     /**
      * A CSP vale para a CADEIA do redirect, e não só para o primeiro host.
@@ -237,9 +145,9 @@ export function middleware(req: NextRequest) {
      * aparecia com metade dos livros quebrados. Sintoma de CSP quase sempre é
      * isto, e nunca o host que você digitou.
      */
-    medicaoImg ? `${imgSrc()} ${medicaoImg}` : imgSrc(),
+    imgSrc(),
     "font-src 'self' data:",
-    `connect-src 'self'${medicaoConnect ? ` ${medicaoConnect}` : ""}`,
+    "connect-src 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
     "base-uri 'self'",

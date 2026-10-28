@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import * as Sentry from "@sentry/nextjs";
 
 /**
  * A TELA DE QUANDO O NOSSO LADO QUEBRA.
@@ -22,10 +21,10 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // A fronteira de erro ENGOLE a exceção: sem esta linha, o alarme nunca toca
-    // para os erros de renderização, que são justamente os que desenham esta
-    // tela. Sem DSN ligado, a chamada é um não-fazer-nada, de graça.
-    Sentry.captureException(error);
+    // A fronteira de erro ENGOLE a exceção: sem esta linha, o erro que desenhou
+    // esta tela não aparece em lugar nenhum. O console é onde ele fica agora, e
+    // basta: quem roda o Gume olha o log da própria máquina. Mandar exceção para
+    // o alarme de um terceiro era coisa de quando havia um site no ar.
     console.error(error);
   }, [error]);
 

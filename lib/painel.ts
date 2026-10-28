@@ -4,7 +4,6 @@ import { assertIdealizador, type Viewer } from "@/lib/authz";
 import { FUSO } from "@/lib/datas";
 import { podeSerDescoberto } from "@/lib/descoberta";
 import { getCodigo, GitHubRecusou } from "@/lib/contributors";
-import type { TipoDeEvento } from "@/lib/funil";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -268,40 +267,6 @@ export type Painel = {
     /** Convidados que vingaram por pessoa que convidou. Um proxy de viralidade. */
     mediaPorConvidante: number;
   };
-  /**
-   * ════════════════════════════════════════════════════════════════════
-   *  O FUNIL DE ENTRADA. Últimos 30 dias, janela FIXA (mesma régua dos KPIs
-   *  de saúde: uma régua que muda de tamanho não compara nada).
-   *
-   *  Vem de `eventos_funil` (migration 0069), anônima — sem coluna de
-   *  pessoa, e por isso nunca precisa de `naoETeste()`: um evento
-   *  pré-cadastro não tem usuário nenhum pra excluir.
-   *
-   *  `cadastros` (o total, e o de cada origem) inclui uma APROXIMAÇÃO: o
-   *  clique no botão do Google em modo "criar" conta como cadastro, mesmo
-   *  quando é só um login — não dá pra saber a diferença do lado do
-   *  cliente sem tocar o gancho de criação de usuário do Better Auth, e
-   *  essa fatia decidiu não tocar lá. Ver ai/DECISIONS.md.
-   * ════════════════════════════════════════════════════════════════════
-   */
-  funil: {
-    janelaDias: 30;
-    totais: { visitas: number; cliques: number; viuEntrar: number; cadastros: number };
-    /** Nula quando não há base (ninguém visitou/clicou/chegou ainda). */
-    taxaVisitaClique: number | null;
-    taxaCliqueEntrar: number | null;
-    taxaEntrarCadastro: number | null;
-    porOrigem: { origem: string; visitas: number; cliques: number; viuEntrar: number; cadastros: number }[];
-    /**
-     * A PEÇA do anúncio, que a origem sozinha não distingue: três criativos no
-     * mesmo Instagram caem todos no balde "instagram". Vazio quando não há
-     * anúncio rodando, e é assim que tem que ser — a linha só existe quando
-     * alguém pagou para ela existir. Ver a migration 0070.
-     */
-    porPeca: { campanha: string; criativo: string; visitas: number; cadastros: number }[];
-    visitasPorDia: Ponto[];
-    cadastrosPorDia: Ponto[];
-  };
   catalogo: {
     obras: number;
     edicoes: number;
@@ -459,12 +424,11 @@ export async function getPainel(viewer: Viewer, filtro: Filtro = FILTRO_PADRAO):
 export async function coletarPainel(filtro: Filtro = FILTRO_PADRAO): Promise<Painel> {
   const hojeSP = sql`(now() at time zone ${FUSO})::date`;
 
-  const [gente, uso, contribuicao, convite, funil, catalogo, codigo, pessoas, moderacao] = await Promise.all([
+  const [gente, uso, contribuicao, convite, catalogo, codigo, pessoas, moderacao] = await Promise.all([
     getGente(hojeSP, filtro),
     getUso(),
     getContribuicao(filtro),
     getConvite(),
-    getFunil(),
     getCatalogo(),
     getCodigoContagem(),
     getPessoas(hojeSP),
@@ -483,7 +447,6 @@ export async function coletarPainel(filtro: Filtro = FILTRO_PADRAO): Promise<Pai
     uso,
     contribuicao: { ...contribuicao, codigo },
     convite,
-    funil,
     catalogo,
     pessoas,
     moderacao,
@@ -763,156 +726,6 @@ async function getConvite(): Promise<Painel["convite"]> {
   };
 }
 
-// ─────────────────────────────────────────────────────────────── FUNIL
-
-async function getFunil(): Promise<Painel["funil"]> {
-  const linhas = await db.execute<{ origem: string; tipo: string; sessoes: number }>(sql`
-    with origem_por_sessao as (
-      -- A primeira origem observada na sessão vale para os eventos seguintes
-      -- da MESMA sessão: um clique não repete o utm que a visita já contou.
-      select sessao_anon,
-             (array_agg(origem order by criado_em) filter (where origem is not null))[1] as origem
-        from eventos_funil
-       where criado_em >= now() - interval '30 days'
-       group by sessao_anon
-    )
-    select coalesce(o.origem, 'sem-origem') as origem, e.tipo,
-           count(distinct e.sessao_anon)::int as sessoes
-      from eventos_funil e
-      left join origem_por_sessao o using (sessao_anon)
-     where e.criado_em >= now() - interval '30 days'
-     group by 1, 2
-  `);
-
-  const CAMPO: Record<string, "visitas" | "cliques" | "viuEntrar" | "cadastros"> = {
-    visita_home: "visitas",
-    clique_criar: "cliques",
-    viu_entrar: "viuEntrar",
-    cadastro_ok: "cadastros",
-  };
-
-  const totais = { visitas: 0, cliques: 0, viuEntrar: 0, cadastros: 0 };
-  const porOrigemMapa = new Map<string, Painel["funil"]["porOrigem"][number]>();
-
-  for (const linha of linhas) {
-    const campo = CAMPO[linha.tipo];
-    if (!campo) continue; // um tipo desconhecido não derruba o painel, só é ignorado
-
-    totais[campo] += linha.sessoes;
-
-    let bucket = porOrigemMapa.get(linha.origem);
-    if (!bucket) {
-      bucket = { origem: linha.origem, visitas: 0, cliques: 0, viuEntrar: 0, cadastros: 0 };
-      porOrigemMapa.set(linha.origem, bucket);
-    }
-    bucket[campo] += linha.sessoes;
-  }
-
-  /**
-   * ═══ A TAXA SEGUE A SESSÃO, E NÃO DIVIDE CONTAGENS SOLTAS ═══
-   *
-   * A primeira versão dividia "chegaram em /entrar" por "clicaram em criar conta" e
-   * mostrou 1033% no painel: a maioria de quem chega em /entrar NÃO veio do botão da
-   * home (veio do link do cabeçalho, de um convite, de um favorito pra entrar). Cada
-   * passo agora conta só quem fez o passo ANTERIOR na mesma sessão: dos que clicaram,
-   * quantos chegaram; dos que chegaram, quantos se cadastraram.
-   */
-  const [[passos], visitasPorDia, cadastrosPorDia] = await Promise.all([
-    db.execute<{ visitou: number; visitou_clicou: number; clicou: number; clicou_chegou: number; chegou: number; chegou_cadastrou: number }>(sql`
-      with s as (
-        select sessao_anon,
-               bool_or(tipo = 'visita_home')  as visitou,
-               bool_or(tipo = 'clique_criar') as clicou,
-               bool_or(tipo = 'viu_entrar')   as chegou,
-               bool_or(tipo = 'cadastro_ok')  as cadastrou
-          from eventos_funil
-         where criado_em >= now() - interval '30 days'
-         group by sessao_anon
-      )
-      select count(*) filter (where visitou)::int               as visitou,
-             count(*) filter (where visitou and clicou)::int    as visitou_clicou,
-             count(*) filter (where clicou)::int                as clicou,
-             count(*) filter (where clicou and chegou)::int     as clicou_chegou,
-             count(*) filter (where chegou)::int                as chegou,
-             count(*) filter (where chegou and cadastrou)::int  as chegou_cadastrou
-        from s
-    `),
-    serieDoFunil("visita_home"),
-    serieDoFunil("cadastro_ok"),
-  ]);
-
-  const porPeca = await getPorPeca();
-
-  const taxa = (de: number, para: number): number | null => (de > 0 ? para / de : null);
-
-  return {
-    janelaDias: 30,
-    totais,
-    taxaVisitaClique: taxa(passos?.visitou ?? 0, passos?.visitou_clicou ?? 0),
-    taxaCliqueEntrar: taxa(passos?.clicou ?? 0, passos?.clicou_chegou ?? 0),
-    taxaEntrarCadastro: taxa(passos?.chegou ?? 0, passos?.chegou_cadastrou ?? 0),
-    // Mais cadastros primeiro: é a pergunta que motivou a fatia inteira —
-    // "de onde vêm os cadastros", e não só "de onde vêm as visitas".
-    porOrigem: [...porOrigemMapa.values()].sort((a, b) => b.cadastros - a.cadastros || b.visitas - a.visitas),
-    porPeca,
-    visitasPorDia,
-    cadastrosPorDia,
-  };
-}
-
-/**
- * ════════════════════════════════════════════════════════════════════
- *  QUAL PEÇA DO ANÚNCIO TROUXE QUEM VIROU GENTE.
- *
- *  Mesma lei do `porOrigem` logo acima, e pelo mesmo motivo: a peça é
- *  observada na VISITA (é ali que a URL traz o utm), e o cadastro acontece
- *  depois, já sem parâmetro nenhum na URL. Contar por linha diria que a peça
- *  teve visita e zero cadastro, sempre.
- *
- *  Então a primeira peça vista na sessão vale para a sessão inteira, e cada
- *  passo conta SESSÕES distintas — nunca linhas. Uma pessoa que recarrega a
- *  home cinco vezes é uma visita, e não cinco.
- * ════════════════════════════════════════════════════════════════════
- */
-async function getPorPeca(): Promise<Painel["funil"]["porPeca"]> {
-  const linhas = await db.execute<{
-    campanha: string; criativo: string; visitas: number; cadastros: number;
-  }>(sql`
-    with peca_por_sessao as (
-      select sessao_anon,
-             (array_agg(campanha order by criado_em) filter (where campanha is not null))[1] as campanha,
-             (array_agg(criativo order by criado_em) filter (where criativo is not null))[1] as criativo
-        from eventos_funil
-       where criado_em >= now() - interval '30 days'
-       group by sessao_anon
-    )
-    select p.campanha,
-           coalesce(p.criativo, 'sem-criativo') as criativo,
-           count(distinct e.sessao_anon) filter (where e.tipo = 'visita_home')::int as visitas,
-           count(distinct e.sessao_anon) filter (where e.tipo = 'cadastro_ok')::int as cadastros
-      from eventos_funil e
-      join peca_por_sessao p using (sessao_anon)
-     where e.criado_em >= now() - interval '30 days'
-       and p.campanha is not null
-     group by 1, 2
-  `);
-
-  // Mais cadastros primeiro: é a pergunta que paga a conta do anúncio.
-  return linhas.sort((a, b) => b.cadastros - a.cadastros || b.visitas - a.visitas);
-}
-
-/** Uma série diária de um tipo de evento, contando SESSÕES distintas, não linhas. */
-async function serieDoFunil(tipo: TipoDeEvento): Promise<Ponto[]> {
-  const rows = await db.execute<{ chave: string; n: number }>(sql`
-    select to_char((criado_em at time zone ${FUSO})::date, 'YYYY-MM-DD') as chave,
-           count(distinct sessao_anon)::int as n
-      from eventos_funil
-     where tipo = ${tipo} and criado_em >= now() - interval '30 days'
-     group by 1 order by 1
-  `);
-  return rows.map((r) => ({ chave: r.chave, n: r.n }));
-}
-
 // ─────────────────────────────────────────────────────────────── CATÁLOGO
 
 async function getCatalogo(): Promise<Painel["catalogo"]> {
@@ -1182,15 +995,6 @@ export function painelEmMarkdown(p: Painel, geradoEm: string): string {
   L.push(`- Por convite: ${n(p.convite.porConvite)}; sozinhos: ${n(p.convite.sozinhos)}`);
   L.push(`- Já convidaram alguém: ${n(p.convite.quemJaConvidou)} pessoas`);
   L.push(`- Convites que vingaram: ${n(p.convite.convitesQueVingaram)} (média ${um(p.convite.mediaPorConvidante)} por convidante)`);
-  L.push("");
-
-  L.push(`## Funil (últimos ${p.funil.janelaDias} dias)`);
-  L.push(`- Visitas: ${n(p.funil.totais.visitas)} · cliques em "criar conta": ${n(p.funil.totais.cliques)} · chegaram em /entrar: ${n(p.funil.totais.viuEntrar)} · cadastros: ${n(p.funil.totais.cadastros)}`);
-  L.push(`- Visita → clique: ${p.funil.taxaVisitaClique === null ? "sem base" : `${Math.round(p.funil.taxaVisitaClique * 100)}%`}; clique → chegou na porta: ${p.funil.taxaCliqueEntrar === null ? "sem base" : `${Math.round(p.funil.taxaCliqueEntrar * 100)}%`}; chegou → cadastrou: ${p.funil.taxaEntrarCadastro === null ? "sem base" : `${Math.round(p.funil.taxaEntrarCadastro * 100)}%`}`);
-  L.push(`- "Cadastros" inclui uma aproximação: um clique no Google em modo "criar conta" conta como cadastro, mesmo quando é só um login.`);
-  if (p.funil.porOrigem.length > 0) {
-    L.push(`- Por origem (visitas → cadastros): ${p.funil.porOrigem.map((o) => `${o.origem} ${n(o.visitas)}→${n(o.cadastros)}`).join(", ")}`);
-  }
   L.push("");
 
   L.push(`## Catálogo`);

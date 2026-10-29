@@ -137,7 +137,7 @@ binário não faz.
 
 | Onde | O que fazer |
 |---|---|
-| **Railway** | Apagar o serviço do app e o do Postgres, e depois o projeto. Conferir se não ficou volume órfão: volume apagado junto é o que de fato para a conta. |
+| **Railway** | Apagar o serviço do app e o do Postgres, e depois o projeto. **O volume sobrevive ao serviço, mas não para sempre:** em 2026-10-28 os dois serviços sumiram e o `postgres-volume` ficou "detached", com 1 GB, e o Railway agendou a exclusão dele para dois dias depois, sozinho. Ele some do canvas quando isso acontece, então procurar na tela não adianta: quem mostra é `railway volume list`, com a data em "Deletes on". Confira **antes** que o dado dele já esteja guardado em outro lugar, porque essa data chega mesmo. |
 | **Vercel Blob** | Apagar a store. São as imagens que os leitores subiram, e elas também são dado pessoal. |
 | **Resend** | Revogar a `RESEND_API_KEY`. O domínio pode ficar verificado se você for usar `gume.club` para e-mail; se não, remova o domínio. |
 | **Google Cloud** | Nas credenciais do OAuth, apagar o client (ou ao menos tirar `gume.club` das origens e dos redirects). Revogar a chave do Google Books. |
@@ -145,19 +145,25 @@ binário não faz.
 | **Sentry** | Apagar o projeto, ou ao menos desativar o DSN. |
 | **PostHog, Clarity, Google Analytics, Pixel da Meta, Cloudflare Analytics** | Apagar as propriedades. Elas guardam comportamento de gente que não existe mais como usuário, e dado que ninguém vai olhar é só risco parado. |
 
-## 4. O domínio
+## 4. O domínio, que simplesmente acaba
 
-`gume.club` **fica registrado** e passa a levar para o repositório. Isso mantém o nome (a
-checagem do INPI continua em aberto) e não deixa os links antigos morrerem.
+`gume.club` **não vai redirecionar para lugar nenhum**, por decisão do dono no dia do
+desligamento. A ideia era um 301 para o repositório, e ela morreu na prática: o DNS do
+domínio está na Vercel, o registrador é a Name.com, e montar o redirecionamento exigia
+trocar nameserver num painel e configurar encaminhamento em outro, para um domínio que
+serviria só de placa. Trabalho demais para um projeto cujo ponto era parar de dar trabalho.
 
-- Redirect 301 de `gume.club` e `www.gume.club` para a página do repositório no GitHub. O
-  registrador costuma ter "URL forwarding"; com o Cloudflare na frente, uma Redirect Rule
-  resolve e é de graça.
-- **MX:** se `contato@gume.club` tiver que continuar recebendo (ele está na política de
-  privacidade antiga e em pedidos de LGPD), aponte para uma caixa que você leia de verdade.
-  Hoje o domínio não tem MX, e o endereço não recebe nada.
-- SPF, DKIM e DMARC podem ficar: domínio que não manda e-mail com DMARC publicado é um
-  domínio difícil de falsificar.
+O que isso significa, escrito para não virar surpresa depois:
+
+- O domínio está pago até **12 de julho de 2027**, e a partir dali expira sozinho se
+  ninguém renovar. Até lá ele continua sem responder nada, que é o estado de hoje.
+- **Link antigo de `gume.club` não leva mais ao projeto.** Quem procurar acha pelo GitHub,
+  e é por isso que a descrição e os READMEs do repositório são agora a única porta de
+  entrada: eles têm que se explicar sozinhos, sem contar com o domínio.
+- Sobrou um registro A no apex apontando para `69.46.46.29`, que é o que faz o domínio
+  pendurar em vez de dar erro limpo. Não vale mexer, já que o destino é expirar.
+- Se um dia o nome voltar a importar (a checagem do INPI ficou em aberto), renovar antes de
+  julho de 2027 é a única coisa que preserva a opção.
 
 ## 5. O repositório, que é o que sobra
 

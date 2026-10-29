@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { comVolta } from "@/lib/volta";
-import { registrarEvento, origemAtual, hrefComUtm } from "@/lib/funil-client";
 
 /**
  * ════════════════════════════════════════════════════════════════════
  *  A CHAMADA PARA CRIAR CONTA, FORA DA HOME. Um componente só.
  *
- *  O conserto do funil (components/porta-entrada.tsx) trocou "Entrar" por "Criar
+ *  O conserto da porta (components/porta-entrada.tsx) trocou "Entrar" por "Criar
  *  conta" só na home. As páginas que mais recebem link de fora (a ficha de um livro,
  *  o perfil de alguém, /contribuidores, /sobre) continuavam oferecendo só "Entrar", e
  *  a ficha do livro dizia "Entre para guardar este livro na estante": um convite que
@@ -24,19 +22,13 @@ import { registrarEvento, origemAtual, hrefComUtm } from "@/lib/funil-client";
 
 const CRIAR = "/entrar?novo=1";
 
-/** O link de criar conta, contado no funil como o da home. */
+/** O link de criar conta. Já foi contado no funil de entrada, que não existe mais. */
 export function LinkCriarConta({ className, children }: { className?: string; children: React.ReactNode }) {
   // Depois de criar a conta, a pessoa volta para a página que a convenceu (o livro,
   // a estante de alguém). Ver lib/volta.ts.
   const aqui = usePathname();
-  const [href, setHref] = useState(comVolta(CRIAR, aqui));
-  useEffect(() => setHref(hrefComUtm(comVolta(CRIAR, aqui))), [aqui]);
   return (
-    <Link
-      href={href}
-      onClick={() => registrarEvento("clique_criar", { origem: origemAtual() })}
-      className={className}
-    >
+    <Link href={comVolta(CRIAR, aqui)} className={className}>
       {children}
     </Link>
   );

@@ -20,6 +20,12 @@ Self-hostable · No ads, no affiliate links, no algorithm
 
 ---
 
+> **This project is not maintained.** The Gume went offline in October 2026 and the
+> repository stayed. Nobody is on call: issues, pull requests and discussions may go
+> unanswered indefinitely, and that is the state of things rather than neglect. The code
+> is whole, it runs, and the licence lets you take it. **If you want to carry it forward,
+> do not ask: fork it.**
+
 <img src="./docs/screenshots/manifesto.png" alt="The logged-out home: a wall of real covers from the catalog, with the thesis over it" width="100%">
 
 A reading app sells itself on its face, so this is the face. Dark background, a serif, and the only color comes from the covers. No leaderboard, no progress bar, nothing trending.

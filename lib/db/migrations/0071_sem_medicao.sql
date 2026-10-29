@@ -1,0 +1,26 @@
+-- ════════════════════════════════════════════════════════════════════
+--  A MEDIÇÃO SAIU DO CÓDIGO, E A TABELA SAI COM ELA.
+--
+--  `eventos_funil` (migrations 0069 e 0070) guardava visita na home, clique em
+--  "criar conta", chegada em /entrar e cadastro, por sessão anônima, com a
+--  origem e a peça do anúncio. Existia para uma pergunta que só fazia sentido
+--  com uma instância hospedada e campanha rodando: qual anúncio trouxe quem
+--  virou gente.
+--
+--  Não há mais instância, não há mais campanha, e o código que escrevia aqui
+--  (lib/funil.ts, lib/funil-client.ts, app/api/eventos/route.ts) foi removido.
+--  Tabela que ninguém escreve e ninguém lê não é histórico: é uma tabela de
+--  comportamento de gente real esperando alguém esbarrar nela.
+--
+--  ═══ POR QUE DROP, E NÃO "DEIXA QUIETO" ═══
+--
+--  Quem clona o Gume hoje roda as migrations todas e ganharia uma tabela vazia
+--  com nome de rastreador, sem uma linha de código que a alimente. A próxima
+--  pessoa a ler o schema ia procurar o que escreve ali, e não ia achar.
+--
+--  `buscas_vazias` (migration 0031) FICA, e a diferença é o dono do dado: ela
+--  guarda o que alguém procurou e não achou, sem coluna de pessoa, e é fila de
+--  trabalho de bibliotecário. Mede o catálogo, e não gente.
+-- ════════════════════════════════════════════════════════════════════
+
+drop table if exists eventos_funil;

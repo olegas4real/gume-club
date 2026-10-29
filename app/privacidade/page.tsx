@@ -17,39 +17,44 @@ export const metadata = {
  *
  *  ═══ CADA LINHA AQUI É UMA AFIRMAÇÃO SOBRE O CÓDIGO ═══
  *
- *  A lista de serviços espelha o que está LIGADO na instância hospedada (as variáveis
- *  de components/medicao.tsx, instrumentation.ts, lib/email.ts, lib/guardar.ts,
- *  lib/stripe.ts, lib/auth.ts). Ligar um serviço novo sem acrescentá-lo aqui transforma
+ *  A lista de serviços é tudo que o CÓDIGO sabe ligar (as variáveis de lib/email.ts,
+ *  lib/guardar.ts, lib/stripe.ts e lib/auth.ts). Ligar um serviço novo sem acrescentá-lo aqui transforma
  *  esta página numa mentira educada. O mesmo vale para o que se apaga: ver lib/conta.ts.
+ *
+ *  ═══ ELA NÃO FALA MAIS POR UMA INSTÂNCIA HOSPEDADA, PORQUE NÃO HÁ UMA ═══
+ *
+ *  Até outubro de 2026 esta página descrevia o gume.club, e podia afirmar no presente o
+ *  que estava ligado lá. O site saiu do ar, e quem roda o Gume agora é outra pessoa, na
+ *  máquina dela. Afirmar "usamos o Clarity" para a cópia de um estranho seria falso, e o
+ *  texto passa a dizer que o que está ligado depende de quem hospeda.
+ *
+ *  No mesmo dia a questão ficou mais simples do que isso: os medidores saíram do código
+ *  inteiro (Clarity, Google Analytics, PostHog, pixel da Meta, Cloudflare Analytics e
+ *  Sentry). O que sobrou nesta lista é só o que o Gume precisa para FUNCIONAR, e nenhum
+ *  deles mede ninguém.
+ *
+ *  O CONTATO vem de NEXT_PUBLIC_CONTATO pelo mesmo motivo: um endereço cravado aqui
+ *  mandaria o pedido de LGPD de quem usa a cópia de outra pessoa para uma caixa que não
+ *  é dela. Sem a variável, a página diz para procurar quem hospeda, em vez de oferecer
+ *  um endereço que não responde.
  *
  *  `ATUALIZADA` muda junto com qualquer mudança de conteúdo.
  * ════════════════════════════════════════════════════════════════════
  */
 
-const ATUALIZADA = "10 de outubro de 2026";
-const CONTATO = "contato@gume.club";
+const ATUALIZADA = "28 de outubro de 2026";
+const CONTATO = process.env.NEXT_PUBLIC_CONTATO ?? null;
 
 const SERVICOS: { quem: string; para: string }[] = [
-  { quem: "Railway", para: "onde o Gume roda e onde os dados ficam guardados, nos Estados Unidos." },
+  {
+    quem: "Railway",
+    para:
+      "o servidor onde o Gume roda e onde os dados ficam guardados. O site oficial rodava lá, nos Estados Unidos, e saiu do ar em outubro de 2026.",
+  },
   { quem: "Resend", para: "manda os e-mails do Gume, como o código para entrar e o de trocar a senha." },
   { quem: "Vercel", para: "guarda a foto de perfil, se você puser uma." },
   { quem: "Google", para: "só se você entrar com a conta do Google: recebemos o seu nome, e-mail e foto." },
   { quem: "Stripe", para: "só se você apoiar: o pagamento acontece lá, e o número do cartão nunca passa pelo Gume." },
-  { quem: "Sentry", para: "avisa quando uma tela dá erro, para a gente consertar." },
-  {
-    quem: "Meta (Facebook e Instagram)",
-    para: "só quando você chega por um anúncio nosso: conta a visita, para sabermos se o anúncio funcionou. Não enviamos o que você lê.",
-  },
-  {
-    quem: "PostHog",
-    para:
-      "mede o que é usado dentro do site (que telas abrem, que caminhos travam), para melhorar o produto. Também registra o momento em que uma conta é criada, com o nome do anúncio que trouxe a pessoa, para sabermos qual anúncio funcionou. Vai o nome do anúncio, nunca o seu. Usa cookies.",
-  },
-  {
-    quem: "Google Analytics e Microsoft Clarity",
-    para:
-      "medem como o site é usado: de onde as pessoas chegam, onde clicam, onde a tela trava. Usam cookies. O Clarity grava o movimento na página com o texto escondido, e serve para achar o que está difícil de usar, nunca para ler a estante de ninguém.",
-  },
 ];
 
 export default function Privacidade() {
@@ -103,7 +108,10 @@ export default function Privacidade() {
       </Bloco>
 
       <Bloco titulo="Quem mais toca nos dados">
-        <p>O Gume usa alguns serviços de fora para existir. Cada um recebe só a parte que precisa:</p>
+        <p>
+          O Gume sabe usar alguns serviços de fora, e cada um recebe só a parte que precisa.
+          Quais estão ligados depende de quem hospeda a cópia que você está usando:
+        </p>
         <ul className="flex flex-col gap-3">
           {SERVICOS.map((s) => (
             <li key={s.quem}>
@@ -132,24 +140,38 @@ export default function Privacidade() {
           junto. As correções que você fez em fichas de livros ficam, sem o seu nome, porque a ficha
           certa é de todo mundo.
         </p>
-        <p>
-          Se preferir, ou se não conseguir entrar, escreva para{" "}
-          <a href={`mailto:${CONTATO}`} className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
-            {CONTATO}
-          </a>{" "}
-          a partir do e-mail da conta, e a gente apaga por você.
-        </p>
+        {CONTATO ? (
+          <p>
+            Se preferir, ou se não conseguir entrar, escreva para{" "}
+            <a href={`mailto:${CONTATO}`} className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
+              {CONTATO}
+            </a>{" "}
+            a partir do e-mail da conta, e a gente apaga por você.
+          </p>
+        ) : (
+          <p>
+            Se preferir, ou se não conseguir entrar, fale com quem hospeda esta cópia do Gume, a
+            partir do e-mail da conta.
+          </p>
+        )}
       </Bloco>
 
       <Bloco titulo="Seus direitos">
         <p>
           Pela Lei Geral de Proteção de Dados, você pode saber o que guardamos, corrigir, levar
-          embora e pedir para apagar. A maior parte disso você faz sozinho, no perfil. Para o resto,
-          ou para qualquer dúvida, o endereço é{" "}
-          <a href={`mailto:${CONTATO}`} className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
-            {CONTATO}
-          </a>
-          .
+          embora e pedir para apagar. A maior parte disso você faz sozinho, no perfil.
+          {CONTATO ? (
+            <>
+              {" "}
+              Para o resto, ou para qualquer dúvida, o endereço é{" "}
+              <a href={`mailto:${CONTATO}`} className="underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]">
+                {CONTATO}
+              </a>
+              .
+            </>
+          ) : (
+            <> Para o resto, ou para qualquer dúvida, fale com quem hospeda esta cópia do Gume.</>
+          )}
         </p>
       </Bloco>
     </main>

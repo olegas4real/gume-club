@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, signUp } from "@/lib/auth-client";
 import { rememberInviter } from "@/app/entrar/invite";
-import { registrarEvento, origemAtual } from "@/lib/funil-client";
 import { destinoSeguro } from "@/lib/volta";
 import { navegadorInterno } from "@/lib/navegador-interno";
 
@@ -85,10 +84,6 @@ export default function Entrar() {
    * resposta tem que ser a do momento em que a pessoa chegou, não a de depois
    * de qualquer ajuste automático.
    */
-  useEffect(() => {
-    registrarEvento("viu_entrar", { modoInicial: mode, origem: params.get("utm_source") ?? origemAtual() });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -145,9 +140,6 @@ export default function Entrar() {
             : "E-mail ou senha não conferem.",
         );
         return;
-      }
-      if (mode === "criar") {
-        registrarEvento("cadastro_ok", { origem: params.get("utm_source") ?? origemAtual() });
       }
       // "tire a pagina de bem-vindo do gume (...) pode já redirecionar pra pasta
       // inicial mesmo" — o dono. Quem cria conta ou entra vai direto pra /,
@@ -250,9 +242,6 @@ export default function Entrar() {
            * não tocar lá (decisão do dono). Dispara no CLIQUE, e não no
            * sucesso: quem sai pro Google não volta por aqui para avisar.
            */
-          if (mode === "criar") {
-            registrarEvento("cadastro_ok", { origem: params.get("utm_source") ?? origemAtual() });
-          }
           try {
             // Espera o cookie do convite terminar de gravar antes de sair pro
             // Google. Some no `pending`: na prática resolve bem antes de a

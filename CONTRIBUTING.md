@@ -1,14 +1,21 @@
 # Como contribuir
 
+> **Antes de tudo: ninguém está de plantão.** O Gume saiu do ar em outubro de 2026, e o
+> repositório ficou sem mantenedor. Seu PR pode ficar aberto para sempre, e a sua pergunta
+> pode não ser respondida. Isto aqui continua escrito porque é um bom mapa do código, e
+> porque a trava que ele descreve é automática e continua funcionando: o CI é o porteiro,
+> e ele não dormiu.
+>
+> **Se o que você quer é levar o Gume adiante, faça um fork.** A AGPL-3.0 existe para
+> isso, e não há ninguém para pedir licença. Mantenha o código aberto, e pronto.
+
 Sem CLA. Sem checklist de dez itens. Sem pedir permissão pra começar.
 
 O caminho do primeiro PR tem quatro passos, e eles estão logo abaixo.
 
-**E tem um atalho pra tudo: as [Discussões](https://github.com/olegas4real/gume-club/discussions).**
-É onde a gente conversa sobre o que vem em seguida, e é o lugar mais barato de descobrir que a
-sua ideia já foi discutida, ou que alguém já está mexendo naquilo. Bug, dúvida, ideia, ou só
-"esse comando não rodou aqui": fala lá. **Você não precisa passar por lá pra abrir um PR**, mas
-é o jeito mais rápido de não gastar a sua noite à toa.
+As [Discussões](https://github.com/olegas4real/gume-club/discussions) continuam de pé, e o
+histórico delas é útil: é onde se decidiu boa parte do que está no código, e dá para
+descobrir que uma ideia já foi discutida. Só não espere resposta nova.
 
 Fica no mesmo lugar do código, e isso é de propósito: a conversa que decide uma coisa tem que
 poder ser encontrada por quem chegar depois, e não sumir na rolagem de um chat.

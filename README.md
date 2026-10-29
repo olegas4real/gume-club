@@ -20,6 +20,12 @@ Auto-hospedável · Sem anúncios, sem links de afiliado, sem algoritmo
 
 ---
 
+> **Este projeto não é mantido.** O Gume saiu do ar em outubro de 2026 e o repositório
+> ficou. Não há ninguém de plantão: issue, PR e discussão podem ficar sem resposta por
+> tempo indeterminado, e não é descaso, é o estado da coisa. O código está inteiro, roda,
+> e a licença deixa você levar embora. **Se quiser tocar isto adiante, não peça licença:
+> faça um fork.**
+
 <img src="./docs/screenshots/manifesto.png" alt="A home, sem entrar: uma parede de capas reais do catálogo, e a tese por cima" width="100%">
 
 App de leitura se vende pela cara, então esta é a cara. Fundo escuro, serifa, e a única cor vem das capas. Sem placar, sem barra de progresso, sem nada em alta.
@@ -115,7 +121,7 @@ Quer uma estante de exemplo para não começar com o app vazio? `pnpm db:seed`.
 
 **E o catálogo você não precisa montar do zero.** `pnpm db:catalogo` baixa as 265 mil obras em português e carrega no seu banco em alguns minutos. É o mesmo catálogo que o site usava.
 
-Se qualquer um dos dois falhar numa máquina limpa, isso é um bug e a gente quer a issue. Código aberto que você não consegue rodar é decoração.
+Se qualquer um dos dois falhar numa máquina limpa, isso é um bug: abra uma issue para quem vier depois, sabendo que pode não ter resposta. Código aberto que você não consegue rodar é decoração.
 
 ## Como contribuir
 

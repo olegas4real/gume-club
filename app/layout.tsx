@@ -8,7 +8,6 @@ import { ToastHost } from "@/components/toast-host";
 import { VoltarAoTopo } from "@/components/voltar-ao-topo";
 import { RelatarProblema } from "@/components/relatar-problema";
 import { PublicHeader } from "@/components/public-header";
-import { Medicao } from "@/components/medicao";
 import { getViewer, getUser } from "@/lib/viewer";
 import { souIdealizador } from "@/lib/authz";
 import { apoioVisivel } from "@/lib/apoio-visivel";
@@ -105,7 +104,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               components/relatar-problema.tsx e lib/relatar.ts. */}
           <RelatarProblema />
           <ToastHost />
-          <Medicao />
         </body>
       </html>
     );
@@ -167,7 +165,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         {/* Room for the fixed column on desktop, and for the bottom bar on a phone. */}
         <div className="pb-24 sm:pb-0 sm:pl-[254px]">{children}</div>
-        <Medicao />
       </body>
     </html>
   );

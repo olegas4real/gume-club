@@ -35,13 +35,12 @@
     "db:catalogo": "node scripts/importar-catalogo.mjs"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.70.0",
     "@vercel/blob": "^2.8.0",
     "better-auth": "^1.6.29",
     "drizzle-orm": "^0.45.2",
     "heic2any": "^0.0.4",
     "lucide-react": "^1.31.0",
-    "next": "^15.5.24",
+    "next": "^15.5.28",
     "pg": "^8.23.0",
     "postgres": "^3.4.5",
     "react": "^19.2.8",

@@ -1,8 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { registrarEvento, origemAtual, hrefComUtm } from "@/lib/funil-client";
 
 /**
  * ════════════════════════════════════════════════════════════════════
@@ -13,40 +9,28 @@ import { registrarEvento, origemAtual, hrefComUtm } from "@/lib/funil-client";
  *
  *  1.217 visitas de divulgação, 2 cadastros: o CTA da home dizia "Entrar",
  *  e um estranho sem conta batia num botão de LOGIN. "Entrar" em português
- *  lê como "fazer login", não como "começar" — e é a hipótese mais
+ *  lê como "fazer login", não como "começar" — e era a hipótese mais
  *  provável, e a mais barata de testar, para o 0,16%.
  *
- *  ═══ OS DOIS EVENTOS DESTA TELA ═══
+ *  ═══ ELA JÁ FOI MEDIDA, E NÃO É MAIS ═══
  *
- *  `visita_home` no mount (uma vez, com a origem que o navegador enxerga) e
- *  `clique_criar` no clique do CTA principal, via `sendBeacon`: o clique já
- *  navega pra /entrar, e não pode esperar rede nenhuma terminar antes.
+ *  Esta tela mandava `visita_home` e `clique_criar` para o funil, e os links
+ *  ganhavam `?utm_source=` depois de montar, para a campanha saber qual
+ *  anúncio trouxe quem. Os dois sumiram junto com a medição inteira: sem
+ *  instância hospedada não há campanha para atribuir nem painel para olhar,
+ *  e o que sobra de um medidor sem ninguém medindo é só código que manda
+ *  dados dos outros para fora.
  *
- *  ═══ POR QUE OS HREFS COMEÇAM SEM utm_source, E MUDAM DEPOIS ═══
- *
- *  O servidor não sabe `window.location`, e a home é renderizada lá. Os links
- *  nascem com o destino simples (`/entrar?novo=1`, `/entrar`) e só GANHAM o
- *  `?utm_source=` depois de montar, no navegador — é um re-render comum, e
- *  não uma divergência de hidratação, porque o HTML do primeiro paint no
- *  cliente é idêntico ao do servidor; só o CLIQUE seguinte usa o link novo.
+ *  O que ficou é o que a fatia resolvia de verdade: a palavra no botão.
+ *  Dois links estáticos, sem estado e sem efeito, renderizados no servidor.
  * ════════════════════════════════════════════════════════════════════
  */
 export function PortaEntrada({ vitrine }: { vitrine: string | undefined }) {
-  const [hrefCriar, setHrefCriar] = useState("/entrar?novo=1");
-  const [hrefEntrar, setHrefEntrar] = useState("/entrar");
-
-  useEffect(() => {
-    registrarEvento("visita_home", { origem: origemAtual() });
-    setHrefCriar(hrefComUtm("/entrar?novo=1"));
-    setHrefEntrar(hrefComUtm("/entrar"));
-  }, []);
-
   return (
     <>
       <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
         <Link
-          href={hrefCriar}
-          onClick={() => registrarEvento("clique_criar", { origem: origemAtual() })}
+          href="/entrar?novo=1"
           className="w-full rounded-[var(--radius-control)] bg-[var(--color-ink)] px-7 py-3.5 text-[15px] font-medium text-[var(--color-canvas)] sm:w-auto"
         >
           Criar conta
@@ -68,7 +52,7 @@ export function PortaEntrada({ vitrine }: { vitrine: string | undefined }) {
       <p className="mt-5 text-[14px] text-[var(--color-ink-faint)]">
         já tem conta?{" "}
         <Link
-          href={hrefEntrar}
+          href="/entrar"
           className="text-[var(--color-ink-soft)] underline decoration-[var(--color-rule)] underline-offset-4 hover:text-[var(--color-ink)]"
         >
           entrar

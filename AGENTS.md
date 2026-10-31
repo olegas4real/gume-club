@@ -240,7 +240,7 @@ Uma fatia não está pronta porque compila. Está pronta quando:
 - [ ] **`pnpm verify`** passa · lint + typecheck + testes + `audit:security`
 - [ ] a migration foi escrita como arquivo novo, nunca editando uma que já rodou
 - [ ] toda leitura de dado de outra pessoa filtra `visibility` **no SQL**, e toda escrita checa dono **antes** de mutar
-- [ ] há teste que falha sem a correção, se isto era um bug
+- [ ] se isto era um bug, você escreveu o teste que falha antes da correção
 - [ ] a fatia foi marcada no `ai/PLAN.md`, e decisão real entrou no `ai/DECISIONS.md`
 - [ ] o trabalho foi para um PR, não para o `main`
 - [ ] **o CI do PR está verde** · verde na sua máquina não é verde

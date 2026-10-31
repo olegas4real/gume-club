@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm audit:security",
     "start": "drizzle-kit migrate && NODE_OPTIONS=--max-old-space-size=768 next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",

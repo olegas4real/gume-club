@@ -1,24 +1,4 @@
-# CLAUDE.md
+<!-- Fonte única: AGENTS.md. Este arquivo só o importa, para não existirem duas
+     verdades que divergem em silêncio. Regra nova entra no AGENTS.md. -->
 
-Leia **[AGENTS.md](./AGENTS.md)** primeiro. É o contrato deste repo: stack, regras, o que não vibe-codar, e o workflow por feature.
-
-Depois, na ordem, conforme a tarefa:
-
-- **[ai/PLAN.md](./ai/PLAN.md)**: o que construir e em que ordem. Fatias verticais. Não pule fase. Marque os itens conforme terminar.
-- **[ai/PRD.md](./ai/PRD.md)**: por que cada requisito existe (cada um vem de uma dor documentada de um concorrente).
-- **[docs/schema.md](./docs/schema.md)**: o modelo de dados e as sete decisões que ele trava.
-- **[docs/design.md](./docs/design.md)**: o sistema visual. Vidro é chrome, papel é conteúdo.
-- **[SECURITY.md](./SECURITY.md)**: autorização mora em `lib/authz.ts`, escrito à mão. Leia antes de tocar em qualquer query.
-- **[ai/DECISIONS.md](./ai/DECISIONS.md)**: decisões já tomadas. Não relitigue; se discordar, argumente e adicione uma entrada nova.
-
-## Regras que valem em toda sessão
-
-1. Uma fatia vertical por vez: migration → server → UI → teste. Nunca "todos os models primeiro".
-2. Toda leitura de dado de outra pessoa filtra `visibility` **no SQL**. Toda escrita checa dono **antes** de mutar.
-3. Nada de segredo em client component ou `NEXT_PUBLIC_*`.
-4. Nada de IA generativa no produto. É promessa pública no README, não backlog.
-5. Ao terminar uma fatia: marque no ai/PLAN.md e, se houve decisão real, registre em ai/DECISIONS.md.
-6. Na dúvida, apresente 3 opções com trade-offs e uma recomendação. Não escolha em silêncio.
-7. **O Gume fala com leitores, não com desenvolvedores.** Nenhuma tela cita arquivo interno (`ai/PLAN.md`, "Fase 4", "roadmap"), nem jargão de dev ("schema", "migration", "endpoint", "seed", "transação", "AGPL", "self-host"). O que ainda não existe é "em breve", nunca "chega na Fase 4". A única exceção é dizer, em frase humana, que o código é aberto e está no GitHub: em `/sobre`, no rodapé da home e em `/contribuidores`. Ver a seção "A voz" no AGENTS.md.
-
-Estado atual: **o v0.1 está de pé, e o Gume saiu do ar.** Catálogo, estante (ter e ler contados separados), coleções, veredito como palavra, honras e insígnias, perfil público, correções e curadoria, moderação, importação (Goodreads, StoryGraph, Skoob, Fable) e exportação: tudo existe e roda. O que não existe mais é a instância hospedada, desligada em outubro de 2026 (ver a entrada em ai/DECISIONS.md): o Gume vive como repositório, e quem quiser roda o seu. Não assuma produção em nada que escrever: não há servidor, não há apoio, não há e-mail de saída. O que falta no código mora em ai/PLAN.md e docs/O-QUE-FALTA-NO-CODIGO.md. Não relitigue o que já está em ai/DECISIONS.md.
+@AGENTS.md

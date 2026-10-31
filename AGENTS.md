@@ -1,8 +1,18 @@
 # AGENTS.md
 
+> **Fonte única deste repositório para agentes de código** (Claude Code, Codex, Cursor, Copilot).
+> O `CLAUDE.md` só importa este arquivo. Regra nova entra aqui, nunca em dois lugares.
+
 Contexto para qualquer agente de IA trabalhando neste repo (Claude Code, Cursor, Codex). Leia isto antes de escrever código. Mantenha atualizado **durante** o desenvolvimento, não depois: um AGENTS.md desatualizado é pior que nenhum.
 
-Docs companheiros: [ai/PRD.md](./ai/PRD.md) (o quê) · [ai/PLAN.md](./ai/PLAN.md) (como, em ordem) · [docs/schema.md](./docs/schema.md) · [docs/design.md](./docs/design.md) · [SECURITY.md](./SECURITY.md) · [ai/DECISIONS.md](./ai/DECISIONS.md)
+**Ordem de leitura**, conforme a tarefa:
+
+- **[ai/PLAN.md](./ai/PLAN.md)**: o que construir e em que ordem. Fatias verticais. Não pule fase. Marque os itens conforme terminar.
+- **[ai/PRD.md](./ai/PRD.md)**: por que cada requisito existe (cada um vem de uma dor documentada de um concorrente).
+- **[docs/schema.md](./docs/schema.md)**: o modelo de dados e as sete decisões que ele trava.
+- **[docs/design.md](./docs/design.md)**: o sistema visual. Vidro é chrome, papel é conteúdo.
+- **[SECURITY.md](./SECURITY.md)**: autorização mora em `lib/authz.ts`, escrito à mão. Leia antes de tocar em qualquer query.
+- **[ai/DECISIONS.md](./ai/DECISIONS.md)**: decisões já tomadas. Não relitigue; se discordar, argumente e adicione uma entrada nova.
 
 ## O que é isto
 
@@ -223,6 +233,18 @@ Isso existe porque já falhou: nove commits seguidos foram para o `main` com o C
 4. Commite sempre que algo funcionar. Commits pequenos, para que uma regressão possa ser bisectada.
 5. Depois de terminar uma fatia, atualize o ai/PLAN.md (marque) e adicione ao ai/DECISIONS.md se uma decisão real foi tomada.
 
+## Antes de dizer que terminou
+
+Uma fatia não está pronta porque compila. Está pronta quando:
+
+- [ ] **`pnpm verify`** passa · lint + typecheck + testes + `audit:security`
+- [ ] a migration foi escrita como arquivo novo, nunca editando uma que já rodou
+- [ ] toda leitura de dado de outra pessoa filtra `visibility` **no SQL**, e toda escrita checa dono **antes** de mutar
+- [ ] há teste que falha sem a correção, se isto era um bug
+- [ ] a fatia foi marcada no `ai/PLAN.md`, e decisão real entrou no `ai/DECISIONS.md`
+- [ ] o trabalho foi para um PR, não para o `main`
+- [ ] **o CI do PR está verde** · verde na sua máquina não é verde
+
 ## Comandos
 
 ```
@@ -232,6 +254,7 @@ pnpm db:migrate
 pnpm test           # vitest
 pnpm lint && pnpm typecheck
 pnpm audit:security # secret scan + dep audit + authz lint. tem que passar antes do deploy.
+pnpm verify         # os quatro de uma vez. é o portão antes de abrir o PR.
 
 git config core.hooksPath .githooks   # uma vez por clone. barra arquivo > 10 MB.
 ```

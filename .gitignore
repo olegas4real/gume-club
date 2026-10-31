@@ -94,3 +94,7 @@ twa-manifest.json
 # Os zips e os e-mails do desligamento: dado pessoal de leitores, nunca versionado.
 saida-export/
 saida-catalogo/
+
+# Config local de agente: fica na maquina, nunca no repo.
+# As skills e o settings.json compartilhados do .claude/ continuam versionados.
+.claude/settings.local.json
